@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/c
 # Edit at https://www.toptal.com/developers/gitignore?templates=c
 
@@ -58,3 +57,4 @@ dkms.conf
 
 # End of https://www.toptal.com/developers/gitignore/api/c
 **/*.aseprite
+.vscode

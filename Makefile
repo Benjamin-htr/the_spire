@@ -9,7 +9,7 @@ MAKEFLAGS += --no-builtin-rules
 TARGET_EXEC ?= main.out
 
 CC=gcc
-CFLAGS=-Wall -ansi -W -pedantic
+CFLAGS=-Wall -ansi -W -pedantic -std=c99 -L lib/ -lraylib -pthread -lopengl32 -lgdi32 -lwinmm -mwindows
 
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src

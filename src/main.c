@@ -30,7 +30,7 @@ int main(void)
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "BASIC WINDOW test 12");
+    InitWindow(screenWidth, screenHeight, "BASIC WINDOW test 1");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------

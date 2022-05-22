@@ -31,14 +31,14 @@ void InitMenuScreen(void)
 void UpdateMenuScreen(void)
 {
     titlePositionY += 3;
-    if (titlePositionY > 40) titlePositionY = 40;
+    if (titlePositionY > 20) titlePositionY = 20;
 
     updateSprite(&sprite);
 
 }
 void DrawMenuScreen(void)
 {
-    const float scaleFactor = 1.5f;
+    const float scaleFactor = 1.2f;
 
     const Vector2 position = { GetScreenWidth()/2 - (sprite.frameRec.width*scaleFactor)/2, titlePositionY };
 

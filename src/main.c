@@ -52,7 +52,7 @@ static void UpdateDrawFrame(void);          // Update and draw one frame
 
 int main(void)
 {
-    //SetConfigFlags(FLAG_WINDOW_MAXIMIZED);
+    //SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
 
     // Initialization (OpenGL context)
     //--------------------------------------------------------------------------------------
@@ -61,8 +61,8 @@ int main(void)
     // Global data loading (assets that must be available in all screens, i.e. fonts)
     InitAudioDevice();
 
-    font = LoadFont("./asset/Misc/Fonts/pixantiqua.png");
-    //SetTextureFilter(font.texture, FILTER_BILINEAR);
+    font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 96, 0, 0);
+    background = LoadTexture("./asset/Misc/background.png");
 
     music = LoadMusicStream("./asset/Misc/Audio/Music/Video-Game-Music-Dar-Golan-200bp.mp3");
     PlayMusicStream(music);
@@ -91,13 +91,32 @@ int main(void)
         // check for alt + enter
  		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
  		{
+ 			int display = GetCurrentMonitor();
+ 
+            
+            //if (IsWindowFullscreen())
+            //{
+            //    printf("was fullscreen : screenWidth : %d, screenHeight : %d \n ", screenWidth, screenHeight);
+            //    // if we are full screen, then go back to the windowed size
+            //    SetWindowSize(screenWidth, screenHeight);
+            //}
+            //else
+            //{
+            //    
+            //    // if we are not full screen, set the window size to match the monitor we are on
+            //    SetWindowSize(GetMonitorPhysicalWidth(display), GetMonitorPhysicalHeight(display));
+            //}
+ 
             // toggle the state
  			ToggleFullscreen();
+
+             printf("screenWidth : %d, screenHeight : %d \n ", GetScreenWidth(), GetScreenHeight());
          }
     }
 
     // Unload all global loaded data (i.e. fonts) here!
     UnloadFont(font);
+    UnloadTexture(background);
     UnloadMusicStream(music);
 
     CloseAudioDevice();     // Close audio context

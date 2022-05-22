@@ -9,8 +9,7 @@
 //----------------------------------------------------------------------------------
 static int finishScreen = 0;
 
-static Texture2D texTitle = { 0 };
-static Sprite sprite = { 0 };
+static Sprite titleSprite = { 0 };
 
 
 static int titlePositionY = 0;
@@ -20,10 +19,8 @@ void InitMenuScreen(void)
     printf("Menu Screen Init\n");
 
     finishScreen = 0;
-
-    texTitle = LoadTexture("./asset/Misc/title.gif");
     
-    constructSprite(&sprite, "./asset/Misc/title.png", 2, 5, (Vector2){200, 200});
+    constructSprite(&titleSprite, "./asset/Misc/title.png", 2, 5, (Vector2){200, 200});
 
     titlePositionY = -400;
     
@@ -31,27 +28,30 @@ void InitMenuScreen(void)
 void UpdateMenuScreen(void)
 {
     titlePositionY += 3;
-    if (titlePositionY > 20) titlePositionY = 20;
+    if (titlePositionY > 10) titlePositionY = 10;
 
-    updateSprite(&sprite);
+    updateSprite(&titleSprite);
 
 }
 void DrawMenuScreen(void)
 {
-    const float scaleFactor = 1.2f;
+    float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
+    DrawTextureEx(background, (Vector2){0, 0}, 0, scaleBackground, WHITE);
+    //DrawTexture(background, 0, 0, WHITE);
 
-    const Vector2 position = { GetScreenWidth()/2 - (sprite.frameRec.width*scaleFactor)/2, titlePositionY };
+    const float scaleFactor = 1.1f;
 
-    //DrawTextureEx(texTitle, position, 0, scaleFactor, WHITE);
-    drawSprite(&sprite, position, 0.0f, scaleFactor, WHITE);
+    const Vector2 position = { GetScreenWidth()/2 - (titleSprite.frameRec.width*scaleFactor)/2, titlePositionY };
+    drawSprite(&titleSprite, position, 0.0f, scaleFactor, WHITE);
 
+    Vector2 fontPosition = { 40.0f, GetScreenHeight()/2.0f - 80.0f };
 
-    //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+    //DrawTextEx(font, "Congrats! You created your first window !", fontPosition, 24, 0, BLACK);
+    //DrawText("Congrats! You created your first window!", 190, 500, 20, LIGHTGRAY);
 }
 void UnloadMenuScreen(void)
 {
-    UnloadTexture(texTitle);
-    UnloadTexture(sprite.texture);
+    UnloadTexture(titleSprite.texture);
 }
 int FinishMenuScreen(void)
 {

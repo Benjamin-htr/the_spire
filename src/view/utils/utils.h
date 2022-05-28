@@ -26,8 +26,17 @@ typedef struct Sprite {
 extern GameScreen currentScreen;
 extern Font font;
 extern Music music;
-extern Sound fxCoin;
 extern Texture2D background;
+extern Sound buttonSound;
+extern Texture2D buttonPatch;
+extern NPatchInfo buttonInfo;
+extern bool shouldClose;
+
+extern float transAlpha;
+extern bool onTransition;
+extern bool transFadeOut;
+extern int transFromScreen;
+extern int transToScreen;
 
 
 //----------------------------------------------------------------------------------
@@ -38,5 +47,11 @@ void constructSprite(Sprite* sprite, char* texturePath, int nbFramesPerLine, int
 void updateSprite(Sprite* sprite);
 
 void drawSprite(Sprite* sprite, Vector2 position, float angle, float scale, Color c);
+
+// Gui button (immediate mode, update and draw)
+bool GuiButton(Rectangle bounds, const char *text, int forcedState);
+
+//Transitions :
+void TransitionToScreen(int screen); // Request transition to next screen
 
 #endif

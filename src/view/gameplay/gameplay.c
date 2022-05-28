@@ -13,7 +13,7 @@ void UpdateGameplayScreen(void)
 }
 void DrawGameplayScreen(void)
 {
-    
+    DrawText("GAMEPLAY SCREEN", 190, 200, 20, LIGHTGRAY);
 }
 void UnloadGameplayScreen(void)
 {

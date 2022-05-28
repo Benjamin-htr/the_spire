@@ -17,8 +17,6 @@ static int titlePositionY = 0;
 void InitMenuScreen(void)
 {
     printf("Menu Screen Init\n");
-
-    finishScreen = 0;
     
     constructSprite(&titleSprite, "./asset/Misc/title.png", 2, 5, (Vector2){200, 200});
 
@@ -37,7 +35,6 @@ void DrawMenuScreen(void)
 {
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
     DrawTextureEx(background, (Vector2){0, 0}, 0, scaleBackground, WHITE);
-    //DrawTexture(background, 0, 0, WHITE);
 
     const float scaleFactor = 1.1f;
 
@@ -46,8 +43,21 @@ void DrawMenuScreen(void)
 
     Vector2 fontPosition = { 40.0f, GetScreenHeight()/2.0f - 80.0f };
 
-    //DrawTextEx(font, "Congrats! You created your first window !", fontPosition, 24, 0, BLACK);
-    //DrawText("Congrats! You created your first window!", 190, 500, 20, LIGHTGRAY);
+    int buttonWidth = 300;
+    int buttonHeight = 80;
+    int gap = 30;
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, 300, buttonWidth, buttonHeight }, "NOUVELLE PARTIE", -1))
+    {
+        TransitionToScreen(GAMEPLAY);
+    }
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, 300+buttonHeight+gap, buttonWidth, buttonHeight }, "CREDITS", -1))
+    {
+        TransitionToScreen(CREDITS);
+    }
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, 300+(2*(buttonHeight+gap)), buttonWidth, buttonHeight }, "QUITTER", -1))
+    {
+        shouldClose = true;
+    }
 }
 void UnloadMenuScreen(void)
 {

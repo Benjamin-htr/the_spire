@@ -18,22 +18,24 @@
 GameScreen currentScreen = 0;
 Font font = { 0 };
 Music music = { 0 };
-Sound fxCoin = { 0 };
 Texture2D background = { 0 };
+Sound buttonSound = { 0 };
+Texture2D buttonPatch = { 0 };
+NPatchInfo buttonInfo = { 0 };
+bool shouldClose = false;
 
+// Required variables to manage screen transitions (fade-in, fade-out)
+float transAlpha = 0.0f;
+bool onTransition = false;
+bool transFadeOut = false;
+int transFromScreen = -1;
+int transToScreen = -1;
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
 static const int screenWidth = 1200;
 static const int screenHeight = 675;
-
-// Required variables to manage screen transitions (fade-in, fade-out)
-static float transAlpha = 0.0f;
-static bool onTransition = false;
-static bool transFadeOut = false;
-static int transFromScreen = -1;
-static int transToScreen = -1;
 
 // NOTE: Some global variables that require to be visible for all screens,
 // are defined in utils.h (i.e. currentScreen)
@@ -42,8 +44,6 @@ static int transToScreen = -1;
 // Module Functions Declaration (local)
 //----------------------------------------------------------------------------------
 static void ChangeToScreen(int screen);     // Change to screen, no transition effect
-
-static void TransitionToScreen(int screen); // Request transition to next screen
 static void UpdateTransition(void);         // Update transition effect
 static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
 
@@ -61,12 +61,21 @@ int main(void)
     // Global data loading (assets that must be available in all screens, i.e. fonts)
     InitAudioDevice();
 
-    font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 96, 0, 0);
+    font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 24, 0, 0);
     background = LoadTexture("./asset/Misc/background.png");
 
     music = LoadMusicStream("./asset/Misc/Audio/Music/Video-Game-Music-Dar-Golan-200bp.mp3");
     PlayMusicStream(music);
     SetMusicVolume(music, 0.1f);
+
+    buttonSound = LoadSound("./asset/Misc/Audio/Sound/Confirm.wav");
+
+    buttonPatch = LoadTexture("./asset/Misc/button.png");
+    buttonInfo.source = (Rectangle){ 0, 0, 115, buttonPatch.height },
+    buttonInfo.left = 60;
+    buttonInfo.top = 60;
+    buttonInfo.right = 60;
+    buttonInfo.bottom =60;
 
     // Setup and Init first screen
     currentScreen = MENU;
@@ -75,15 +84,13 @@ int main(void)
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    
-
     //-------------------------------------------------------------------------------------
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
     //---------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!(WindowShouldClose() || shouldClose))    // Detect window close button or ESC key
     {
         // Update
         UpdateDrawFrame();
@@ -91,7 +98,7 @@ int main(void)
         // check for alt + enter
  		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
  		{
- 			int display = GetCurrentMonitor();
+ 			//int display = GetCurrentMonitor();
  
             
             //if (IsWindowFullscreen())
@@ -154,17 +161,6 @@ static void ChangeToScreen(int screen)
     }
 
     currentScreen = screen;
-}
-
-
-// Request transition to next screen
-static void TransitionToScreen(int screen)
-{
-    onTransition = true;
-    transFadeOut = false;
-    transFromScreen = currentScreen;
-    transToScreen = screen;
-    transAlpha = 0.0f;
 }
 
 // Update transition effect
@@ -244,7 +240,7 @@ static void UpdateDrawFrame(void)
 
                 if (FinishMenuScreen())
                 {
-                    //TransitionToScreen(MENU);
+                    //TransitionToScreen(GAMEPLAY);
                     PlayMusicStream(music);
                 }
 

@@ -18,7 +18,7 @@ void InitCreditsScreen(void)
 }
 void UpdateCreditsScreen(void)
 {
-    creditsScrollingPosY -= 0.8f;
+    creditsScrollingPosY -= 1.5f;
     if (IsKeyPressed(KEY_SPACE) || IsKeyDown(KEY_DOWN))
     {
         creditsScrollingPosY -= 3.0f;
@@ -42,7 +42,7 @@ void DrawCreditsScreen(void)
                         "MUSIQUE PAR",
                         "Dar Golan" };
 
-    float padding = 20.0f; 
+    float padding = 40.0f; 
     float sizeQueue = 0.0f;
     Color color = GetColor(0x8a9696ff);
     for (int i = 0; i < TAB_SIZE-1; i+=2) {

@@ -5,6 +5,20 @@
 
 #define TAB_SIZE 4*2
 
+//global variables :
+char* creditsData[TAB_SIZE] = { "DESIGN DU JEU",
+                        "Dutoit Hugo\nHautier Benjamin",
+                        "DEVELOPPEMENT DU JEU",
+                        "Corre Léonard\nMille Martin\nDutoit Hugo\nHautier Benjamin",
+                        "CREATION D'ASSETS",
+                        "Dutoit Hugo\nHautier Benjamin",
+                        "MUSIQUE PAR",
+                        "Dar Golan" };
+
+//----------------------------------------------------------------------------------
+// Module Variables Definition (local)
+//----------------------------------------------------------------------------------
+static int finishScreen = 0;
 static float creditsScrollingPosY = 0;
 static Texture2D raylibLogo;
 
@@ -19,11 +33,14 @@ void InitCreditsScreen(void)
 void UpdateCreditsScreen(void)
 {
     creditsScrollingPosY -= 1.5f;
-    if (IsKeyPressed(KEY_SPACE) || IsKeyDown(KEY_DOWN))
+    if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_DOWN))
     {
         creditsScrollingPosY -= 3.0f;
     }
-    if (creditsScrollingPosY < (-GetScreenHeight() -400)) creditsScrollingPosY = -GetScreenHeight() - 400;
+    if (creditsScrollingPosY < (-GetScreenHeight() -400)) {
+        creditsScrollingPosY = -GetScreenHeight() - 400;
+        finishScreen = 1;
+    }
     
 }
 void DrawCreditsScreen(void)
@@ -32,15 +49,6 @@ void DrawCreditsScreen(void)
     DrawTextureEx(background, (Vector2){0, 0}, 0, scaleBackground, WHITE);
 
     int fontSize = 50;
-
-    char *creditsData[TAB_SIZE] = { "DESIGN DU JEU",
-                        "Dutoit Hugo\nHautier Benjamin",
-                        "DEVELOPPEMENT DU JEU",
-                        "Corre Léonard\nMille Martin\nDutoit Hugo\nHautier Benjamin",
-                        "CREATION D'ASSETS",
-                        "Dutoit Hugo\nHautier Benjamin",
-                        "MUSIQUE PAR",
-                        "Dar Golan" };
 
     float padding = 40.0f; 
     float sizeQueue = 0.0f;
@@ -72,5 +80,5 @@ void UnloadCreditsScreen(void)
 }
 int FinishCreditsScreen(void) 
 {
-    return 0;
+    return finishScreen;
 }

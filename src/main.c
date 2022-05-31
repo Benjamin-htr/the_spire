@@ -58,7 +58,7 @@ int main(void)
     // Initialization (OpenGL context)
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "The Spire");
-    
+
     SetExitKey(0);
 
     // Global data loading (assets that must be available in all screens, i.e. fonts)

@@ -4,6 +4,11 @@
 
 #include <stdio.h>
 
+//----------------------------------------------------------------------------------
+// Module Variables Definition (local)
+//----------------------------------------------------------------------------------
+static int finishScreen = 0;
+
 void InitGameplayScreen(void)
 {
     printf("Gameplay Screen Init\n");
@@ -26,5 +31,5 @@ void UnloadGameplayScreen(void)
 }
 int FinishGameplayScreen(void)
 {
-    return 0;
+    return finishScreen;
 }

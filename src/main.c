@@ -23,6 +23,7 @@ Sound buttonSound = { 0 };
 Texture2D buttonPatch = { 0 };
 NPatchInfo buttonInfo = { 0 };
 bool shouldClose = false;
+bool showInGameMenu = false;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 float transAlpha = 0.0f;
@@ -57,6 +58,8 @@ int main(void)
     // Initialization (OpenGL context)
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "The Spire");
+    
+    SetExitKey(0);
 
     // Global data loading (assets that must be available in all screens, i.e. fonts)
     InitAudioDevice();
@@ -288,6 +291,8 @@ static void UpdateDrawFrame(void)
             case ENDING: DrawEndingScreen(); break;
             default: break;
         }
+
+        if (showInGameMenu) drawInGameMenu();
 
         // Draw full screen rectangle in front of everything
         if (onTransition) DrawTransition();

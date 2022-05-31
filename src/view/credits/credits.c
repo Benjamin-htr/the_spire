@@ -68,7 +68,7 @@ void DrawCreditsScreen(void)
 }
 void UnloadCreditsScreen(void)
 {
-    
+    UnloadTexture(raylibLogo);
 }
 int FinishCreditsScreen(void) 
 {

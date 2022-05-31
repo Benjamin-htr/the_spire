@@ -110,3 +110,33 @@ void TransitionToScreen(int screen)
     transToScreen = screen;
     transAlpha = 0.0f;
 }
+
+void drawInGameMenu() {
+    //for buttons :
+    int buttonWidth = 300;
+    int buttonHeight = 80;
+    int gap = 20;
+
+    //for background :
+    int paddingX = 80;
+    int paddingY = 80;
+    int menuWidth = buttonWidth+2*paddingX;
+    int menuHeight = buttonHeight*3+gap*2+2*paddingY;
+    DrawRectangle(GetScreenWidth()/2 -menuWidth/2, GetScreenHeight()/2 -menuHeight/2, menuWidth, menuHeight, BLACK);
+
+    int topPosButton = GetScreenHeight()/2-menuHeight/2+paddingY;
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, topPosButton, buttonWidth, buttonHeight }, "CONTINUER", -1))
+    {
+        showInGameMenu = false;
+    }
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, topPosButton+buttonHeight+gap, buttonWidth, buttonHeight }, "RETOUR VERS LE MENU", -1))
+    {
+        TransitionToScreen(MENU);
+        showInGameMenu = false;
+    }
+    if (GuiButton((Rectangle){ GetScreenWidth()/2 - buttonWidth/2, topPosButton+(2*(buttonHeight+gap)), buttonWidth, buttonHeight }, "QUITTER", -1))
+    {
+        shouldClose = true;
+        showInGameMenu = false;
+    }
+}

@@ -1,5 +1,7 @@
 #include "./../../../include/raylib.h"
 #include "gameplay.h"
+#include "./../utils/utils.h"
+
 #include <stdio.h>
 
 void InitGameplayScreen(void)
@@ -9,7 +11,10 @@ void InitGameplayScreen(void)
 }
 void UpdateGameplayScreen(void)
 {
-    
+    if (IsKeyPressed(KEY_ESCAPE))
+    {
+        showInGameMenu = !showInGameMenu;
+    }
 }
 void DrawGameplayScreen(void)
 {

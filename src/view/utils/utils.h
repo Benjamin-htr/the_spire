@@ -31,6 +31,7 @@ extern Sound buttonSound;
 extern Texture2D buttonPatch;
 extern NPatchInfo buttonInfo;
 extern bool shouldClose;
+extern bool showInGameMenu;
 
 extern float transAlpha;
 extern bool onTransition;
@@ -53,5 +54,7 @@ bool GuiButton(Rectangle bounds, const char *text, int forcedState);
 
 //Transitions :
 void TransitionToScreen(int screen); // Request transition to next screen
+
+void drawInGameMenu();
 
 #endif

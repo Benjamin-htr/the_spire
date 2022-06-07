@@ -73,7 +73,7 @@ int main(void)
 
     buttonSound = LoadSound("./asset/Misc/Audio/Sound/Confirm.wav");
 
-    buttonPatch = LoadTexture("./asset/Misc/button.png");
+    buttonPatch = LoadTexture("./asset/UI_assets/button.png");
     buttonInfo.source = (Rectangle){ 0, 0, 115, buttonPatch.height },
     buttonInfo.left = 60;
     buttonInfo.top = 60;

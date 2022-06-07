@@ -19,7 +19,7 @@ typedef enum {
 typedef enum {
     CURR,
     MAX,
-}statTemporalRange;
+}statTemporalRange_;
 
 typedef int stat_value[3];
 typedef stat_value stat_bar_t[2];

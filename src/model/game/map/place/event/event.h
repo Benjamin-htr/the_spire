@@ -5,8 +5,10 @@
 
 typedef struct {
     char* dialogue;
-    select* actions;
+    select_* actions;
     void* data;
 }event;
+
+event *event_init(char* dialogue, select_* actions, void* data);
 
 #endif

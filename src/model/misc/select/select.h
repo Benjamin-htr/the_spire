@@ -6,7 +6,7 @@
 typedef struct
 {
     option* options;
-}select;
+}select_;
 
 
 #endif

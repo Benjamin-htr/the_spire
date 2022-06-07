@@ -12,7 +12,7 @@ typedef void (*onCombatStart_t) ();
 
 typedef struct _effect
 {
-    _effect (*init) (int);
+    // _effect (*init) (int);
     onDisplay_t onDisplay;
     onNextTurn_t onNextTurn;
     onCardUsed_t onCardUse_t;

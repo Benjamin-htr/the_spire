@@ -1,28 +1,26 @@
 #ifndef EFFECT
 #define EFFECT
 
-#include "../stat/stat.h"
-#include "../../../misc/boolean/boolean.h"
-
-typedef void (*onDisplay_t) ();
-typedef void (*onNextTurn_t) ();
-typedef void (*onCardUsed_t) ();
-typedef void (*onCombatStart_t) ();
-
-
-typedef struct _effect
+typedef enum
 {
-    // _effect (*init) (int);
-    onDisplay_t onDisplay;
-    onNextTurn_t onNextTurn;
-    onCardUsed_t onCardUse_t;
-    onCombatStart_t onCombatStart;
-    statTemporalRange effectPercistance;
-    boolean effectMax;
-    int value;
-    int turnLeft;
-    char* description;
-}effect;
+    HP_E,
+    DODGE_E,
+    ABISS_E,
+    STR_E,
+    DEX_E,
+    FIRE_E,
+    WEAK_E,
+    SLOW_E,
+} effect_ID;
 
+typedef struct
+{
+    effect_ID id;
+    int value;
+} effect_t;
+
+effect_t *initEffect(effect_ID id, int value);
+void displayEffect(effect_t effect);
+void testEffect();
 
 #endif

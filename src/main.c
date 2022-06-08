@@ -1,8 +1,8 @@
 /*******************************************************************************************
-*
-*  The Spire.
-*
-*******************************************************************************************/
+ *
+ *  The Spire.
+ *
+ *******************************************************************************************/
 
 #include "stdio.h"
 #include "./../include/raylib.h"
@@ -11,17 +11,19 @@
 #include "./view/ending/ending.h"
 #include "./view/gameplay/gameplay.h"
 #include "./view/utils/utils.h"
+#include "model/misc/boolean/boolean.h"
+#include "test/test.h"
 
 //----------------------------------------------------------------------------------
 // Shared Variables Definition (global)
 //----------------------------------------------------------------------------------
 GameScreen currentScreen = 0;
-Font font = { 0 };
-Music music = { 0 };
-Texture2D background = { 0 };
-Sound buttonSound = { 0 };
-Texture2D buttonPatch = { 0 };
-NPatchInfo buttonInfo = { 0 };
+Font font = {0};
+Music music = {0};
+Texture2D background = {0};
+Sound buttonSound = {0};
+Texture2D buttonPatch = {0};
+NPatchInfo buttonInfo = {0};
 bool shouldClose = false;
 bool showInGameMenu = false;
 
@@ -44,98 +46,103 @@ static const int screenHeight = 675;
 //----------------------------------------------------------------------------------
 // Module Functions Declaration (local)
 //----------------------------------------------------------------------------------
-static void ChangeToScreen(int screen);     // Change to screen, no transition effect
-static void UpdateTransition(void);         // Update transition effect
-static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
+static void ChangeToScreen(int screen); // Change to screen, no transition effect
+static void UpdateTransition(void);     // Update transition effect
+static void DrawTransition(void);       // Draw transition effect (full-screen rectangle)
 
-static void UpdateDrawFrame(void);          // Update and draw one frame
+static void UpdateDrawFrame(void); // Update and draw one frame
 
+const boolean isInNonGraphicalTestes = true;
 
 int main(void)
 {
-    //SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
-
-    // Initialization (OpenGL context)
-    //--------------------------------------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "The Spire");
-
-    SetExitKey(0);
-
-    // Global data loading (assets that must be available in all screens, i.e. fonts)
-    InitAudioDevice();
-
-    font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 24, 0, 250);
-    background = LoadTexture("./asset/Misc/background.png");
-
-    music = LoadMusicStream("./asset/Misc/Audio/Music/Video-Game-Music-Dar-Golan-200bp.mp3");
-    PlayMusicStream(music);
-    SetMusicVolume(music, 0.1f);
-
-    buttonSound = LoadSound("./asset/Misc/Audio/Sound/Confirm.wav");
-
-    buttonPatch = LoadTexture("./asset/UI_assets/button.png");
-    buttonInfo.source = (Rectangle){ 0, 0, 115, buttonPatch.height },
-    buttonInfo.left = 60;
-    buttonInfo.top = 60;
-    buttonInfo.right = 60;
-    buttonInfo.bottom =60;
-
-    // Setup and Init first screen
-    currentScreen = MENU;
-    InitMenuScreen();
-    
-
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-
-    //-------------------------------------------------------------------------------------
-    // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-
-    //---------------------------------------------------------------------------------------
-
-    // Main game loop
-    while (!(WindowShouldClose() || shouldClose))    // Detect window close button or ESC key
+    if (isInNonGraphicalTestes)
     {
-        // Update
-        UpdateDrawFrame();
-        
-        // check for alt + enter
- 		if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
- 		{
- 			//int display = GetCurrentMonitor();
- 
-            
-            //if (IsWindowFullscreen())
-            //{
-            //    printf("was fullscreen : screenWidth : %d, screenHeight : %d \n ", screenWidth, screenHeight);
-            //    // if we are full screen, then go back to the windowed size
-            //    SetWindowSize(screenWidth, screenHeight);
-            //}
-            //else
-            //{
-            //    
-            //    // if we are not full screen, set the window size to match the monitor we are on
-            //    SetWindowSize(GetMonitorPhysicalWidth(display), GetMonitorPhysicalHeight(display));
-            //}
- 
-            // toggle the state
- 			ToggleFullscreen();
-
-             printf("screenWidth : %d, screenHeight : %d \n ", GetScreenWidth(), GetScreenHeight());
-         }
+        testFunction();
     }
+    else
+    {
+        // SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
 
-    // Unload all global loaded data (i.e. fonts) here!
-    UnloadFont(font);
-    UnloadTexture(background);
-    UnloadMusicStream(music);
+        // Initialization (OpenGL context)
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "The Spire");
 
-    CloseAudioDevice();     // Close audio context
-    
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
-    return 0;
+        SetExitKey(0);
+
+        // Global data loading (assets that must be available in all screens, i.e. fonts)
+        InitAudioDevice();
+
+        font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 24, 0, 250);
+        background = LoadTexture("./asset/Misc/background.png");
+
+        music = LoadMusicStream("./asset/Misc/Audio/Music/Video-Game-Music-Dar-Golan-200bp.mp3");
+        PlayMusicStream(music);
+        SetMusicVolume(music, 0.1f);
+
+        buttonSound = LoadSound("./asset/Misc/Audio/Sound/Confirm.wav");
+
+        buttonPatch = LoadTexture("./asset/UI_assets/button.png");
+        buttonInfo.source = (Rectangle){0, 0, 115, buttonPatch.height},
+        buttonInfo.left = 60;
+        buttonInfo.top = 60;
+        buttonInfo.right = 60;
+        buttonInfo.bottom = 60;
+
+        // Setup and Init first screen
+        currentScreen = MENU;
+        InitMenuScreen();
+
+        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+
+        //-------------------------------------------------------------------------------------
+        // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
+
+        //---------------------------------------------------------------------------------------
+
+        // Main game loop
+        while (!(WindowShouldClose() || shouldClose)) // Detect window close button or ESC key
+        {
+            // Update
+            UpdateDrawFrame();
+
+            // check for alt + enter
+            if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+            {
+                // int display = GetCurrentMonitor();
+
+                // if (IsWindowFullscreen())
+                //{
+                //     printf("was fullscreen : screenWidth : %d, screenHeight : %d \n ", screenWidth, screenHeight);
+                //     // if we are full screen, then go back to the windowed size
+                //     SetWindowSize(screenWidth, screenHeight);
+                // }
+                // else
+                //{
+                //
+                //     // if we are not full screen, set the window size to match the monitor we are on
+                //     SetWindowSize(GetMonitorPhysicalWidth(display), GetMonitorPhysicalHeight(display));
+                // }
+
+                // toggle the state
+                ToggleFullscreen();
+
+                printf("screenWidth : %d, screenHeight : %d \n ", GetScreenWidth(), GetScreenHeight());
+            }
+        }
+
+        // Unload all global loaded data (i.e. fonts) here!
+        UnloadFont(font);
+        UnloadTexture(background);
+        UnloadMusicStream(music);
+
+        CloseAudioDevice(); // Close audio context
+
+        CloseWindow(); // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+        return 0;
+    }
 }
-
 
 //----------------------------------------------------------------------------------
 // Module Functions Definition (local)
@@ -146,21 +153,39 @@ static void ChangeToScreen(int screen)
     // Unload current screen
     switch (currentScreen)
     {
-        case MENU: UnloadMenuScreen(); break;
-        case CREDITS: UnloadCreditsScreen(); break;
-        case GAMEPLAY: UnloadGameplayScreen(); break;
-        case ENDING: UnloadEndingScreen(); break;
-        default: break;
+    case MENU:
+        UnloadMenuScreen();
+        break;
+    case CREDITS:
+        UnloadCreditsScreen();
+        break;
+    case GAMEPLAY:
+        UnloadGameplayScreen();
+        break;
+    case ENDING:
+        UnloadEndingScreen();
+        break;
+    default:
+        break;
     }
 
     // Init next screen
     switch (screen)
     {
-        case MENU: InitMenuScreen(); break;
-        case CREDITS: InitCreditsScreen(); break;
-        case GAMEPLAY: InitGameplayScreen(); break;
-        case ENDING: InitEndingScreen(); break;
-        default: break;
+    case MENU:
+        InitMenuScreen();
+        break;
+    case CREDITS:
+        InitCreditsScreen();
+        break;
+    case GAMEPLAY:
+        InitGameplayScreen();
+        break;
+    case ENDING:
+        InitEndingScreen();
+        break;
+    default:
+        break;
     }
 
     currentScreen = screen;
@@ -182,21 +207,39 @@ static void UpdateTransition(void)
             // Unload current screen
             switch (transFromScreen)
             {
-                case MENU: UnloadMenuScreen(); break;
-                case CREDITS: UnloadCreditsScreen(); break;
-                case GAMEPLAY: UnloadGameplayScreen(); break;
-                case ENDING: UnloadEndingScreen(); break;
-                default: break;
+            case MENU:
+                UnloadMenuScreen();
+                break;
+            case CREDITS:
+                UnloadCreditsScreen();
+                break;
+            case GAMEPLAY:
+                UnloadGameplayScreen();
+                break;
+            case ENDING:
+                UnloadEndingScreen();
+                break;
+            default:
+                break;
             }
 
             // Load next screen
             switch (transToScreen)
             {
-                case MENU: InitMenuScreen(); break;
-                case CREDITS: InitCreditsScreen(); break;
-                case GAMEPLAY: InitGameplayScreen(); break;
-                case ENDING: InitEndingScreen(); break;
-                default: break;
+            case MENU:
+                InitMenuScreen();
+                break;
+            case CREDITS:
+                InitCreditsScreen();
+                break;
+            case GAMEPLAY:
+                InitGameplayScreen();
+                break;
+            case ENDING:
+                InitEndingScreen();
+                break;
+            default:
+                break;
             }
 
             currentScreen = transToScreen;
@@ -205,7 +248,7 @@ static void UpdateTransition(void)
             transFadeOut = true;
         }
     }
-    else  // Transition fade out logic
+    else // Transition fade out logic
     {
         transAlpha -= 0.02f;
 
@@ -231,71 +274,86 @@ static void UpdateDrawFrame(void)
 {
     // Update
     //----------------------------------------------------------------------------------
-    UpdateMusicStream(music);       // NOTE: Music keeps playing between screens
+    UpdateMusicStream(music); // NOTE: Music keeps playing between screens
 
     if (!onTransition)
     {
-        switch(currentScreen)
+        switch (currentScreen)
         {
-            case MENU:
+        case MENU:
+        {
+            UpdateMenuScreen();
+
+            if (FinishMenuScreen())
             {
-                UpdateMenuScreen();
+                // TransitionToScreen(GAMEPLAY);
+                PlayMusicStream(music);
+            }
+        }
+        break;
+        case CREDITS:
+        {
+            UpdateCreditsScreen();
 
-                if (FinishMenuScreen())
-                {
-                    //TransitionToScreen(GAMEPLAY);
-                    PlayMusicStream(music);
-                }
+            if (FinishCreditsScreen() == 1)
+                TransitionToScreen(MENU);
+            // else if (FinishTitleScreen() == 2) TransitionToScreen(GAMEPLAY);
+        }
+        break;
+        case GAMEPLAY:
+        {
+            UpdateGameplayScreen();
 
-            } break;
-            case CREDITS:
-            {
-                UpdateCreditsScreen();
+            // if (FinishGameplayScreen() == 1) TransitionToScreen(ENDING);
+            // else if (FinishGameplayScreen() == 2) TransitionToScreen(TITLE);
+        }
+        break;
+        case ENDING:
+        {
+            UpdateEndingScreen();
 
-                if (FinishCreditsScreen() == 1) TransitionToScreen(MENU);
-                //else if (FinishTitleScreen() == 2) TransitionToScreen(GAMEPLAY);
-
-            } break;
-            case GAMEPLAY:
-            {
-                UpdateGameplayScreen();
-
-                //if (FinishGameplayScreen() == 1) TransitionToScreen(ENDING);
-                //else if (FinishGameplayScreen() == 2) TransitionToScreen(TITLE);
-
-            } break;
-            case ENDING:
-            {
-                UpdateEndingScreen();
-
-                if (FinishEndingScreen() == 1) TransitionToScreen(MENU);
-
-            } break;
-            default: break;
+            if (FinishEndingScreen() == 1)
+                TransitionToScreen(MENU);
+        }
+        break;
+        default:
+            break;
         }
     }
-    else UpdateTransition();    // Update transition (fade-in, fade-out)
+    else
+        UpdateTransition(); // Update transition (fade-in, fade-out)
     //----------------------------------------------------------------------------------
 
     // Draw
     //----------------------------------------------------------------------------------
     BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+    ClearBackground(RAYWHITE);
 
-        switch(currentScreen)
-        {
-            case MENU: DrawMenuScreen(); break;
-            case CREDITS: DrawCreditsScreen(); break;
-            case GAMEPLAY: DrawGameplayScreen(); break;
-            case ENDING: DrawEndingScreen(); break;
-            default: break;
-        }
+    switch (currentScreen)
+    {
+    case MENU:
+        DrawMenuScreen();
+        break;
+    case CREDITS:
+        DrawCreditsScreen();
+        break;
+    case GAMEPLAY:
+        DrawGameplayScreen();
+        break;
+    case ENDING:
+        DrawEndingScreen();
+        break;
+    default:
+        break;
+    }
 
-        if (showInGameMenu) drawInGameMenu();
+    if (showInGameMenu)
+        drawInGameMenu();
 
-        // Draw full screen rectangle in front of everything
-        if (onTransition) DrawTransition();
+    // Draw full screen rectangle in front of everything
+    if (onTransition)
+        DrawTransition();
 
     EndDrawing();
     //----------------------------------------------------------------------------------

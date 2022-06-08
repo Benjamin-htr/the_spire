@@ -50,7 +50,7 @@ void displayCard(card_t card);
 
 // METHODS
 
-void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
+// void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
 
 // TEST FUNCTION
 

@@ -3,7 +3,6 @@
 
 #include "../../../misc/list/linkedList/simple_list.h"
 #include "card/card.h"
-
 typedef simple_list deck_t;
 
 deck_t *createDeck(card_t *card);

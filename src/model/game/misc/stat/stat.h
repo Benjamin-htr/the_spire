@@ -1,32 +1,37 @@
 #ifndef STAT
 #define STAT
 
-enum statID{
+#include "../../../misc/boolean/boolean.h"
+
+typedef enum
+{
     NONE,
     HP,
     DODGE,
     STR,
     MANA,
     ENERGY,
-};
+} stat_ID;
 
-typedef enum {
+typedef enum
+{
     PERCISTANT,
-    COMBAT,
-    TURN,
-}statTemporalRange;
+    TEMPORARY,
+} statTemporalRange;
 
-typedef enum {
+typedef enum
+{
     CURR,
     MAX,
-}statTemporalRange;
+} statCurrOrMax;
 
-typedef int stat_value[3];
-typedef stat_value stat_bar_t[2];
 typedef struct
 {
-    enum statID id;
-    stat_bar_t *stat_bar;
-} stat;
+    stat_ID id;
+    int **stat_bar;
+} stat_t;
 
+stat_t *initStat(stat_ID id, int max, boolean currZero); // If curr is null curr = max
+void displayStat(stat_t stat);
+void testStat();
 #endif

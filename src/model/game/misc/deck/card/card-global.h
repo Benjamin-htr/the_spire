@@ -4,7 +4,7 @@
 #include "card.h"
 #include "stddef.h"
 
-card STRIKE = {
+card_t STRIKE = {
     .name = "Strike",
     .rarity = BASIC,
     .description = "Attaque de base",
@@ -13,7 +13,7 @@ card STRIKE = {
     .technic = "Inflige 6 dégâts",
 };
 
-card CARD_DODGE = {
+card_t DODGE_A = {
     .name = "Dodge",
     .rarity = BASIC,
     .description = "L'esquive de base",
@@ -22,7 +22,7 @@ card CARD_DODGE = {
     .technic = "Donne 5 points d'equive",
 };
 
-card DOUBLE_STRIKE = {
+card_t DOUBLE_STRIKE = {
     .name = "Double strike",
     .rarity = COMMON,
     .description = "Attaque de base",
@@ -31,7 +31,7 @@ card DOUBLE_STRIKE = {
     .technic = "Inflige 6 dégâts",
 };
 
-card FIREBALL = {
+card_t FIREBALL = {
     .name = "Boule de feu",
     .rarity = COMMON,
     .description = "Un classique des mages débutants",
@@ -40,7 +40,7 @@ card FIREBALL = {
     .technic = "Inflige 6 points de feu",
 };
 
-card WEAKENING_STRIKE = {
+card_t WEAKENING_STRIKE = {
     .name = "Coup affaiblissant",
     .rarity = COMMON,
     .description = "Permet d'attaquer tout en se défendant",
@@ -49,7 +49,7 @@ card WEAKENING_STRIKE = {
     .technic = "Inflige 3 dégâts et rends l'ennemi faible pour 2 tours",
 };
 
-card ACCELERATION = {
+card_t ACCELERATION = {
     .name = "acceleration",
     .rarity = COMMON,
     .description = "Un classique des mages débutants",
@@ -58,7 +58,7 @@ card ACCELERATION = {
     .technic = "Inflige Lent pour un tour et donne 4 points d'esquive",
 };
 
-card OVERWORK = {
+card_t OVERWORK = {
     .name = "Surménage",
     .rarity = ATYPIC,
     .description = "Permet de frpper plus fort, mais attention aux courbatures!",
@@ -67,8 +67,8 @@ card OVERWORK = {
     .technic = "Augmente les dégâts de 2, mais vous inflige 5 dégâts",
 };
 
-card DEFENSE = {
-    .name = "Posture defensive",
+card_t DEFENSE = {
+    .name = "Posture défensive",
     .rarity = ATYPIC,
     .description = " Permet de mieux esquiver, mais faire durer les combats plus longtemps",
     .energyCost = 0,
@@ -76,7 +76,7 @@ card DEFENSE = {
     .technic = "Dextérité +2, mais Force -1",
 };
 
-card FOCUS = {
+card_t FOCUS = {
     .name = "Concentration",
     .rarity = ATYPIC,
     .description = ": Important si les combats durent longtemps",
@@ -85,7 +85,7 @@ card FOCUS = {
     .technic = "Recharge 50 points de mana",
 };
 
-card FIRE = {
+card_t FIRE = {
     .name = "Incendie",
     .rarity = ATYPIC,
     .description = "Aidera à terminer les combats, d’une manière ou l’autre",
@@ -94,7 +94,7 @@ card FIRE = {
     .technic = "Inflige 10 de feu à l’adversaire et 5 de feu à soi",
 };
 
-card PULVERIZE = {
+card_t PULVERIZE = {
     .name = "Pulvériser",
     .rarity = RARE,
     .description = "Blam ",
@@ -103,7 +103,7 @@ card PULVERIZE = {
     .technic = "Inflige 30 dégâts, Abyssal",
 };
 
-card SPECTRUM = {
+card_t SPECTRUM = {
     .name = "Spectre complet",
     .rarity = RARE,
     .description = "Un bonus pour chaque couleur de l’arc-en-ciel.",
@@ -112,7 +112,7 @@ card SPECTRUM = {
     .technic = "Donne différents bonus. Abyssal.",
 };
 
-card JAWURM_BACKSTAB = {
+card_t JAWURM_BACKSTAB = {
     // 11 dégats
     .name = "Tape dans le dos",
     .energyCost = 0,
@@ -120,7 +120,7 @@ card JAWURM_BACKSTAB = {
     .description = "Coup de pute",
 };
 
-card JAWURM_FIST = {
+card_t JAWURM_FIST = {
     // 7 dégats
     .name = "Coup de poing",
     .energyCost = 0,
@@ -128,7 +128,7 @@ card JAWURM_FIST = {
     .description = "Un autre classique",
 };
 
-card JAWURM_CROUCH = {
+card_t JAWURM_CROUCH = {
     // force+3, 6 points d'esquive
     .name = "Accroupissement",
     .energyCost = 0,
@@ -136,7 +136,7 @@ card JAWURM_CROUCH = {
     .description = "Rien de mieux pour reprendre son élan",
 };
 
-card BLOUNI_KICK = {
+card_t BLOUNI_KICK = {
     // 13 dégâts
     .name = "Coup de pied",
     .energyCost = 0,
@@ -144,7 +144,7 @@ card BLOUNI_KICK = {
     .description = "Bien placé, il peut faire très mal",
 };
 
-card BLOUNI_JAB = {
+card_t BLOUNI_JAB = {
     // 8 dégâts
     .name = "Jab",
     .energyCost = 0,
@@ -152,7 +152,7 @@ card BLOUNI_JAB = {
     .description = "Un classique",
 };
 
-card KELIKO_NUDGE = {
+card_t KELIKO_NUDGE = {
     // 3 dégâts, 3 points d'esquive,force +2
     .name = "Coup de coude",
     .energyCost = 0,
@@ -160,7 +160,7 @@ card KELIKO_NUDGE = {
     .description = "De quoi refaire sa dentition..",
 };
 
-card KELIKO_PINCH = {
+card_t KELIKO_PINCH = {
     // : 3 dégâts, 3 points d’esquive, dextérité +2
     .name = "Pincement",
     .energyCost = 0,
@@ -168,7 +168,7 @@ card KELIKO_PINCH = {
     .description = "Bah ?",
 };
 
-card HEADBUTT = {
+card_t HEADBUTT = {
     // 15 dégats
     .name = "Coup de boule",
     .energyCost = 0,
@@ -176,7 +176,7 @@ card HEADBUTT = {
     .description = "Aie mon crâne",
 };
 
-card JAWURM2_HAIRPULLING = {
+card_t JAWURM2_HAIRPULLING = {
     // 12 dégats,10 points d'esquive
     .name = "Tirage de cheveux",
     .energyCost = 0,
@@ -184,7 +184,7 @@ card JAWURM2_HAIRPULLING = {
     .description = "Un pas de plus pour la calvitie..",
 };
 
-card JAWURM2_SPIT = {
+card_t JAWURM2_SPIT = {
     // +3 force, 18 points d'esquive
     .name = "Crachat",
     .energyCost = 0,
@@ -192,7 +192,7 @@ card JAWURM2_SPIT = {
     .description = "On te manque de respect",
 };
 
-card REDONI_SPANKING = {
+card_t REDONI_SPANKING = {
     // 20 dégâts
     .name = "fessée",
     .energyCost = 0,
@@ -200,7 +200,7 @@ card REDONI_SPANKING = {
     .description = "Tu n'as pas été sage..",
 };
 
-card REDONI_SLAP = {
+card_t REDONI_SLAP = {
     // 15 degâts, 2 tours de faiblesse sur Peter
     .name = "Gifle",
     .energyCost = 0,
@@ -208,7 +208,7 @@ card REDONI_SLAP = {
     .description = "Clac",
 };
 
-card MANGOUSTINE_SNARE = {
+card_t MANGOUSTINE_SNARE = {
     //  3 dégâts, 3 points d’esquive, force +2 sur lui, dextérité +2 sur lui (
     .name = "Ricannement",
     .energyCost = 0,
@@ -216,7 +216,7 @@ card MANGOUSTINE_SNARE = {
     .description = "On se moque de toi..",
 };
 
-card ELDAN_BANANAPEEL = {
+card_t ELDAN_BANANAPEEL = {
     // : 10 dégâts, 15 points d’esquive
     .name = "Peau de banane",
     .energyCost = 0,
@@ -224,7 +224,7 @@ card ELDAN_BANANAPEEL = {
     .description = "Attention à la peau de banane",
 };
 
-card PYROX_FIRESPIT = {
+card_t PYROX_FIRESPIT = {
     // Feu 5, 10 points d’esquive
     .name = "Crachat de feu",
     .energyCost = 0,
@@ -232,7 +232,7 @@ card PYROX_FIRESPIT = {
     .description = "On te crache du feu dessus",
 };
 
-card PYROX_FIRESTORM = {
+card_t PYROX_FIRESTORM = {
     // Feu 10, dextérité +2 (bonus de dextérité pour lui)
     .name = "Tempête de feu",
     .energyCost = 0,
@@ -240,14 +240,14 @@ card PYROX_FIRESTORM = {
     .description = "Une tempête de feu s'abat sur toi",
 };
 
-card SLEEP = {
+card_t SLEEP = {
     .name = "Dors..",
     .energyCost = 0,
     .manaCost = 0,
     .description = "Le boss s'endort",
 };
 
-card CLAW_COMBO = {
+card_t CLAW_COMBO = {
     //: Dégâts (4), Dégâts (4), Dégâts (4), Dégâts (4), Dégâts (4)
     .name = "Combo griffe",
     .energyCost = 0,

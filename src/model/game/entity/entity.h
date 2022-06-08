@@ -17,8 +17,6 @@ typedef struct
 
 // CONSTRUCTORS
 entity_t *initEntity(char *name, int stats[][2]);
-stat_t *initEntityStatBars(int stats[][2]);
-effect_t *initEffectBar();
 
 // DISPLAY FUNCTION
 void displayEntity(entity_t *entity);
@@ -26,6 +24,9 @@ void displayEntity(entity_t *entity);
 // GETTER / SETTER
 stat_t *getStat(entity_t *entity, stat_ID statId);
 effect_t *getEffect(entity_t *entity, effect_ID id);
+
+//      SETTER
+void mergeEffect(entity_t *entity, effect_t effect);
 
 // TEST FUNCTION
 void testEntity();

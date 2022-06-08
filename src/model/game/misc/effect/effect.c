@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-const char *EFFECT_NAME[8] = (const char *[]){
+// GLOBAL VARIABLES
+
+char *const EFFECT_NAME[7] = {
     "DAMAGE",
     "DODGE",
-    "ABISS",
     "STRENGTH",
     "DEXTERITY",
     "FIRE",
@@ -13,13 +14,40 @@ const char *EFFECT_NAME[8] = (const char *[]){
     "SLOWNESS",
 };
 
-effect_t *
-initEffect(effect_ID id, int value)
+// CONSTRUCTORS
+
+effect_t *initEffect(effect_ID id, int value)
 {
     effect_t *res = malloc(sizeof(effect_t));
     res->id = id;
     res->value = value;
+    return res;
 }
+
+// used in entity
+effect_t *initEffectBar()
+{
+    effect_t *res = calloc(5, sizeof(effect_t *));
+    for (size_t effects_ID = 0; effects_ID < 5; effects_ID++)
+    {
+        res[effects_ID] = *initEffect(effects_ID + 2, 0);
+    };
+    return res;
+}
+
+// effects : [[effectID, value]]
+effect_t *initEffectFromArray(int effects[][2], size_t size)
+{
+    effect_t *res = calloc(size, sizeof(effect_t *));
+    for (size_t effects_ID = 0; effects_ID < size; effects_ID++)
+    {
+        res[effects_ID] = *initEffect(effects[effects_ID][0], effects[effects_ID][1]);
+    };
+    return res;
+}
+
+// DISPLAY FUNCTION
+
 void displayEffect(effect_t effect)
 {
     printf(
@@ -27,6 +55,8 @@ void displayEffect(effect_t effect)
         EFFECT_NAME[effect.id],
         effect.value);
 }
+
+// TEST FUNCTION
 void testEffect()
 {
     effect_t *test = initEffect(STR_E, 10);

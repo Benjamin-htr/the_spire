@@ -7,28 +7,8 @@ entity_t *initEntity(char *name, int stats[][2])
 {
     entity_t *res = malloc(sizeof(entity_t));
     res->name = name;
-    res->stats = initEntityStatBars(stats);
+    res->stats = initEntityStatFromArray(stats);
     res->effects = initEffectBar();
-    return res;
-}
-
-stat_t *initEntityStatBars(int stats[][2])
-{
-    stat_t *res = calloc(6, sizeof(stat_t *));
-    for (size_t stats_ID = 0; stats_ID < 5; stats_ID++)
-    {
-        res[stats_ID] = *initStat(stats_ID + 1, stats[stats_ID][0], stats[stats_ID][1]);
-    };
-    return res;
-}
-
-effect_t *initEffectBar()
-{
-    effect_t *res = calloc(5, sizeof(effect_t *));
-    for (size_t effects_ID = 0; effects_ID < 5; effects_ID++)
-    {
-        res[effects_ID] = *initEffect(effects_ID + 3, 0);
-    };
     return res;
 }
 
@@ -36,9 +16,9 @@ effect_t *initEffectBar()
 
 void displayEntity(entity_t *entity)
 {
-    printf("NAME:\n_____\n%s\n", entity->name);
+    printf("\nNAME:\n_____\n%s\n", entity->name);
     printf("\nSTATS: \n______\n");
-    for (size_t stats_ID = 0; stats_ID < 5; stats_ID++)
+    for (size_t stats_ID = 0; stats_ID < 4; stats_ID++)
     {
         displayStat(entity->stats[stats_ID]);
     };
@@ -48,10 +28,12 @@ void displayEntity(entity_t *entity)
         displayEffect(entity->effects[effects_ID]);
     };
 
-    printf("============================================");
+    printf("============================================\n");
 }
 
 // GETTER / SETTER
+
+//      GETTER
 
 stat_t *getStat(entity_t *entity, stat_ID statId)
 {
@@ -64,7 +46,23 @@ effect_t *getEffect(entity_t *entity, effect_ID id)
     {
         return NULL;
     }
-    return &entity->effects[id - 3];
+    return &entity->effects[id - 2];
+}
+
+//      SETTER
+
+void mergeEffect(entity_t *entity, effect_t effect)
+{
+    if (effect.id < 2)
+    {
+        stat_t *currentStat = getStat(entity, effect.id + 1);
+        updateStat(currentStat, effect.value, CURR, PERCISTANT);
+    }
+    else
+    {
+        effect_t *currentEffect = getEffect(entity, effect.id);
+        currentEffect->value += effect.value;
+    }
 }
 
 // TEST
@@ -87,4 +85,9 @@ void testEntity()
 
     effect_t *testEffectGetter = getEffect(test, FIRE_E);
     displayEffect(*testEffectGetter);
+
+    effect_t *testEffect = initEffect(STR_E, 10);
+    mergeEffect(test, *testEffect);
+
+    displayEntity(test);
 }

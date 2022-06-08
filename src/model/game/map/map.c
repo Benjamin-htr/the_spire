@@ -5,9 +5,8 @@
 #include "./place/place.h"
 #include "map.h"
 
-
-extern int MAP_HEIGHT;
-extern int MAP_WIDTH;
+int MAP_HEIGHT = 10;
+int MAP_WIDTH = 4;
 
 position position_init(int x, int y)
 {
@@ -32,7 +31,7 @@ void map_init(int height, int width)
             if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
             {
                 printf("--------------------oe-------------\n");
-                m->places[i][j] = place_init(0, NULL, NULL);
+                m->places[i][j] = test();//place_init(0, NULL, NULL);
                 printf("---------------------super------------\n");
             }
             else

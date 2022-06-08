@@ -12,6 +12,6 @@ typedef struct
 }place;
 
 place place_init(int isEvent, event *eventData, enemy *enemyData);
-
+place test();
 
 #endif

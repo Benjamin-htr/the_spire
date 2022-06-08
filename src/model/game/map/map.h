@@ -5,8 +5,8 @@
 #include "./place/place.h"
 #include "map.h"
 
-static const int MAP_HEIGHT = 10;
-static const int MAP_WIDTH = 4;
+extern int MAP_HEIGHT;
+extern int MAP_WIDTH;
 
 typedef struct position
 {

@@ -9,4 +9,6 @@ typedef struct {
     void* data;
 }event;
 
+
+event * createEvent(char * dialogue, select* actions, void * data);
 #endif

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "../../effect/effect.h"
 #include "../../../entity/entity.h"
+#include "./../../../../misc/boolean/boolean.h"
 
 enum rarityE
 {

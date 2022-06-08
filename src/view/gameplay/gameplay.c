@@ -41,8 +41,7 @@ void DrawGameplayScreen(void)
     DrawTextureEx(arrowButton, (Vector2){ GetScreenWidth()/2 - arrowButton.width*scaleFactor/2, GetScreenHeight()/2 - arrowButton.height*scaleFactor/2 }, 0, scaleFactor, WHITE);
 
 
-    const float scaleFactor = 1.0f;
-
+    scaleFactor = 1.0f;
     const Vector2 position = { GetScreenWidth()/2 - (roomSprite.frameRec.width*scaleFactor)/2, GetScreenHeight()/2 - (roomSprite.frameRec.height*scaleFactor)/2 };
     drawSprite(&roomSprite, position, 0.0f, scaleFactor, WHITE);
 

@@ -7,13 +7,13 @@
 typedef simple_list deck;
 
 
-deck * createDeck(card* card);
+deck * createDeck(card_t* card);
 
-void addCard(deck * deck, card* card);
+void addCard(deck * deck, card_t* card);
 
 deck * removeFirstCard(deck* myDeck);
 
-card * draw(deck * deck);
+card_t * draw(deck * deck);
 
 deck* getElementFromDeckAtIndex(int idx, deck * myDeck);
 

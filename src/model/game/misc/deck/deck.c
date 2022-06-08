@@ -5,7 +5,7 @@
 #include "card/card-global.h"
 #include "time.h"
 
-deck * createDeck(card * myCard){
+deck * createDeck(card_t * myCard){
     deck * res = malloc(sizeof(deck));
     res->next=NULL;
     res->data=myCard;
@@ -13,7 +13,7 @@ deck * createDeck(card * myCard){
 }
 
 
-void addCard(deck * myDeck, card* myCard){
+void addCard(deck * myDeck, card_t* myCard){
     if(myDeck==NULL) { 
         myDeck=createDeck(myCard);  return ; 
     }while(myDeck->next!=NULL) {
@@ -40,13 +40,13 @@ deck* removeCard(deck * myDeck, char * cardName){
     deck * origin = myDeck;
     deck * tmp;
     while (myDeck != NULL) {
-        card* myCard = myDeck->data;
+        card_t* myCard = myDeck->data;
         printf("%s \n ",myCard->name);
         if(strcmp(myCard->name,cardName)==0){
                if(previousElement==NULL){
                    myDeck=removeFirstCard(myDeck);
                    origin = myDeck;
-                   card* myCard = myDeck->data;
+                   card_t* myCard = myDeck->data;
                }
                else {   
                    previousElement->next=myDeck->next;
@@ -59,8 +59,8 @@ deck* removeCard(deck * myDeck, char * cardName){
 }
 
 
-card * draw(deck * myDeck){
-    card* res =  myDeck->data;
+card_t * draw(deck * myDeck){
+    card_t* res =  myDeck->data;
     myDeck= myDeck->next;
     return res;
 }
@@ -125,7 +125,7 @@ deck * shuffleDeck(deck* myDeck){
 }
 
 int main(){
-    deck* myDeck = createDeck(&CARD_DODGE);
+    deck* myDeck = createDeck(&DODGE_A);
     addCard(myDeck,&PULVERIZE);
     addCard(myDeck,&BLOUNI_JAB);
     addCard(myDeck,&ACCELERATION);
@@ -138,7 +138,7 @@ int main(){
 void displayDeck(deck * myDeck){
     int i=0;
     while (myDeck != NULL) {
-        card* myCard = myDeck->data;
+        card_t* myCard = myDeck->data;
         printf("Element %d %s: \n",i, myCard->name);
         myDeck = myDeck->next;
         i++;

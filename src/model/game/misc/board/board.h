@@ -5,11 +5,10 @@
 
 typedef struct
 {
-    deck* cardDeck;
-    deck* hand;
-    deck* discardPile;
-    deck* abyss;
-}board;
-
+    deck_t *cardDeck;
+    deck_t *hand;
+    deck_t *discardPile;
+    deck_t *abyss;
+} board;
 
 #endif

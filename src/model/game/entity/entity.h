@@ -9,9 +9,9 @@
 typedef struct
 {
     char *name;
-    deck *cardDeck;
+    deck_t *cardDeck;
     effect_t *effects;
-    stat_t *stats; /* HP,DODGE(max 999),STR(max 999),Mana,Energy */
+    stat_t *stats; /* HP,DODGE(max 999),Mana,Energy */
     board *board;
 } entity_t;
 

@@ -52,7 +52,7 @@ static void DrawTransition(void);       // Draw transition effect (full-screen r
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = true;
+const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {
@@ -93,7 +93,7 @@ int main(void)
         currentScreen = MENU;
         InitMenuScreen();
 
-        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+        SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 
         //-------------------------------------------------------------------------------------
         // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)

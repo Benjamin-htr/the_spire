@@ -2,25 +2,23 @@
 #define DECK
 
 #include "../../../misc/list/linkedList/simple_list.h"
-#include "./card/card.h"
+#include "card/card.h"
+typedef simple_list deck_t;
 
-typedef simple_list deck;
+deck_t *createDeck(card_t *card);
 
+void addCard(deck_t *deck, card_t *card);
 
-deck * createDeck(card_t* card);
+deck_t *removeFirstCard(deck_t *myDeck);
 
-void addCard(deck * deck, card_t* card);
+card_t *draw(deck_t *deck);
 
-deck * removeFirstCard(deck* myDeck);
+deck_t *getElementFromDeckAtIndex(int idx, deck_t *myDeck);
 
-card_t * draw(deck * deck);
+int size(deck_t *myDeck);
 
-deck* getElementFromDeckAtIndex(int idx, deck * myDeck);
+void swapElements(deck_t *myDeck, int n, int m);
 
-int size(deck * myDeck);
-
-void  swapElements(deck * myDeck, int n, int m);
-
-void displayDeck(deck * myDeck);
+void displayDeck(deck_t *myDeck);
 
 #endif

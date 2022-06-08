@@ -9,9 +9,9 @@
 //----------------------------------------------------------------------------------
 static int finishScreen = 0;
 
-static Texture2D arrowButton = { 0 };
+static Texture2D arrowButton = {0};
 
-static Sprite roomSprite = { 0 };
+static Sprite roomSprite = {0};
 
 void InitGameplayScreen(void)
 {
@@ -19,8 +19,7 @@ void InitGameplayScreen(void)
 
     arrowButton = LoadTexture("./asset/UI_assets/arrow.png");
 
-    constructSprite(&roomSprite, "./asset/map/room.png", 3, 1, (Vector2){GetScreenWidth()/2, GetScreenHeight()/2});
-    
+    constructSprite(&roomSprite, "./asset/map/room.png", 3, 1, (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2});
 }
 void UpdateGameplayScreen(void)
 {
@@ -28,24 +27,20 @@ void UpdateGameplayScreen(void)
     {
         showInGameMenu = !showInGameMenu;
     }
-    
+
     updateSprite(&roomSprite);
-
-
 }
 void DrawGameplayScreen(void)
 {
     DrawText("GAMEPLAY SCREEN", 190, 200, 20, LIGHTGRAY);
 
     float scaleFactor = 4.0f;
-    DrawTextureEx(arrowButton, (Vector2){ GetScreenWidth()/2 - arrowButton.width*scaleFactor/2, GetScreenHeight()/2 - arrowButton.height*scaleFactor/2 }, 0, scaleFactor, WHITE);
-
+    DrawTextureEx(arrowButton, (Vector2){GetScreenWidth() / 2 - arrowButton.width * scaleFactor / 2, GetScreenHeight() / 2 - arrowButton.height * scaleFactor / 2}, 0, scaleFactor, WHITE);
 
     scaleFactor = 1.0f;
-    const Vector2 position = { GetScreenWidth()/2 - (roomSprite.frameRec.width*scaleFactor)/2, GetScreenHeight()/2 - (roomSprite.frameRec.height*scaleFactor)/2 };
+
+    const Vector2 position = {GetScreenWidth() / 2 - (roomSprite.frameRec.width * scaleFactor) / 2, GetScreenHeight() / 2 - (roomSprite.frameRec.height * scaleFactor) / 2};
     drawSprite(&roomSprite, position, 0.0f, scaleFactor, WHITE);
-
-
 }
 void UnloadGameplayScreen(void)
 {

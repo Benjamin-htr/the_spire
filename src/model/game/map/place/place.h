@@ -1,17 +1,19 @@
 #ifndef PLACE
 #define PLACE
 
-#include "../../entity/enemy/enemy.h"
 #include "event/event.h"
+#include "./../../entity/entity.h"
+#include "./../../../misc/boolean/boolean.h"
 
 typedef struct
 {
-    int isEvent;
+    boolean isEvent;
     event* eventData;
-    enemy* enemyData;
+    entity_t* enemyData;
 }place;
 
-place place_init(int isEvent, event *eventData, enemy *enemyData);
+place place_init(boolean isEvent, event *eventData, entity_t *enemyData);
 place test();
+void testPlace();
 
 #endif

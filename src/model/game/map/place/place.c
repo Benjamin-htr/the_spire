@@ -5,7 +5,7 @@
 #include "place.h"
 
 
-place place_init(int isEvent, event *eventData, enemy *enemyData)
+place place_init(boolean isEvent, event *eventData, entity_t *enemyData)
 {
     place p;
     p.isEvent = isEvent;
@@ -15,12 +15,10 @@ place place_init(int isEvent, event *eventData, enemy *enemyData)
 }
 
 place test(){
-    return place_init(987, NULL, NULL);
+    return place_init(false, NULL, NULL);
 }
 
-int main(int argc, char const *argv[])
-{
+void testPlace(){
     place p = test();
     printf("%d\n", p.isEvent);
-    return 0;
 }

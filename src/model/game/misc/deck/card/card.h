@@ -16,12 +16,12 @@ typedef struct
     enum rarityE rarity;
     int manaCost;
     int energyCost;
-    effect* effects;
+    effect_t* effects;
     char* technic;
     char* description;
 } card;
 
-card * createCard(char* name,enum rarityE rarity, int manaCost, int energyCost , effect* effects, char* technic,char* description);
+card * createCard(char* name,enum rarityE rarity, int manaCost, int energyCost ,effect_t* effect, char* technic,char* description);
 
 
 #endif

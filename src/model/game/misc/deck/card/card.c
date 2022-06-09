@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-card * createCard(char* name,enum rarityE rarity, int manaCost, int energyCost , effect* effects, char* technic,char* description){
+card * createCard(char* name,enum rarityE rarity, int manaCost, int energyCost , effect_t* effects, char* technic,char* description){
     card* res = malloc(sizeof(card));
     res->name = name;
     res->rarity=rarity;

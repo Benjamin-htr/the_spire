@@ -8,7 +8,7 @@
 extern int MAP_HEIGHT;
 extern int MAP_WIDTH;
 
-typedef struct position
+typedef struct _position
 {
     int x;
     int y;
@@ -18,14 +18,13 @@ typedef struct _map
 {
     place **places;
     position position_player;
-    // struct _map *up;
-    // struct _map *middle;
-    // struct _map *down;
 } map;
 
+void printtamere(char * chaine);
 position position_init(int x, int y);
 place map_get(map* map,int x, int y);
-void map_init(int height, int width);
+map* map_init();
+void testMap();
 // map *newTree(double value, map *left, map *right);
 // map *putToLeft(map *arbre, double value);
 // map *putToMiddle(map *arbre, double value);

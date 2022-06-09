@@ -76,15 +76,6 @@ card DEFENSE = {
     .technic="Dextérité +2, mais Force -1",
 };
 
-card DEFENSE = {
-    .name="Posture défensive",
-    .rarity=ATYPIC,
-    .description=" Permet de mieux esquiver, mais faire durer les combats plus longtemps",
-    .energyCost=0,
-    .manaCost=0,
-    .technic="Dextérité +2, mais Force -1",
-};
-
 card FOCUS = {
     .name="Concentration",
     .rarity=ATYPIC,

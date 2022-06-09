@@ -11,7 +11,7 @@ typedef struct
     deck_t *cardDeck;
     effect_t *effects;
     stat_t *stats; /* HP,DODGE(max 999),Mana,Energy */
-    board *board;
+    board_t *board;
 } entity_t;
 
 // CONSTRUCTORS

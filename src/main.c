@@ -52,7 +52,7 @@ static void DrawTransition(void);       // Draw transition effect (full-screen r
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = false;
+const boolean isInNonGraphicalTestes = true;
 
 int main(void)
 {

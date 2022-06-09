@@ -50,20 +50,6 @@ void displayCard(card_t card)
     }
 }
 
-// METHODS
-
-void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
-{
-    for (size_t launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
-    {
-        mergeEffect(launcher, card->launcherEffects[launcherEffectID]);
-    }
-    for (size_t receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
-    {
-        mergeEffect(receiver, card->receiverEffects[receiverEffectID]);
-    }
-}
-
 // TEST FUNCTION
 
 void testCard()
@@ -81,20 +67,4 @@ void testCard()
         "Inflige 6 dégats",
         "Attaque de base");
     displayCard(*test);
-
-    int testStat[5][2] = {
-        {10, 1},
-        {100, 1},
-        {30, 1},
-        {10, 1},
-        {10, 1},
-    };
-    entity_t *testCar = initEntity("peter", testStat);
-    entity_t *testEnemy = initEntity("enemy", testStat);
-    displayEntity(testCar);
-    displayEntity(testEnemy);
-    applyCardEffect(test, testCar, testEnemy);
-    printf("\napply effect\n");
-    displayEntity(testCar);
-    displayEntity(testEnemy);
 }

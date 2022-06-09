@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include "../../effect/effect.h"
-#include "../../../entity/entity.h"
 #include "../../../../misc/boolean/boolean.h"
 
 enum rarityE
@@ -47,10 +46,6 @@ card_t *createCard(
 // DISPLAY FUNCTION
 
 void displayCard(card_t card);
-
-// METHODS
-
-// void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
 
 // TEST FUNCTION
 

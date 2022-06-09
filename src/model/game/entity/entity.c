@@ -31,6 +31,20 @@ void displayEntity(entity_t *entity)
     printf("============================================\n");
 }
 
+// METHODS
+
+void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
+{
+    for (size_t launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
+    {
+        mergeEffect(launcher, card->launcherEffects[launcherEffectID]);
+    }
+    for (size_t receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
+    {
+        mergeEffect(receiver, card->receiverEffects[receiverEffectID]);
+    }
+}
+
 // GETTER / SETTER
 
 //      GETTER
@@ -67,8 +81,50 @@ void mergeEffect(entity_t *entity, effect_t effect)
 
 // TEST
 
+void testGetterSetter(entity_t *testCar)
+{
+    // GETTER TESTS
+
+    printf("TEST GETTER/SETTER\n==================\n");
+    printf("TEST getStat\n____________");
+    stat_t *testStatGetter = getStat(testCar, DODGE);
+    displayStat(*testStatGetter);
+
+    printf("TEST getEffect\n______________");
+    effect_t *testEffectGetter = getEffect(testCar, FIRE_E);
+    displayEffect(*testEffectGetter);
+
+    effect_t *testEffect = initEffect(STR_E, 10);
+    mergeEffect(testCar, *testEffect);
+}
+
+void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
+{
+    printf("\nTEST applyCard\n==============");
+
+    card_t *test = createCard(
+        "Strike",
+        BASIC,
+        0,
+        1,
+        false,
+        (int[][2]){{STR_E, 6}, {DODGE_E, 10}},
+        2,
+        (int[][2]){{HP_E, -6}},
+        1,
+        "Inflige 6 dégats",
+        "Attaque de base");
+    displayEntity(testCar);
+    displayEntity(testEnemy);
+    applyCardEffect(test, testCar, testEnemy);
+    printf("\napply effect\n");
+    displayEntity(testCar);
+    displayEntity(testEnemy);
+}
+
 void testEntity()
 {
+
     int testStat[5][2] = {
         {10, 1},
         {100, 1},
@@ -76,18 +132,11 @@ void testEntity()
         {10, 1},
         {10, 1},
     };
-    entity_t *test = initEntity("martino", testStat);
-    displayEntity(test);
 
-    // GETTER TESTS
-    stat_t *testStatGetter = getStat(test, DODGE);
-    displayStat(*testStatGetter);
+    entity_t *testCar = initEntity("peter", testStat);
+    entity_t *testEnemy = initEntity("enemy", testStat);
+    displayEntity(testCar);
 
-    effect_t *testEffectGetter = getEffect(test, FIRE_E);
-    displayEffect(*testEffectGetter);
-
-    effect_t *testEffect = initEffect(STR_E, 10);
-    mergeEffect(test, *testEffect);
-
-    displayEntity(test);
+    testGetterSetter(testCar);
+    testApplyCardEffect(testCar, testEnemy);
 }

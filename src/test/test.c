@@ -12,6 +12,6 @@ void testFunction()
     // testEffect();
     printf("\n==============================\n\tTEST DE CARD\n==============================\n");
     testCard();
-    // printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
-    // testEntity();
+    printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
+    testEntity();
 }

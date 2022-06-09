@@ -93,7 +93,7 @@ int main(void)
         currentScreen = MENU;
         InitMenuScreen();
 
-        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+        SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 
         //-------------------------------------------------------------------------------------
         // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)

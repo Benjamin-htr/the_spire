@@ -8,10 +8,11 @@ const char *STAT_NAME[] = {
     "NIY",
     "VIE",
     "ESQUIVE",
-    "FORCE",
     "MANA",
     "ENERGY",
 };
+
+// CONSTRUCTOR
 
 stat_t *initStat(stat_ID id, int max, boolean currZero)
 {
@@ -34,6 +35,25 @@ stat_t *initStat(stat_ID id, int max, boolean currZero)
     return stat;
 }
 
+stat_t *initEntityStatFromArray(int stats[][2])
+{
+    stat_t *res = calloc(5, sizeof(stat_t *));
+    for (size_t stats_ID = 0; stats_ID < 4; stats_ID++)
+    {
+        res[stats_ID] = *initStat(stats_ID + 1, stats[stats_ID][0], stats[stats_ID][1]);
+    };
+    return res;
+}
+
+// METHOD
+
+void updateStat(stat_t *stat, int value, statCurrOrMax currOrMax, statTemporalRange temporalRange)
+{
+    stat->stat_bar[currOrMax][temporalRange] += value;
+}
+
+// DISPLAY FUNCTION
+
 void displayStat(stat_t stat)
 {
     printf(
@@ -45,8 +65,10 @@ void displayStat(stat_t stat)
         stat.stat_bar[MAX][TEMPORARY]);
 }
 
+// TEST FUNCTION
+
 void testStat()
 {
-    stat_t *test = initStat(STR, 20, false);
+    stat_t *test = initStat(MANA, 20, false);
     displayStat(*test);
 }

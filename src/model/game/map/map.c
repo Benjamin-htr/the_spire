@@ -48,19 +48,18 @@ map* map_init()
     return m;
 }
 
-void check_map(map* m, int x, int y)
-{
-    if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT)
-    {
-        m->position_player = position_init(0, 0);
-        printf("out of map\n");
-    }
-    else
-    {
-        printf("in map\n");
-    }
+boolean check_map()
+{   
+    return true;
 }
 
+void move_player(map* m, int x, int y)
+{
+    if(check_map()){
+        m->position_player = position_init(x,y);
+        printf("position %d , %d", m->position_player.x, m->position_player.y);
+    }
+}
 
 void map_print(map* m)
 {
@@ -90,4 +89,5 @@ void testMap()
     map *m = map_init();
     printf("-------------------------a-----\n");
     map_print(m);
+    move_player(m,1,4);
 }

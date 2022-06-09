@@ -25,6 +25,7 @@ position position_init(int x, int y);
 place map_get(map* map,int x, int y);
 map* map_init();
 void testMap();
+void move_player(map* m,int x,int y);
 // map *newTree(double value, map *left, map *right);
 // map *putToLeft(map *arbre, double value);
 // map *putToMiddle(map *arbre, double value);

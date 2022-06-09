@@ -20,4 +20,5 @@ void testFunction()
     testCard();
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     testEntity();
+    
 }

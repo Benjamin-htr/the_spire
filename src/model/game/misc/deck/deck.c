@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "card/card-global.h"
 #include "time.h"
 
 deck_t *createDeck(card_t *myCard)

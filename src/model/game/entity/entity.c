@@ -60,14 +60,14 @@ effect_t *getEffect(entity_t *entity, effect_ID id)
     {
         return NULL;
     }
-    return &entity->effects[id - 2];
+    return &entity->effects[id - 4];
 }
 
 //      SETTER
 
 void mergeEffect(entity_t *entity, effect_t effect)
 {
-    if (effect.id < 2)
+    if (effect.id < 4)
     {
         stat_t *currentStat = getStat(entity, effect.id + 1);
         updateStat(currentStat, effect.value, CURR, PERCISTANT);

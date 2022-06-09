@@ -14,16 +14,21 @@ deck_t *createDeck(card_t *myCard)
 
 void addCard(deck_t *deck, card_t *card)
 {
-    if (deck == NULL)
-    {
-        deck = createDeck(card);
-        return;
+    if(deck->data ==NULL){
+        deck->data = card;
     }
-    while (deck->next != NULL)
-    {
-        deck = deck->next;
+    else {
+        if (deck == NULL)
+        {
+            deck = createDeck(card);
+            return;
+        }
+        while (deck->next != NULL)
+        {
+            deck = deck->next;
+        }
+        deck->next = createDeck(card);
     }
-    deck->next = createDeck(card);
 }
 
 deck_t *removeFirstCard(deck_t *deck)
@@ -46,7 +51,6 @@ deck_t *removeCard(deck_t *deck, char *cardName)
     while (deck != NULL)
     {
         card_t *card = deck->data;
-        printf("%s \n ", card->name);
         if (strcmp(card->name, cardName) == 0)
         {
             if (previousElement == NULL)
@@ -156,7 +160,10 @@ void testDeck()
 void displayDeck(deck_t *myDeck)
 {
     int i = 0;
-    while (myDeck != NULL)
+    if(myDeck ==NULL || myDeck->data ==NULL){
+        printf("The deck is empty");
+    }
+    while (myDeck != NULL && myDeck->data != NULL)
     {
         card_t *myCard = myDeck->data;
         printf("Element %d %s: \n", i, myCard->name);

@@ -13,6 +13,8 @@ deck_t *removeFirstCard(deck_t *myDeck);
 
 card_t *draw(deck_t *deck);
 
+deck_t *shuffleDeck(deck_t *deck);
+
 deck_t *getElementFromDeckAtIndex(int idx, deck_t *myDeck);
 
 int size(deck_t *myDeck);
@@ -21,4 +23,5 @@ void swapElements(deck_t *myDeck, int n, int m);
 
 void displayDeck(deck_t *myDeck);
 
+deck_t *removeCard(deck_t *deck, char *cardName);
 #endif

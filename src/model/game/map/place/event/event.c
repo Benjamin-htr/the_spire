@@ -1,11 +1,13 @@
-#include "event.h"
 #include <stdlib.h>
+#include <string.h>
+#include "event.h"
 
-event *createEvent(char *dialogue, select *actions, void *data)
+event *event_init(char* dialogue, select_* actions, void* data)
 {
-    event *res = malloc(sizeof(event));
-    res->dialogue = dialogue;
-    res->actions = actions;
-    res->data = data;
-    return res;
+    event* e = malloc(sizeof(event));
+    e->dialogue = dialogue;
+    e->actions = actions;
+    e->data = data;
+    return e;
 }
+

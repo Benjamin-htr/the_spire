@@ -16,9 +16,9 @@ void testFunction()
     testPlace();
     printf("\n==============================\n\tTEST DE MAP\n==============================\n");
     testMap();
-    printf("\n==============================\n\tTEST DE CARD\n==============================\n");
-    testCard();
-    printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
-    testEntity();
+    // printf("\n==============================\n\tTEST DE CARD\n==============================\n");
+    // testCard();
+    // printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
+    // testEntity();
     
 }

@@ -2,6 +2,7 @@
 #include "../model/game/misc/stat/stat.h"
 #include "../model/game/misc/effect/effect.h"
 #include "../model/game/misc/deck/card/card.h"
+#include "../model/game/map/map.h"
 #include <stdio.h>
 
 void testFunction()

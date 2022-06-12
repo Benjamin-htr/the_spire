@@ -7,7 +7,8 @@ typedef enum
 {
     HP_E,
     DODGE_E,
-    ABISS_E,
+    MANA_E,
+    ENERGY_E,
     STR_E,
     DEX_E,
     FIRE_E,

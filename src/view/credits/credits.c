@@ -32,10 +32,10 @@ void InitCreditsScreen(void)
 }
 void UpdateCreditsScreen(void)
 {
-    creditsScrollingPosY -= 1.5f;
+    creditsScrollingPosY -= 3.5f;
     if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_DOWN))
     {
-        creditsScrollingPosY -= 3.0f;
+        creditsScrollingPosY -= 7.0f;
     }
     if (creditsScrollingPosY < (-GetScreenHeight() -400)) {
         creditsScrollingPosY = -GetScreenHeight() - 400;
@@ -50,11 +50,9 @@ void DrawCreditsScreen(void)
 
     int fontSize = 50;
 
-    float padding = 40.0f; 
     float sizeQueue = 0.0f;
     Color color = GetColor(0x8a9696ff);
     for (int i = 0; i < TAB_SIZE-1; i+=2) {
-        int factorPos = i != 0 ? i : 1;
         Vector2 sectionTitleSize = MeasureTextEx(font, creditsData[i], fontSize, 2);
         Vector2 sectionDataSize = MeasureTextEx(font, creditsData[i+1], fontSize, 2);
         sizeQueue += 20.0f;

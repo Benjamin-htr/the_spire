@@ -25,7 +25,7 @@ void InitMenuScreen(void)
 }
 void UpdateMenuScreen(void)
 {
-    titlePositionY += 3;
+    titlePositionY += 7;
     if (titlePositionY > 10) titlePositionY = 10;
 
     updateSprite(&titleSprite);
@@ -40,8 +40,6 @@ void DrawMenuScreen(void)
 
     const Vector2 position = { GetScreenWidth()/2 - (titleSprite.frameRec.width*scaleFactor)/2, titlePositionY };
     drawSprite(&titleSprite, position, 0.0f, scaleFactor, WHITE);
-
-    Vector2 fontPosition = { 40.0f, GetScreenHeight()/2.0f - 80.0f };
 
     int buttonWidth = 300;
     int buttonHeight = 80;

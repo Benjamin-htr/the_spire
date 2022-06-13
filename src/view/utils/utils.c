@@ -1,7 +1,7 @@
 #include "utils.h"
 #include <stdio.h>
 
-void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int nbLines, Vector2 position)
+void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int nbLines)
 {
     sprite->texture = LoadTexture(texturePath);
     sprite->nbFramesPerLine = nbFramesPerLine;
@@ -11,7 +11,7 @@ void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int
     float frameHeight = (float)(sprite->texture.height / sprite->nbLines);
 
     sprite->frameRec = (Rectangle){0, 0, frameWidth, frameHeight};
-    sprite->position = position;
+    sprite->position = (Vector2){0, 0};
 
     sprite->framesCounter = 0;
     sprite->currentFrame = 0;

@@ -129,11 +129,11 @@ void InitGameplayScreen(void)
     HeartIcon = LoadTexture("./asset/Board/Bar/unit/heart.png");
 
     // load 3 sprites rooms :
-    constructSprite(&roomSpriteStart, "./asset/map/room_start.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
-    constructSprite(&roomSprite3Doors, "./asset/map/room_3_doors.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
-    constructSprite(&roomSprite2Doors_top_blocked, "./asset/map/room_2_doors_top_blocked.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
-    constructSprite(&roomSprite2Doors_bottom_blocked, "./asset/map/room_2_doors_bottom_blocked.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
-    constructSprite(&roomSpriteEnd, "./asset/map/room_end.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
+    constructSprite(&roomSpriteStart, "./asset/map/room_start.png", 3, 1);
+    constructSprite(&roomSprite3Doors, "./asset/map/room_3_doors.png", 3, 1);
+    constructSprite(&roomSprite2Doors_top_blocked, "./asset/map/room_2_doors_top_blocked.png", 3, 1);
+    constructSprite(&roomSprite2Doors_bottom_blocked, "./asset/map/room_2_doors_bottom_blocked.png", 3, 1);
+    constructSprite(&roomSpriteEnd, "./asset/map/room_end.png", 3, 1);
 }
 void UpdateGameplayScreen(void)
 {
@@ -159,7 +159,16 @@ void DrawGameplayScreen(void)
 
     drawLifeBar();
 
-    Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);
+    // POUR TEST COMBAT : (A RETIRER PLUS TARD)
+    int buttonWidth = 150;
+    int buttonHeight = 50;
+    if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "COMBAT", -1))
+    {
+        // TransitionToScreen(COMBAT);
+        ChangeToScreen(COMBAT);
+    }
+
+    // Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);
     DrawTextEx(font, TextFormat("ETAGE %d", etage), (Vector2){10, 10}, 20, 1, LIGHTGRAY);
 
     float scaleFactor = 4.0f;

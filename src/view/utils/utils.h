@@ -1,15 +1,22 @@
 #include "./../../../include/raylib.h"
 
-
 #ifndef GUI_UTILS
 #define GUI_UTILS
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum GameScreen { MENU = 0, CREDITS, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen
+{
+    MENU = 0,
+    CREDITS,
+    GAMEPLAY,
+    COMBAT,
+    ENDING
+} GameScreen;
 
-typedef struct Sprite {
+typedef struct Sprite
+{
     Texture2D texture;
     int nbFramesPerLine;
     int nbLines;
@@ -39,20 +46,19 @@ extern bool transFadeOut;
 extern int transFromScreen;
 extern int transToScreen;
 
-
 //----------------------------------------------------------------------------------
 // Functions declarations
 //----------------------------------------------------------------------------------
-void constructSprite(Sprite* sprite, char* texturePath, int nbFramesPerLine, int nbLines, Vector2 position);
+void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int nbLines);
 
-void updateSprite(Sprite* sprite);
+void updateSprite(Sprite *sprite);
 
-void drawSprite(Sprite* sprite, Vector2 position, float angle, float scale, Color c);
+void drawSprite(Sprite *sprite, Vector2 position, float angle, float scale, Color c);
 
 // Gui button (immediate mode, update and draw)
 bool GuiButton(Rectangle bounds, const char *text, int forcedState);
 
-//Transitions :
+// Transitions :
 void TransitionToScreen(int screen); // Request transition to next screen
 
 void drawInGameMenu();

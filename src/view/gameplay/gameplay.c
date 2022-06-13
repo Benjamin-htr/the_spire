@@ -2,6 +2,7 @@
 #include "gameplay.h"
 #include "./../utils/utils.h"
 #include "./../../model/game/game.h"
+#include "./../../model/game/map/map.h"
 
 #include <stdio.h>
 
@@ -20,8 +21,8 @@ static Sprite roomSpriteEnd = {0};
 
 static int roomGapX = -200;
 
-static int etage = 0;
-static int room = 1;
+// static int etage = 0;
+// static int room = 1;
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
@@ -145,6 +146,10 @@ void UpdateGameplayScreen(void)
         showInGameMenu = !showInGameMenu;
     }
 
+    position_player playerPos = player_position(game->mapData);
+    int etage = playerPos.x;
+    int room = playerPos.y;
+
     if (etage == 0)
         updateSprite(&roomSpriteStart);
     else if (etage > 0 && etage < 10 && !(room == 3 || room == 0))
@@ -159,6 +164,10 @@ void UpdateGameplayScreen(void)
 void DrawGameplayScreen(void)
 {
     ClearBackground(BLACK);
+
+    position_player playerPos = player_position(game->mapData);
+    int etage = playerPos.x;
+    int room = playerPos.y;
 
     drawLifeBar();
 
@@ -199,21 +208,14 @@ void DrawGameplayScreen(void)
     if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))
     {
         printf("ArrowButton RIGHT\n");
-        if (etage < 10)
-            etage++;
-        else
-            etage = 0;
+        move_player(game->mapData, room);
     }
     if (etage == 0)
     {
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1))
         {
             printf("ArrowButton LEFT\n");
-            if (etage < 10)
-                etage++;
-            else
-                etage = 0;
-            room += 2;
+            move_player(game->mapData, room + 2);
         }
     }
     if (room != 0 && etage != 10)
@@ -221,11 +223,7 @@ void DrawGameplayScreen(void)
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, -1))
         {
             printf("ArrowButton TOP\n");
-            if (etage < 10)
-                etage++;
-            else
-                etage = 0; //
-            room -= 1;
+            move_player(game->mapData, room - 1);
         }
     }
     if (room != 3 && etage != 10)
@@ -233,11 +231,7 @@ void DrawGameplayScreen(void)
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, -1))
         {
             printf("ArrowButton BOTTOM\n");
-            if (etage < 10)
-                etage++;
-            else
-                etage = 0;
-            room += 1;
+            move_player(game->mapData, room + 1);
         }
     }
 }

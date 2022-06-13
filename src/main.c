@@ -98,8 +98,8 @@ int main(void)
         buttonInfo.bottom = 60;
 
         // Setup and Init first screen
-        currentScreen = COMBAT;
-        InitCombatScreen();
+        currentScreen = MENU;
+        InitMenuScreen();
 
         SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 

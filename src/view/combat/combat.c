@@ -20,7 +20,7 @@ void drawStatBoard()
     int HpActuel = 70;
 
     int ManaMax = 100;
-    int ManaActuel = 100;
+    int ManaActuel = 50;
 
     float scaleMain = 3.0f;
 
@@ -33,6 +33,8 @@ void drawStatBoard()
     Vector2 StatBoardPos = (Vector2){GetScreenWidth() - Statboard.width * scaleMain - padding, GetScreenHeight() - Statboard.height * scaleMain - padding};
     DrawTextureEx(Statboard, StatBoardPos, 0, scaleMain, WHITE);
 
+    //-----------------------------------------------------------
+    // Health :
     // We calculate the HealhBar container position :
     Vector2 HealthBarPos = (Vector2){StatBoardPos.x + Statboard.width * scaleMain * 0.20f, StatBoardPos.y + Statboard.height * scaleMain * 0.5f};
 
@@ -41,12 +43,29 @@ void drawStatBoard()
     DrawRectangle(HealthBarPos.x + StatBar.width * scaleMain / 10, HealthBarPos.y + StatBar.height * scaleMain * 0.2f, HpFillWidth, StatBar.height * scaleMain * 0.6f, RED);
 
     // We draw the text :
-    Vector2 textSize = MeasureTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), fontSize, 1);
-    Vector2 textPos = (Vector2){HealthBarPos.x + StatBar.width * scaleMain + textLeftargin, HealthBarPos.y + ((StatBar.height * scaleMain) / 4)};
-    DrawTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), textPos, fontSize, 1, LIGHTGRAY);
+    Vector2 textLifeSize = MeasureTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), fontSize, 1);
+    Vector2 textLifePos = (Vector2){HealthBarPos.x + StatBar.width * scaleMain + textLeftargin, HealthBarPos.y + ((StatBar.height * scaleMain) / 4)};
+    DrawTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), textLifePos, fontSize, 1, LIGHTGRAY);
 
     // We draw the healthBar container :
     DrawTextureEx(StatBar, HealthBarPos, 0, scaleMain, WHITE);
+
+    //-----------------------------------------------------------
+    // Mana :
+    // We calculate the ManaBar container position :
+    Vector2 ManaBarPos = (Vector2){StatBoardPos.x + Statboard.width * scaleMain * 0.20f, StatBoardPos.y + Statboard.height * scaleMain * 0.77f};
+
+    // We draw the blue rectangle of the current mana :
+    float ManaFillWidth = (float)ManaActuel / (float)ManaMax * StatBar.width * scaleMain * 0.8f;
+    DrawRectangle(ManaBarPos.x + StatBar.width * scaleMain / 10, ManaBarPos.y + StatBar.height * scaleMain * 0.2f, ManaFillWidth, StatBar.height * scaleMain * 0.6f, BLUE);
+
+    // We draw the text :
+    Vector2 textManaSize = MeasureTextEx(font, TextFormat("%d/%d", ManaActuel, ManaMax), fontSize, 1);
+    Vector2 textManaPos = (Vector2){ManaBarPos.x + StatBar.width * scaleMain + textLeftargin, ManaBarPos.y + ((StatBar.height * scaleMain) / 4)};
+    DrawTextEx(font, TextFormat("%d/%d", ManaActuel, ManaMax), textManaPos, fontSize, 1, LIGHTGRAY);
+
+    // We draw the manaBar container :
+    DrawTextureEx(StatBar, ManaBarPos, 0, scaleMain, WHITE);
 }
 
 void InitCombatScreen(void)

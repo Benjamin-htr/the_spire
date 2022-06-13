@@ -15,6 +15,7 @@ static int finishScreen = 0;
 
 void InitCombatScreen(void)
 {
+    finishScreen = 0;
     printf("Combat Screen Init\n");
 
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");

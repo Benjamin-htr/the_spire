@@ -8,6 +8,8 @@ static int finishScreen = 0;
 
 static Texture2D arrowButtonBack = {0};
 static Texture2D arrow = {0};
+static Texture2D StatBar = {0};
+static Texture2D HeartIcon = {0};
 
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
@@ -89,6 +91,30 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 
     return pressed;
 }
+void drawLifeBar()
+{
+    int HpMax = 75;
+    int HpActuel = 25;
+
+    float scaleBar = 4.0f;
+    float scaleHeart = 3.0f;
+
+    int padding = 15;
+    int gap = 20;
+
+    int fontSize = 20;
+    Vector2 textSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), fontSize, 1);
+    Vector2 textPos = (Vector2){GetScreenWidth() - textSize.x - padding, GetScreenHeight() - ((StatBar.height * scaleBar / 2) + textSize.y + padding)};
+    DrawTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), textPos, fontSize, 1, LIGHTGRAY);
+
+    Vector2 StatBarPos = (Vector2){textPos.x - (StatBar.width * scaleBar + gap), GetScreenHeight() - ((HeartIcon.height * scaleHeart / 2) + (StatBar.height * scaleBar / 2) + padding)};
+    DrawTextureEx(HeartIcon, (Vector2){StatBarPos.x - (HeartIcon.width * scaleHeart + gap), GetScreenHeight() - (HeartIcon.height * scaleHeart + padding)}, 0, scaleHeart, WHITE);
+
+    float HpBarWidth = (float)HpActuel / (float)HpMax * StatBar.width * scaleBar * 0.8f;
+    DrawRectangle(StatBarPos.x + StatBar.width * scaleBar / 10, StatBarPos.y + StatBar.height * scaleBar * 0.2f, HpBarWidth, StatBar.height * scaleBar * 0.6f, RED);
+
+    DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
+}
 
 //----------------------------------------------------------------------------------
 // Screen functions :
@@ -99,6 +125,8 @@ void InitGameplayScreen(void)
 
     arrow = LoadTexture("./asset/UI_assets/arrow.png");
     arrowButtonBack = LoadTexture("./asset/UI_assets/button-arrow.png");
+    StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
+    HeartIcon = LoadTexture("./asset/Board/Bar/unit/heart.png");
 
     // load 3 sprites rooms :
     constructSprite(&roomSpriteStart, "./asset/map/room_start.png", 3, 1, (Vector2){GetScreenWidth() / 2 - roomGapX, GetScreenHeight() / 2});
@@ -129,8 +157,10 @@ void DrawGameplayScreen(void)
 {
     ClearBackground(BLACK);
 
+    drawLifeBar();
+
     Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);
-    DrawTextEx(font, TextFormat("ETAGE %d", etage), (Vector2){GetScreenWidth() - (textSize.x + 10), GetScreenHeight() - (textSize.y + 10)}, 20, 1, LIGHTGRAY);
+    DrawTextEx(font, TextFormat("ETAGE %d", etage), (Vector2){10, 10}, 20, 1, LIGHTGRAY);
 
     float scaleFactor = 4.0f;
     // DrawTextureEx(arrowButton, (Vector2){GetScreenWidth() / 2 - arrowButton.width * scaleFactor / 2, GetScreenHeight() / 2 - arrowButton.height * scaleFactor / 2}, 0, scaleFactor, WHITE);
@@ -204,6 +234,11 @@ void UnloadGameplayScreen(void)
     UnloadTexture(arrow);
     UnloadTexture(arrowButtonBack);
     UnloadTexture(roomSpriteStart.texture);
+    UnloadTexture(roomSprite2Doors_bottom_blocked.texture);
+    UnloadTexture(roomSprite2Doors_top_blocked.texture);
+    UnloadTexture(roomSprite3Doors.texture);
+    UnloadTexture(roomSpriteEnd.texture);
+    UnloadTexture(StatBar);
 }
 int FinishGameplayScreen(void)
 {

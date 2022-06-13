@@ -2,6 +2,8 @@
 #include "board.h"
 #include <stdlib.h>
 
+
+const int NB_CARDS_TO_DRAW = 5;
 board_t * createBoard(deck_t * playerDeck){
     board_t * gameBoard = malloc(sizeof(board_t));
     gameBoard->cardDeck = playerDeck;
@@ -24,24 +26,46 @@ int drawCardsFromDeck(board_t * myBoard,int nbCardsDrew){ // returns number of c
 }
 
 deck_t * putCardsFromOnePlaceToAnother(deck_t* firstPlace, deck_t* secondPlace){  // returns the firstPlace, which is empty.
+    // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
     firstPlace=  shuffleDeck(firstPlace);
     while(firstPlace!=NULL){
         card_t * cardToDraw = firstPlace->data;
         firstPlace = removeFirstCard(firstPlace);
-       // firstPlace = firstPlace->next;
         addCard(secondPlace,cardToDraw);
     }
     return firstPlace;
 }
 
-board_t *  drawCards(board_t * myBoard){
+board_t *  drawCards(board_t * myBoard){ // returns the board, please use "board = drawCards(board) 
     int nbCardsDrawed =   drawCardsFromDeck(myBoard,0);
-    if(nbCardsDrawed<5){ // means no more cards are in the deck, lets try to fill the draw with discard
-       myBoard->cardDeck=createDeck(NULL);
+    if(nbCardsDrawed<NB_CARDS_TO_DRAW){ // means no more cards are in the deck, lets try to fill the draw with discard
+       myBoard->cardDeck = createDeck(NULL);
        myBoard->discardPile = putCardsFromOnePlaceToAnother(myBoard->discardPile,myBoard->cardDeck);
        nbCardsDrawed += drawCardsFromDeck(myBoard,nbCardsDrawed);
     }  
     return myBoard;
+}
+
+void moveCardsFromHand(board_t * myBoard){ // move all cards from hand to abyss/discard 
+    deck_t * hand = myBoard->hand;
+    if(myBoard->abyss==NULL){
+        myBoard->abyss = createDeck(NULL);
+    }
+    if(myBoard->discardPile==NULL){
+        myBoard->discardPile = createDeck(NULL);
+    }
+  
+    while(hand!=NULL && hand->data !=NULL){
+        card_t * cardToRemove = hand->data;
+        hand = removeFirstCard(hand);
+        if(cardToRemove->isAbyssal){
+           addCard(myBoard->abyss,cardToRemove);
+        }
+        else {
+           addCard(myBoard->discardPile,cardToRemove);
+        }
+    }
+    myBoard ->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
 }
 
 
@@ -53,23 +77,40 @@ void testBoard(){
     addCard(discard,importCardFromId(DODGE_A));
     addCard(playerDeck,importCardFromId(JAWURM_BACKSTAB));
     addCard(playerDeck,importCardFromId(JAWURM_CROUCH));
-   /* addCard(playerDeck,importCardFromId(JAWURM_FIST));
-    addCard(playerDeck,importCardFromId(ACCELERATION));
-    addCard(playerDeck,importCardFromId(BLOUNI_JAB));
-    addCard(playerDeck,importCardFromId(BLOUNI_KICK));   */
     board_t * gameBoard = createBoard(playerDeck);
     gameBoard->discardPile = discard;
-    printf("Discard before draw:  \n");
+    printf("On a ajouté a la discard 4 cartes , la voici :  \n");
     displayDeck(gameBoard->discardPile);
-    printf("Deck before draw : ");
+    printf("Voici le deck, qui doit contenir 3 cartes  : \n ");
     displayDeck(gameBoard->cardDeck);
     gameBoard = drawCards(gameBoard);
-    printf("Discard after draw \n");
+    printf("Voici la discard, qui doit se retrouver vide puisqu'il n'y'a pas assez de cartes dans le deck pour piocher. \n");
     displayDeck(gameBoard->discardPile);
-    printf("Deck after draw : ");
+    printf("Voici notre deck, avec deux cartes de la discard : \n ");
     displayDeck(gameBoard->cardDeck);
-    printf("\n hand : \n");
+    printf("\n Voici la main, qui doit contenir 5 cartes \n");
     displayDeck(gameBoard->hand); 
+    moveCardsFromHand(gameBoard);
+    printf("\n La main après avoir jouée : ");
+    displayDeck(gameBoard->hand);
+    printf("\n La discard après après avoir vidé toute la main : \n");
+    displayDeck(gameBoard->discardPile);
+    addCard(gameBoard->hand,importCardFromId(SPECTRUM));
+    addCard(gameBoard->hand,importCardFromId(PULVERIZE));
+    addCard(gameBoard->hand,importCardFromId(CLAW_COMBO));
+    addCard(gameBoard->hand,importCardFromId(DODGE_A)); 
+    printf("On a rajouté des cartes à la main \n");
+    displayDeck(gameBoard->hand);
+    printf("Retirons ces cartes pour les mettre dans la défausse ou l'abysse \n");
+    moveCardsFromHand(gameBoard);
+    printf("Voici la main après avoir retiré les cartes \n");
+    displayDeck(gameBoard->hand);
+    printf("Voici l'abysse (il doit y avoir uniquement PULVERIZE) : \n");
+    displayDeck(gameBoard->abyss);
+    printf("Voici la discard, qui doit contenir 8 cartes : \n");
+    displayDeck(gameBoard->discardPile);
+
+
 }
 
 

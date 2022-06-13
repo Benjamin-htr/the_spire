@@ -22,7 +22,7 @@ void addCard(deck_t *deck, card_t *card)
         {
             deck = createDeck(card);
             return;
-        }
+        } 
         while (deck->next != NULL)
         {
             deck = deck->next;
@@ -161,7 +161,7 @@ void displayDeck(deck_t *myDeck)
 {
     int i = 0;
     if(myDeck ==NULL || myDeck->data ==NULL){
-        printf("The deck is empty");
+        printf("The deck is empty \n");
     }
     while (myDeck != NULL && myDeck->data != NULL)
     {

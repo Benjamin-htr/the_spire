@@ -14,6 +14,7 @@
 #include "./view/utils/utils.h"
 #include "model/misc/boolean/boolean.h"
 #include "test/test.h"
+#include "./model/game/game.h"
 
 //----------------------------------------------------------------------------------
 // Shared Variables Definition (global)
@@ -27,6 +28,7 @@ Texture2D buttonPatch = {0};
 NPatchInfo buttonInfo = {0};
 bool shouldClose = false;
 bool showInGameMenu = false;
+Game *game = {0};
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 float transAlpha = 0.0f;

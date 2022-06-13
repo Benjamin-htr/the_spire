@@ -35,7 +35,7 @@ void DrawCombatScreen(void)
 {
     ClearBackground(BLACK);
 
-    float scaleEnnemy = 2.0f;
+    float scaleEnnemy = 3.0f;
     const Vector2 ennemyPos = {GetScreenWidth() / 2 - ennemySprite.frameRec.width * scaleEnnemy / 2, 20};
     drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
 }

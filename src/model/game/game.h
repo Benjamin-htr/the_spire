@@ -6,9 +6,18 @@
 
 typedef struct
 {
-    caracter* caracterData;
-    map* mapData;
-}game;
+    caracter *caracterData;
+    map *mapData;
+} Game;
 
+//----------------------------------------------------------------------------------
+// Global Variables Declaration (shared by several modules)
+//----------------------------------------------------------------------------------
+extern Game *game;
+
+//----------------------------------------------------------------------------------
+// Functions declarations
+//----------------------------------------------------------------------------------
+void initGame();
 
 #endif

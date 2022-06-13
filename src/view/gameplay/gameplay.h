@@ -16,4 +16,7 @@ void UnloadGameplayScreen(void);
 // Gameplay Screen should finish?
 int FinishGameplayScreen(void);
 
+// ChangeToScreen
+void ChangeToScreen(int screen);
+
 #endif

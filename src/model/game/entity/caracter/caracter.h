@@ -6,9 +6,8 @@
 
 typedef struct
 {
-    entity* core;
-    item* items;
+    entity_t *core;
+    item *items;
 } caracter;
-
 
 #endif

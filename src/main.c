@@ -10,9 +10,11 @@
 #include "./view/credits/credits.h"
 #include "./view/ending/ending.h"
 #include "./view/gameplay/gameplay.h"
+#include "./view/combat/combat.h"
 #include "./view/utils/utils.h"
 #include "model/misc/boolean/boolean.h"
 #include "test/test.h"
+#include "./model/game/game.h"
 
 //----------------------------------------------------------------------------------
 // Shared Variables Definition (global)
@@ -26,6 +28,7 @@ Texture2D buttonPatch = {0};
 NPatchInfo buttonInfo = {0};
 bool shouldClose = false;
 bool showInGameMenu = false;
+Game *game = {0};
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 float transAlpha = 0.0f;
@@ -46,13 +49,13 @@ static const int screenHeight = 675;
 //----------------------------------------------------------------------------------
 // Module Functions Declaration (local)
 //----------------------------------------------------------------------------------
-static void ChangeToScreen(int screen); // Change to screen, no transition effect
-static void UpdateTransition(void);     // Update transition effect
-static void DrawTransition(void);       // Draw transition effect (full-screen rectangle)
+void ChangeToScreen(int screen);    // Change to screen, no transition effect
+static void UpdateTransition(void); // Update transition effect
+static void DrawTransition(void);   // Draw transition effect (full-screen rectangle)
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = true;
+const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {
@@ -148,7 +151,7 @@ int main(void)
 // Module Functions Definition (local)
 //----------------------------------------------------------------------------------
 // Change to screen, no transition
-static void ChangeToScreen(int screen)
+void ChangeToScreen(int screen)
 {
     // Unload current screen
     switch (currentScreen)
@@ -161,6 +164,9 @@ static void ChangeToScreen(int screen)
         break;
     case GAMEPLAY:
         UnloadGameplayScreen();
+        break;
+    case COMBAT:
+        UnloadCombatScreen();
         break;
     case ENDING:
         UnloadEndingScreen();
@@ -180,6 +186,9 @@ static void ChangeToScreen(int screen)
         break;
     case GAMEPLAY:
         InitGameplayScreen();
+        break;
+    case COMBAT:
+        InitCombatScreen();
         break;
     case ENDING:
         InitEndingScreen();
@@ -216,6 +225,9 @@ static void UpdateTransition(void)
             case GAMEPLAY:
                 UnloadGameplayScreen();
                 break;
+            case COMBAT:
+                UnloadCombatScreen();
+                break;
             case ENDING:
                 UnloadEndingScreen();
                 break;
@@ -234,6 +246,9 @@ static void UpdateTransition(void)
                 break;
             case GAMEPLAY:
                 InitGameplayScreen();
+                break;
+            case COMBAT:
+                InitCombatScreen();
                 break;
             case ENDING:
                 InitEndingScreen();
@@ -308,6 +323,14 @@ static void UpdateDrawFrame(void)
             // else if (FinishGameplayScreen() == 2) TransitionToScreen(TITLE);
         }
         break;
+        case COMBAT:
+        {
+            UpdateCombatScreen();
+
+            if (FinishCombatScreen() == 1)
+                TransitionToScreen(GAMEPLAY);
+        }
+        break;
         case ENDING:
         {
             UpdateEndingScreen();
@@ -340,6 +363,9 @@ static void UpdateDrawFrame(void)
         break;
     case GAMEPLAY:
         DrawGameplayScreen();
+        break;
+    case COMBAT:
+        DrawCombatScreen();
         break;
     case ENDING:
         DrawEndingScreen();

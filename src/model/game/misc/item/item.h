@@ -5,9 +5,9 @@
 
 typedef struct
 {
-    char* name;
-    effect* effects;
-    char* description;
+    char *name;
+    effect_t *effects;
+    char *description;
 } item;
 
 #endif

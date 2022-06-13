@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "board.h"
 #include <stdlib.h>
-
+#include "time.h"
 
 const int NB_CARDS_TO_DRAW = 5;
 board_t * createBoard(deck_t * playerDeck){
@@ -54,7 +54,6 @@ void moveCardsFromHand(board_t * myBoard){ // move all cards from hand to abyss/
     if(myBoard->discardPile==NULL){
         myBoard->discardPile = createDeck(NULL);
     }
-  
     while(hand!=NULL && hand->data !=NULL){
         card_t * cardToRemove = hand->data;
         hand = removeFirstCard(hand);
@@ -66,6 +65,40 @@ void moveCardsFromHand(board_t * myBoard){ // move all cards from hand to abyss/
         }
     }
     myBoard ->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
+}
+
+card_t * getRandomCardFromHand(board_t* board){
+    srand(time(NULL));
+    int listSize = size(board->hand);
+    if(board->hand !=NULL){
+       return getElementFromDeckAtIndex(rand() %listSize, board->hand)->data;
+    }
+    else {
+       return NULL;
+    }
+}
+
+void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
+     if(cardToRemove != NULL){
+        if(board->abyss==NULL){
+            board->abyss = createDeck(NULL);
+        }
+        if(board->discardPile==NULL){
+            board->discardPile = createDeck(NULL);
+        }
+        removeCard(board->hand,cardToRemove->name);
+        if(cardToRemove->isAbyssal){
+           addCard(board->abyss,cardToRemove);
+        }
+        else {
+           addCard(board->discardPile,cardToRemove);
+        }
+    }
+}
+
+void moveOneCardFromHandByIdx(board_t * board,int idx){ 
+    card_t* cardToRemove =  getElementFromDeckAtIndex(idx,board->hand)->data;
+    moveOneCardFromHand(board,cardToRemove);
 }
 
 
@@ -109,8 +142,19 @@ void testBoard(){
     displayDeck(gameBoard->abyss);
     printf("Voici la discard, qui doit contenir 8 cartes : \n");
     displayDeck(gameBoard->discardPile);
-
-
+    addCard(gameBoard->hand,importCardFromId(SPECTRUM));
+    addCard(gameBoard->hand,importCardFromId(PULVERIZE));
+    addCard(gameBoard->hand,importCardFromId(CLAW_COMBO));
+    addCard(gameBoard->hand,importCardFromId(DODGE_A)); 
+    printf("Nous avons rajouté 4 cartes à la main, retirons la 2eme ( pulverize ) \n");
+    moveOneCardFromHandByIdx(gameBoard,1);
+    displayDeck(gameBoard->hand);
+    printf("Pulverize devrait être ajouté à l'abysse \n");
+    printf("Voici l'abysse (il doit y avoir 2 PULVERIZE) : \n");
+    displayDeck(gameBoard->abyss);
+    card_t* randomCardFromHand = getRandomCardFromHand(gameBoard);
+    printf("Voici une random card de la main : \n");
+    displayCard(*randomCardFromHand);
 }
 
 

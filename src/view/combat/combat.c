@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 static Texture2D StatBar = {0};
-static Texture2D HeartIcon = {0};
 static Texture2D Statboard = {0};
+static Texture2D EnergyICon = {0};
 
 static Sprite ennemySprite = {0};
 
@@ -21,6 +21,9 @@ void drawStatBoard()
 
     int ManaMax = 100;
     int ManaActuel = 50;
+
+    // int EnergyMax = 3;
+    int EnergyActuel = 3;
 
     float scaleMain = 3.0f;
 
@@ -43,7 +46,7 @@ void drawStatBoard()
     DrawRectangle(HealthBarPos.x + StatBar.width * scaleMain / 10, HealthBarPos.y + StatBar.height * scaleMain * 0.2f, HpFillWidth, StatBar.height * scaleMain * 0.6f, RED);
 
     // We draw the text :
-    Vector2 textLifeSize = MeasureTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), fontSize, 1);
+    // Vector2 textLifeSize = MeasureTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), fontSize, 1);
     Vector2 textLifePos = (Vector2){HealthBarPos.x + StatBar.width * scaleMain + textLeftargin, HealthBarPos.y + ((StatBar.height * scaleMain) / 4)};
     DrawTextEx(font, TextFormat("%d/%d", HpActuel, HpMax), textLifePos, fontSize, 1, LIGHTGRAY);
 
@@ -60,12 +63,21 @@ void drawStatBoard()
     DrawRectangle(ManaBarPos.x + StatBar.width * scaleMain / 10, ManaBarPos.y + StatBar.height * scaleMain * 0.2f, ManaFillWidth, StatBar.height * scaleMain * 0.6f, BLUE);
 
     // We draw the text :
-    Vector2 textManaSize = MeasureTextEx(font, TextFormat("%d/%d", ManaActuel, ManaMax), fontSize, 1);
+    // Vector2 textManaSize = MeasureTextEx(font, TextFormat("%d/%d", ManaActuel, ManaMax), fontSize, 1);
     Vector2 textManaPos = (Vector2){ManaBarPos.x + StatBar.width * scaleMain + textLeftargin, ManaBarPos.y + ((StatBar.height * scaleMain) / 4)};
     DrawTextEx(font, TextFormat("%d/%d", ManaActuel, ManaMax), textManaPos, fontSize, 1, LIGHTGRAY);
 
     // We draw the manaBar container :
     DrawTextureEx(StatBar, ManaBarPos, 0, scaleMain, WHITE);
+
+    //-----------------------------------------------------------
+    // Energy :
+    float gap = (float)((2.0f / 124.0f) * Statboard.width * scaleMain);
+    Vector2 EnergyPos = (Vector2){StatBoardPos.x + Statboard.width * scaleMain * 0.49f, StatBoardPos.y + Statboard.height * scaleMain * 0.083f};
+    for (int i = 0; i < EnergyActuel; i++)
+    {
+        DrawTextureEx(EnergyICon, (Vector2){EnergyPos.x + (EnergyICon.width * i * scaleMain) + (gap * i), EnergyPos.y}, 0, scaleMain, WHITE);
+    }
 }
 
 void InitCombatScreen(void)
@@ -74,8 +86,8 @@ void InitCombatScreen(void)
     printf("Combat Screen Init\n");
 
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
-    HeartIcon = LoadTexture("./asset/Board/Bar/unit/heart.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
+    EnergyICon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
 
     constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
 }

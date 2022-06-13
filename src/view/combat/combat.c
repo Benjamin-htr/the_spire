@@ -38,6 +38,14 @@ void DrawCombatScreen(void)
     float scaleEnnemy = 3.0f;
     const Vector2 ennemyPos = {GetScreenWidth() / 2 - ennemySprite.frameRec.width * scaleEnnemy / 2, 20};
     drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
+
+    // POUR TEST COMBAT : (A RETIRER PLUS TARD)
+    int buttonWidth = 150;
+    int buttonHeight = 50;
+    if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "MAP", -1))
+    {
+        finishScreen = 1;
+    }
 }
 void UnloadCombatScreen(void)
 {

@@ -1,6 +1,7 @@
 #include "./../../../include/raylib.h"
 #include "gameplay.h"
 #include "./../utils/utils.h"
+#include "./../../model/game/game.h"
 
 #include <stdio.h>
 
@@ -122,6 +123,8 @@ void drawLifeBar()
 void InitGameplayScreen(void)
 {
     printf("Gameplay Screen Init\n");
+
+    initGame();
 
     arrow = LoadTexture("./asset/UI_assets/arrow.png");
     arrowButtonBack = LoadTexture("./asset/UI_assets/button-arrow.png");

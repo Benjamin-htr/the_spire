@@ -7,6 +7,8 @@ typedef simple_list deck_t;
 
 deck_t *createDeck(card_t *card);
 
+deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber);
+
 void addCard(deck_t *deck, card_t *card);
 
 deck_t *removeFirstCard(deck_t *myDeck);
@@ -24,4 +26,6 @@ void swapElements(deck_t *myDeck, int n, int m);
 void displayDeck(deck_t *myDeck);
 
 deck_t *removeCard(deck_t *deck, char *cardName);
+
+void testDeck();
 #endif

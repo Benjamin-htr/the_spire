@@ -4,7 +4,9 @@
  *
  *******************************************************************************************/
 
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "./../include/raylib.h"
 #include "./view/menu/menu.h"
 #include "./view/credits/credits.h"
@@ -59,6 +61,9 @@ const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {
+    time_t t;
+    /* Intializes random number generator */
+    srand((unsigned)time(&t));
     if (isInNonGraphicalTestes)
     {
         testFunction();

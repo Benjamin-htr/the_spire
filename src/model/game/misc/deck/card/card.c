@@ -91,6 +91,7 @@ void testCard()
 }
 
 card_import CARD_ENCYCLOPEDIA[] = {
+    //  STRIKE,
     {
         .name = "Strike",
         .rarity = BASIC,
@@ -103,6 +104,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .technic = "Inflige 6 dégâts",
         .description = "Attaque de base",
     },
+    //  DODGE_A,
     {
         .name = "Dodge",
         .rarity = BASIC,
@@ -115,6 +117,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .technic = "Donne 5 points d'equive",
         .description = "L'esquive de base",
     },
+    //  DOUBLE_STRIKE,
     {
         .name = "Double strike",
         .rarity = COMMON,
@@ -127,6 +130,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -4}, {HP_E, -4}},
         .receiverEffectsSize = 2,
     },
+    //  FIREBALL,
     {
         .name = "Boule de feu",
         .rarity = COMMON,
@@ -139,6 +143,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{FIRE_E, 6}},
         .receiverEffectsSize = 1,
     },
+    //  WEAKENING_STRIKE,
     {
         .name = "Coup affaiblissant",
         .rarity = COMMON,
@@ -151,6 +156,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{WEAK_E, 2}, {HP_E, -3}},
         .receiverEffectsSize = 2,
     },
+    //  ACCELERATION,
     {
         .name = "Acceleration",
         .rarity = COMMON,
@@ -163,6 +169,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{SLOW_E, 1}, {DODGE_E, 4}},
         .receiverEffectsSize = 2,
     },
+    //  OVERWORK,
     {
         .name = "Surménage",
         .rarity = ATYPIC,
@@ -175,6 +182,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 2,
         .receiverEffectsSize = 0,
     },
+    //  DEFENSE,
     {
         .name = "Posture défensive",
         .rarity = ATYPIC,
@@ -187,6 +195,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 2,
         .receiverEffectsSize = 0,
     },
+    //  FOCUS,
     {
         .name = "Concentration",
         .rarity = ATYPIC,
@@ -199,6 +208,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
     },
+    //  FIRE,
     {
         .name = "Incendie",
         .rarity = ATYPIC,
@@ -212,6 +222,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{FIRE_E, 10}},
         .receiverEffectsSize = 1,
     },
+    //  PULVERIZE,
     {
         .name = "Pulvériser",
         .rarity = RARE,
@@ -224,6 +235,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -30}},
         .receiverEffectsSize = 1,
     },
+    //  SPECTRUM,
     {
         .name = "Spectre complet",
         .rarity = RARE,
@@ -237,6 +249,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -6}, {FIRE_E, 3}, {SLOW_E, 1}, {WEAK_E, 1}},
         .receiverEffectsSize = 4,
     },
+    //  JAWURM_BACKSTAB,
     {
         // 11 dégats
         .name = "Tape dans le dos",
@@ -248,6 +261,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -11}},
         .receiverEffectsSize = 1,
     },
+    //  JAWURM_FIST,
     {
         // 7 dégats
         .name = "Coup de poing",
@@ -259,6 +273,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -7}},
         .receiverEffectsSize = 1,
     },
+    //  JAWURM_CROUCH,
     {
         // force+3, 6 points d'esquive
         .name = "Accroupissement",
@@ -270,6 +285,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 2,
         .receiverEffectsSize = 0,
     },
+    //  BLOUNI_KICK,
     {
         // 13 dégâts
         .name = "Coup de pied",
@@ -281,6 +297,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -13}},
         .receiverEffectsSize = 1,
     },
+    //  BLOUNI_JAB,
     {
         // 8 dégâts
         .name = "Jab",
@@ -293,6 +310,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -6}},
         .receiverEffectsSize = 1,
     },
+    //  KELIKO_NUDGE,
     {
         // 3 dégâts, 3 points d'esquive,force +2
         .name = "Coup de coude",
@@ -305,6 +323,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -3}},
         .receiverEffectsSize = 1,
     },
+    //  KELIKO_PINCH,
     {
         // : 3 dégâts, 3 points d’esquive, dextérité +2
         .name = "Pincement",
@@ -317,6 +336,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -3}},
         .receiverEffectsSize = 1,
     },
+    //  HEADBUTT,
     {
         // 15 dégats
         .name = "Coup de boule",
@@ -328,6 +348,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -15}},
         .receiverEffectsSize = 1,
     },
+    //  JAWURM2_HAIRPULLING,
     {
         // 12 dégats,10 points d'esquive
         .name = "Tirage de cheveux",
@@ -340,6 +361,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -12}},
         .receiverEffectsSize = 1,
     },
+    //  JAWURM2_SPIT,
     {
         // +3 force, 18 points d'esquive
         .name = "Crachat",
@@ -351,6 +373,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 2,
         .receiverEffectsSize = 0,
     },
+    //  REDONI_SPANKING,
     {
         // 20 dégâts
         .name = "fessée",
@@ -362,6 +385,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -20}},
         .receiverEffectsSize = 1,
     },
+    //  REDONI_SLAP,
     {
         // 15 degâts, 2 tours de faiblesse sur Peter
         .name = "Gifle",
@@ -373,6 +397,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -15}, {WEAK_E, 2}},
         .receiverEffectsSize = 2,
     },
+    //  MANGOUSTINE_SNARE,
     {
         //  3 dégâts, 3 points d’esquive, force +2 sur lui, dextérité +2 sur lui (
         .name = "Ricannement",
@@ -385,6 +410,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{HP_E, -3}},
         .receiverEffectsSize = 1,
     },
+    //  ELDAN_BANANAPEEL,
     {
         // : 10 dégâts, 15 points d’esquive
         .name = "Banana FLIP !",
@@ -398,6 +424,18 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffectsSize = 1,
     },
     {
+        // : 10 dégâts, 15 points d’esquive
+        .name = "La Total",
+        .energyCost = 0,
+        .manaCost = 0,
+        .description = "Tu te prends tout dans la face, bien fait pour toi",
+        .isAbyssal = false,
+        .launcherEffectsSize = 0,
+        .receiverEffects = {{WEAK_E, 2}, {SLOW_E, 2}, {STR_E, -1}, {DEX_E, -1}},
+        .receiverEffectsSize = 4,
+    },
+    //  PYROX_FIRESPIT,
+    {
         // Feu 5, 10 points d’esquive
         .name = "Crachat de feu",
         .energyCost = 0,
@@ -409,6 +447,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{FIRE_E, 5}},
         .receiverEffectsSize = 1,
     },
+    //  PYROX_FIRESTORM,
     {
         // Feu 10, dextérité +2 (bonus de dextérité pour lui)
         .name = "Tempête de feu",
@@ -421,6 +460,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .receiverEffects = {{FIRE_E, 10}},
         .receiverEffectsSize = 1,
     },
+    //  SLEEP,
     {
         .name = "Dors..",
         .energyCost = 0,
@@ -430,6 +470,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .launcherEffectsSize = 0,
         .receiverEffectsSize = 0,
     },
+    //  CLAW_COMBO,
     {
         //: Dégâts (4), Dégâts (4), Dégâts (4), Dégâts (4), Dégâts (4)
         .name = "Combo griffe",

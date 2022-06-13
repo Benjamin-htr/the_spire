@@ -12,17 +12,34 @@ deck_t *createDeck(card_t *myCard)
     return res;
 }
 
+deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
+// first int is the card id 2nd one is the number of card
+// 2nd Param is just the size of the array
+{
+    deck_t *res = createDeck(NULL);
+    for (int cardIdx = 0; cardIdx < diffCardNumber; cardIdx++)
+    {
+        for (int cardExemplar = 0; cardExemplar < cardIds[cardIdx][1]; cardExemplar++)
+        {
+            addCard(res, importCardFromId(cardIds[cardIdx][0]));
+        }
+    }
+    return res;
+}
+
 void addCard(deck_t *deck, card_t *card)
 {
-    if(deck->data ==NULL){
+    if (deck->data == NULL)
+    {
         deck->data = card;
     }
-    else {
+    else
+    {
         if (deck == NULL)
         {
             deck = createDeck(card);
             return;
-        } 
+        }
         while (deck->next != NULL)
         {
             deck = deck->next;
@@ -155,12 +172,15 @@ void testDeck()
     // addCard(myDeck, &BLOUNI_KICK);
     // myDeck = shuffleDeck(myDeck);
     // displayDeck(myDeck);
+    deck_t *myDeck = createDeckFromArray((int[][2]){{DODGE_A, 1}, {PULVERIZE, 2}, {DEFENSE, 3}}, 3);
+    displayDeck(myDeck);
 }
 
 void displayDeck(deck_t *myDeck)
 {
     int i = 0;
-    if(myDeck ==NULL || myDeck->data ==NULL){
+    if (myDeck == NULL || myDeck->data == NULL)
+    {
         printf("The deck is empty \n");
     }
     while (myDeck != NULL && myDeck->data != NULL)

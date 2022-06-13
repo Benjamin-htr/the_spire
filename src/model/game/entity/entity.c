@@ -1,15 +1,87 @@
 #include "entity.h"
 #include "../misc/stat/stat.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 // CONSTRUCTORS
-entity_t *initEntity(char *name, int stats[][2])
+entity_t *initEntity(char *name, int stats[][2], int cards[][2], int diffCardSize)
+// for cards param first int is the card id 2nd one is the number of card
+// for diffCardSize param is just the size of the array
 {
     entity_t *res = malloc(sizeof(entity_t));
     res->name = name;
     res->stats = initEntityStatFromArray(stats);
     res->effects = initEffectBar();
+    res->cardDeck = createDeckFromArray(cards, diffCardSize);
     return res;
+}
+
+entity_t *importCaracter(entity_import entitySkel)
+{
+    return initEntity(
+        entitySkel.name,
+        entitySkel.stats,
+        entitySkel.cardDeck,
+        entitySkel.diffCardSize);
+}
+
+entity_t *importCaracterFromId(CARACTER_ID id)
+{
+    return importCaracter(CARATER_ENCYCLOPEDIA[id]);
+}
+
+entity_t *importEnemy(enemy_import enemySkel)
+{
+    int hp =
+        enemySkel.hpRange[0] + (rand() %
+                                (enemySkel.hpRange[1] -
+                                 enemySkel.hpRange[0]));
+    int stats[5][2] = {
+        {hp, false},
+        {999, true},
+        {999, false},
+        {999, false},
+    };
+    return initEntity(
+        enemySkel.name,
+        stats,
+        enemySkel.cardDeck,
+        enemySkel.diffCardSize);
+}
+
+entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id)
+{
+    return importEnemy(ENEMY_PHASE_1_ENCYCLOPEDIA[id]);
+}
+
+entity_t *getRandomEnemyPhase1()
+{
+    return importEnemyPhase1FromId(rand() % ENEMY_PHASE_1_ID_SIZE);
+}
+
+entity_t *importEnemyPhase2FromId(ENEMY_PHASE_2_ID id)
+{
+    return importEnemy(ENEMY_PHASE_2_ENCYCLOPEDIA[id]);
+}
+
+entity_t *getRandomEnemyPhase2()
+{
+    return importEnemyPhase2FromId(rand() % ENEMY_PHASE_2_ID_SIZE);
+}
+
+entity_t *importMiniBossFromId(MINIBOSS_ID id)
+{
+    return importEnemy(MINIBOSS_ENCYCLOPEDIA[id]);
+}
+
+entity_t *getRandomMiniBoss()
+{
+    return importMiniBossFromId(rand() % MINIBOSS_ID_SIZE);
+}
+
+entity_t *importBOSSFromId(BOSS_ID id)
+{
+    return importEnemy(BOSS_ENCYCLOPEDIA[id]);
 }
 
 // DISPLAY FUNCTION
@@ -27,6 +99,8 @@ void displayEntity(entity_t *entity)
     {
         displayEffect(entity->effects[effects_ID]);
     };
+    printf("\nDECK: \n_____\n");
+    displayDeck(entity->cardDeck);
 
     printf("============================================\n");
 }
@@ -124,19 +198,120 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 
 void testEntity()
 {
+    // entity_t *testCar = initEntity("peter", testStat, (int[][2]){{DODGE_A, 1}, {PULVERIZE, 2}, {DEFENSE, 3}}, 3);
+    entity_t *testEnemy = getRandomMiniBoss();
+    displayEntity(testEnemy);
 
-    int testStat[5][2] = {
-        {10, 1},
-        {100, 1},
-        {30, 1},
-        {10, 1},
-        {10, 1},
-    };
-
-    entity_t *testCar = initEntity("peter", testStat);
-    entity_t *testEnemy = initEntity("enemy", testStat);
-    displayEntity(testCar);
-
-    testGetterSetter(testCar);
-    testApplyCardEffect(testCar, testEnemy);
+    // testGetterSetter(testCar);
+    // testApplyCardEffect(testCar, testEnemy);
 }
+
+entity_import CARATER_ENCYCLOPEDIA[] = {
+    {
+        .name = "Peter",
+        .stats = {
+            {75, false},
+            {999, true},
+            {3, true},
+            {100, true},
+        },
+        .cardDeck = {
+            {STRIKE, 5},
+            {DODGE_A, 5},
+            {SPECTRUM, 1},
+        },
+        .diffCardSize = 3,
+    },
+};
+enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
+    {
+        .name = "Jawurm",
+        .hpRange = {40, 44},
+        .cardDeck = {
+            {JAWURM_BACKSTAB, 1},
+            {JAWURM_FIST, 1},
+            {JAWURM_CROUCH, 1},
+        },
+        .diffCardSize = 3,
+    },
+    {
+        .name = "Blouni",
+        .hpRange = {46, 50},
+        .cardDeck = {
+            {BLOUNI_JAB, 1},
+            {BLOUNI_KICK, 1},
+        },
+        .diffCardSize = 2,
+    },
+    {
+        .name = "Keliko",
+        .hpRange = {60, 70},
+        .cardDeck = {
+            {KELIKO_NUDGE, 1},
+            {KELIKO_PINCH, 1},
+        },
+        .diffCardSize = 2,
+    },
+};
+enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
+    {
+        .name = "Jawurm2",
+        .hpRange = {55, 62},
+        .cardDeck = {
+            {JAWURM2_HAIRPULLING, 1},
+            {JAWURM2_SPIT, 1},
+        },
+        .diffCardSize = 2,
+    },
+    {
+        .name = "Redoni",
+        .hpRange = {50, 54},
+        .cardDeck = {
+            {REDONI_SLAP, 1},
+            {REDONI_SPANKING, 1},
+        },
+        .diffCardSize = 2,
+    },
+    {
+        .name = "Mangoustine",
+        .hpRange = {70, 80},
+        .cardDeck = {
+            {MANGOUSTINE_SNARE, 1},
+        },
+        .diffCardSize = 1,
+    },
+};
+enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
+    {
+        .name = "Eldan",
+        .hpRange = {80, 81},
+        .cardDeck = {
+            {ELDAN_BANANAPEEL, 1},
+            {HEADBUTT, 1},
+            {ELDAN_TOTAL, 1},
+        },
+        .diffCardSize = 3,
+    },
+    {
+        .name = "Pyrox",
+        .hpRange = {120, 121},
+        .cardDeck = {
+            {PYROX_FIRESPIT, 1},
+            {PYROX_FIRESTORM, 1},
+        },
+        .diffCardSize = 2,
+    },
+};
+enemy_import BOSS_ENCYCLOPEDIA[] = {
+    {
+        .name = "Gardien de la plume",
+        .hpRange = {150, 151},
+        .cardDeck = {
+            {SPECTRUM, 1},
+            {PULVERIZE, 1},
+            {CLAW_COMBO, 1},
+            {SLEEP, 1},
+        },
+        .diffCardSize = 4,
+    },
+};

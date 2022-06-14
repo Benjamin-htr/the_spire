@@ -9,7 +9,6 @@ int MAP_HEIGHT = 11;
 int MAP_WIDTH = 4;
 
 
-
 position position_init(int x, int y)
 {
     position p;
@@ -51,49 +50,64 @@ int* playable_move(map* m){
         break;
     }
 }
+int *where_event(){
+    int random_boss = rand()%4; // 0,1,2,3  4 sanctuary 
+    int random_sanctuary = rand()%4;
+    int boss_left = 3;
+    int sanctuary_left = 2;
+    printf("%d %d\n", random_boss, random_sanctuary);
+    int *array = calloc(MAP_HEIGHT-2, sizeof(int));
+    printf("%d\n", MAP_HEIGHT-2);
+    int i = 0;
+    boolean flag = false;
+    while ((boss_left > 0 || sanctuary_left > 0) && !flag)
+    {
+        if(i < 5){
+            
+        }else{
+
+        }
+    }
+
+    for (int i = 0; i < MAP_HEIGHT-2; i++)
+    {
+        printf("i = %d , rand = %d\n",i, array[i]);
+    }
+    return array;
+}
 
 void set_event(map *m){
-    int random_boss = (int) (1+(rand()%4));
-    int random_sanctuary = (int) (1+(rand()%4));
-    printf("\npa %d\n", random_boss);
-    printf("\nyo %d\n", random_sanctuary);
-    for (int i = 0; i < MAP_HEIGHT; i++)
-    {
-        for (int j = 0; j < MAP_WIDTH; j++)
-        {
-            if(m->places[i][j].isWhat >= 1 ){
-                if(i < 5 && i == random_boss ){
-                    m->places[i][j].isWhat = 3;
-                    printf("\nrandom_boss : %d\n", random_boss);
-                    random_boss = (int) ((6+(rand()%3)));
-                }else if(i > 5 && i == random_boss){
-                    m->places[i][j].isWhat = 3;
-                    printf("\nrandom_boss : %d\n", random_boss);
-                    random_boss = (int) (((i+1)+(rand()%(MAP_HEIGHT-(i+1)))));
-                    printf("\nrandom_boss : %d\n", random_boss);
-
-                }
-                if(i < 5 && i == random_sanctuary ){
-                    if(m->places[i][j].isWhat == 3){
-                        m->places[i][j].isWhat = 2;
-                    }else{
-                        m->places[i][j].isWhat = 2;
-                    }
-                    printf("\nrandom_sanctuary : %d\n", random_sanctuary);
-                    random_sanctuary = (int) ((6+(rand()%3)));
-                }else if(i > 5 && i == random_sanctuary){
-                    if(m->places[i][j].isWhat == 3){
-                        printf("fhdsqmhg");
-                        m->places[i][j+random_sanctuary%MAP_WIDTH].isWhat = 2;
-                    }else{
-                        m->places[i][j].isWhat = 2;
-                    }
-                    printf("\n random_sanctuary : %d\n", random_sanctuary);
-                }
-            }   
-        }
+    where_event();
+    // int random_boss = (int) (1+(rand()%4));
+    // int random_sanctuary = (int) (1+(rand()%4));
+    // printf("\npa %d\n", random_boss);
+    // printf("\nyo %d\n", random_sanctuary);
+    // for (int i = 0; i < MAP_HEIGHT; i++)
+    // {
+    //     for (int j = 0; j < MAP_WIDTH; j++)
+    //     {
+    //         if(m->places[i][j].isWhat >= 1){
+    //             if(i != 5 && i == random_boss && random_boss != 5){
+    //                 m->places[i][j].isWhat = 3;
+    //                 printf("\nrandom_boss : %d\n", random_boss);
+    //             }
+    //             random_boss = (int) (((i+1)+(rand()%(MAP_HEIGHT-(i+1)))));
+    //             if(i < 5 && i == random_sanctuary && random_boss != random_sanctuary){
+    //                 printf("\nrandom_sanctuary : %d\n", random_sanctuary);
+    //                 random_sanctuary = (int) ((6+(rand()%3)));
+    //             }else if(i > 5 && i == random_sanctuary){
+    //                 if(m->places[i][j].isWhat == 3){
+    //                     printf("fhdsqmhg");
+    //                     m->places[i][j+random_sanctuary%MAP_WIDTH].isWhat = 2;
+    //                 }else{
+    //                     m->places[i][j].isWhat = 2;
+    //                 }
+    //                 printf("\n random_sanctuary : %d\n", random_sanctuary);
+    //             }
+    //         }   
+    //     }
         
-    }
+    // }
     
 }
 
@@ -124,7 +138,8 @@ map* map_init()
             }
         }
     }
-    set_event(m);
+    // set_event(m);
+    where_event();
     return m;
 }
 

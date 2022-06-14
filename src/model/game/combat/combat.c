@@ -16,7 +16,11 @@ combat_t * startCombat(entity_t* caracter, entity_t* enemy){
 void playPlayerTurn(combat_t* combat){
     board_t * caracterBoard = combat->caracter->board;
     caracterBoard = drawCards(caracterBoard);
-    playCaracterCards(combat);
+    printf("Le deck après avoir pioché :  \n");
+    displayDeck(caracterBoard->cardDeck);
+    printf("La main après avoir pioché : \n");
+    displayDeck(caracterBoard->hand);
+   // playCaracterCards(combat);
 }
 
 void playOnePlayerCard(combat_t* combat, card_t* cardToPlay){
@@ -58,13 +62,13 @@ deck_t* pickCardFromHand(deck_t * hand){
 }
 
 void testCombat(){
-    // entity_t* player = importCaracterFromId(PETER);
+    entity_t* player = importCaracterFromId(PETER);
   
-    // displayEntity(player);
+    displayEntity(player);
     //  entity_t* enemy = importBOSSFromId(GARDIAN_PLUME);
     //  displayEntity(enemy);
-    // combat_t* combat = startCombat(player,enemy);
-    //playPlayerTurn(combat);
+     combat_t* combat = startCombat(player,player);
+    playPlayerTurn(combat);
 }
 
 // void playEnemyTurn(combat_t* combat){

@@ -14,14 +14,14 @@ board_t * createBoard(deck_t * playerDeck){
 }
 
 int drawCardsFromDeck(board_t * myBoard,int nbCardsDrew){ // returns number of cards drawed,
-                                            //second parameter is the number of cards drew this turn
+                                            //second parameter is the number of cards drew this turn*
     while(nbCardsDrew <5 && myBoard->cardDeck != NULL){
         card_t * cardToDraw = myBoard->cardDeck->data;
         removeFirstCard(myBoard->cardDeck);
         myBoard->cardDeck = myBoard->cardDeck->next;
         addCard(myBoard->hand,cardToDraw);
         nbCardsDrew++;
-    } 
+   } 
     return nbCardsDrew;
 }
 

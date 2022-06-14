@@ -52,12 +52,8 @@ deck_t *removeFirstCard(deck_t *deck)
 {
     if (deck == NULL)
         return NULL;
-
-    // Move the head pointer to the next node
     deck_t *temp = deck;
     deck = deck->next;
-    free(temp);
-
     return deck;
 }
 

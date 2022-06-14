@@ -49,7 +49,15 @@ stat_t *initEntityStatFromArray(int stats[][2])
 
 void updateStat(stat_t *stat, int value, statCurrOrMax currOrMax, statTemporalRange temporalRange)
 {
+    if (temporalRange == PERCISTANT)
+    {
+        stat->stat_bar[currOrMax][TEMPORARY] += value;
+    }
     stat->stat_bar[currOrMax][temporalRange] += value;
+    if (currOrMax == MAX && stat->stat_bar[CURR][temporalRange] > stat->stat_bar[MAX][temporalRange])
+    {
+        updateStat(stat, stat->stat_bar[MAX][temporalRange] - stat->stat_bar[CURR][temporalRange], CURR, temporalRange);
+    }
 }
 
 // DISPLAY FUNCTION

@@ -96,7 +96,7 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 void drawLifeBar()
 {
     int HpMax = 75;
-    int HpActuel = 25;
+    int HpActuel = 10;
 
     float scaleBar = 4.0f;
     float scaleHeart = 3.0f;

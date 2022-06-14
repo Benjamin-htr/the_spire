@@ -4,7 +4,9 @@
  *
  *******************************************************************************************/
 
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "./../include/raylib.h"
 #include "./view/menu/menu.h"
 #include "./view/credits/credits.h"
@@ -55,10 +57,13 @@ static void DrawTransition(void);   // Draw transition effect (full-screen recta
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = false;
+const boolean isInNonGraphicalTestes = true;
 
 int main(void)
 {
+    time_t t;
+    /* Intializes random number generator */
+    srand((unsigned)time(&t));
     if (isInNonGraphicalTestes)
     {
         testFunction();

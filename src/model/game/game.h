@@ -1,12 +1,11 @@
 #ifndef GAME
 #define GAME
 
-#include "entity/caracter/caracter.h"
 #include "map/map.h"
 
 typedef struct
 {
-    caracter *caracterData;
+    entity_t *caracterData;
     map *mapData;
 } Game;
 

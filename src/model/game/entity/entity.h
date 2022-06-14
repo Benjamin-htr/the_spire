@@ -4,10 +4,12 @@
 #include "../misc/effect/effect.h"
 #include "../misc/stat/stat.h"
 #include "../misc/board/board.h"
+#include "../misc/item/item.h"
 
 typedef enum
 {
     PETER,
+    TEST_CAR,
     CARACTER_ID_SIZE,
 } CARACTER_ID;
 
@@ -44,6 +46,7 @@ typedef struct
 {
     char *name;
     deck_t *cardDeck;
+    item_t *items;
     effect_t *effects;
     stat_t *stats;
     board_t *board;
@@ -52,6 +55,8 @@ typedef struct
 typedef struct
 {
     char *name;
+    int items[5];
+    int itemslength;
     int cardDeck[4][2];
     int diffCardSize;
     int stats[4][2];
@@ -61,12 +66,20 @@ typedef struct
 {
     char *name;
     int hpRange[2];
+    int items[5];
+    int itemslength;
     int cardDeck[4][2];
     int diffCardSize;
 } enemy_import;
 
 // CONSTRUCTORS
-entity_t *initEntity(char *name, int stats[][2], int cards[][2], int diffCardSize);
+entity_t *initEntity(
+    char *name,
+    int stats[][2],
+    int items[],
+    int itemslength,
+    int cards[][2],
+    int diffCardSize);
 
 entity_t *importCaracter(entity_import entitySkel);
 entity_t *importCaracterFromId(CARACTER_ID id);

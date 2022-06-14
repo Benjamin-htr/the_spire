@@ -4,7 +4,8 @@
 // #include "../model/game/misc/deck/card/card.h"
 // #include "../model/game/misc/board/board.h"
 // #include "../model/game/map/map.h"
-// #include <stdio.h>
+// #include "../model/game/misc/item/item.h"
+#include <stdio.h>
 
 void testFunction()
 {
@@ -16,6 +17,8 @@ void testFunction()
     // testMap();
     // printf("\n==============================\n\tTEST DE CARD\n==============================\n");
     // testCard();
+    // printf("\n==============================\n\tTEST DE ITEM\n==============================\n");
+    // testItem();
     // printf("\n==============================\n\tTEST DE EFFECT\n==============================\n");
     // testEffect();
     // printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");

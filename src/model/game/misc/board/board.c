@@ -28,7 +28,7 @@ int drawCardsFromDeck(board_t * myBoard,int nbCardsDrew){ // returns number of c
 deck_t * putCardsFromOnePlaceToAnother(deck_t* firstPlace, deck_t* secondPlace){  // returns the firstPlace, which is empty.
     // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
     firstPlace=  shuffleDeck(firstPlace);
-    while(firstPlace!=NULL){
+    while(firstPlace!=NULL && firstPlace->data!=NULL){
         card_t * cardToDraw = firstPlace->data;
         firstPlace = removeFirstCard(firstPlace);
         addCard(secondPlace,cardToDraw);
@@ -39,9 +39,9 @@ deck_t * putCardsFromOnePlaceToAnother(deck_t* firstPlace, deck_t* secondPlace){
 board_t *  drawCards(board_t * myBoard){ // returns the board, please use "board = drawCards(board) 
     int nbCardsDrawed =   drawCardsFromDeck(myBoard,0);
     if(nbCardsDrawed<NB_CARDS_TO_DRAW){ // means no more cards are in the deck, lets try to fill the draw with discard
-       myBoard->cardDeck = createDeck(NULL);
-       myBoard->discardPile = putCardsFromOnePlaceToAnother(myBoard->discardPile,myBoard->cardDeck);
-       nbCardsDrawed += drawCardsFromDeck(myBoard,nbCardsDrawed);
+        myBoard->cardDeck = createDeck(NULL);
+        myBoard->discardPile = putCardsFromOnePlaceToAnother(myBoard->discardPile,myBoard->cardDeck);
+        nbCardsDrawed += drawCardsFromDeck(myBoard,nbCardsDrawed);
     }  
     return myBoard;
 }
@@ -86,7 +86,7 @@ void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
         if(board->discardPile==NULL){
             board->discardPile = createDeck(NULL);
         }
-        removeCard(board->hand,cardToRemove->name);
+        board->hand=removeCard(board->hand,cardToRemove->name);
         if(cardToRemove->isAbyssal){
            addCard(board->abyss,cardToRemove);
         }

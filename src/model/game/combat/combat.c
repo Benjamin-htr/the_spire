@@ -9,6 +9,8 @@ combat_t * startCombat(entity_t* caracter, entity_t* enemy){
     combat->caracterTurn=1;
     combat->caracter->board = createBoard(combat->caracter->cardDeck);
     combat->enemy->board = createBoard(combat->enemy->cardDeck);
+    combat->caracter->board->cardDeck=shuffleDeck(combat->caracter->board->cardDeck);
+    combat->enemy->board->cardDeck=shuffleDeck(combat->enemy->board->cardDeck);
     return combat;
 }
 
@@ -20,7 +22,15 @@ void playPlayerTurn(combat_t* combat){
     displayDeck(caracterBoard->cardDeck);
     printf("La main après avoir pioché : \n");
     displayDeck(caracterBoard->hand);
-   // playCaracterCards(combat);
+    playCaracterCards(combat);
+    printf("Après avoir joué toutes les cartes, voici le deck : \n");
+    displayDeck(caracterBoard->cardDeck);
+    printf("Voici la main : \n");
+    displayDeck(caracterBoard->hand);
+    printf("Voici la défausse : \n");
+    displayDeck(caracterBoard->discardPile);
+    printf("Voici l'abysse : \n");
+    displayDeck(caracterBoard->abyss);
 }
 
 void playOnePlayerCard(combat_t* combat, card_t* cardToPlay){
@@ -30,6 +40,9 @@ void playOnePlayerCard(combat_t* combat, card_t* cardToPlay){
         applyCardEffect(cardToPlay,combat->caracter,combat->enemy);
         moveOneCardFromHand(combat->caracter->board,cardToPlay);
     }
+    else {
+        printf("plus d'energie enculer \n");
+    }
 }
 
 void playCaracterCards(combat_t* combat){
@@ -37,7 +50,6 @@ void playCaracterCards(combat_t* combat){
     int i=0;
     while(i<5){ // tant que le tour n'est pas fini
         // on montre la main au joueur, et il choisit une carte
-        printf("tour %d \n",i);
         card_t* cardToPlay = pickCardFromHand(combat->caracter->board->hand)->data;
         playOnePlayerCard(combat, cardToPlay);
         i++;
@@ -47,7 +59,8 @@ void playCaracterCards(combat_t* combat){
 
 
 int getChoosenCardId(deck_t* hand){
-    displayDeck(hand);
+    //displayDeck(hand);
+    hand->data = hand->data; // pour ce chien de warning 
    // char *nb =scanf(" \n Quelle carte voulez vous ? saisir numero \n");
     return 0;; // pour l'instant on prend juste la premiere blc
 }
@@ -61,6 +74,8 @@ deck_t* pickCardFromHand(deck_t * hand){
     return getElementFromDeckAtIndex(getChoosenCardId(hand),hand);
 }
 
+
+
 void testCombat(){
     entity_t* player = importCaracterFromId(PETER);
   
@@ -68,8 +83,10 @@ void testCombat(){
     //  entity_t* enemy = importBOSSFromId(GARDIAN_PLUME);
     //  displayEntity(enemy);
      combat_t* combat = startCombat(player,player);
-    playPlayerTurn(combat);
+    playTurn(combat);
 }
+
+
 
 // void playEnemyTurn(combat_t* combat){
     
@@ -77,10 +94,16 @@ void testCombat(){
 
 
 void playTurn(combat_t* combat){
-    if(combat->caracterTurn==true){
-        playPlayerTurn(combat);
-    }
-    else {
-       // playEnemyTurn(combat);
+    int i =0;
+    while(i<10){
+        if(combat->caracterTurn==true){
+            printf("------------------------TOUR %d ----------------",i);
+            playPlayerTurn(combat);
+            fflush(stdout);
+        }
+        else {
+        // playEnemyTurn(combat);
+        }
+        i++;
     }
 }

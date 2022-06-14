@@ -51,9 +51,12 @@ void addCard(deck_t *deck, card_t *card)
 deck_t *removeFirstCard(deck_t *deck)
 {
     if (deck == NULL)
-        return NULL;
+        return createDeck(NULL);
     deck_t *temp = deck;
     deck = deck->next;
+    if(deck ==NULL){
+        deck = createDeck(NULL);
+    }
     return deck;
 }
 
@@ -61,6 +64,7 @@ deck_t *removeCard(deck_t *deck, char *cardName)
 {
     deck_t *previousElement = NULL;
     deck_t *origin = deck;
+    int isRemoved = 0;
     while (deck != NULL)
     {
         card_t *card = deck->data;
@@ -70,6 +74,10 @@ deck_t *removeCard(deck_t *deck, char *cardName)
             {
                 deck = removeFirstCard(deck);
                 origin = deck;
+                if(origin==NULL){
+                    origin = createDeck(NULL);
+                }
+                return origin;
             }
             else
             {
@@ -78,6 +86,9 @@ deck_t *removeCard(deck_t *deck, char *cardName)
         }
         previousElement = deck;
         deck = deck->next;
+    }
+    if(origin==NULL){
+        origin = createDeck(NULL);
     }
     return origin;
 }
@@ -134,6 +145,8 @@ void swapElements(deck_t *deck, int n, int m)
 
 deck_t *shuffleDeck(deck_t *deck)
 {
+    displayDeck(deck);
+    fflush(stdout);
     int listSize = size(deck);
     srand(time(NULL));
     int number1;

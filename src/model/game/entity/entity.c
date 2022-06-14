@@ -4,7 +4,13 @@
 #include <stdlib.h>
 
 // CONSTRUCTORS
-entity_t *initEntity(char *name, int stats[][2], int cards[][2], int diffCardSize)
+entity_t *initEntity(
+    char *name,
+    int stats[][2],
+    int items[],
+    int itemslength,
+    int cards[][2],
+    int diffCardSize)
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
@@ -13,6 +19,7 @@ entity_t *initEntity(char *name, int stats[][2], int cards[][2], int diffCardSiz
     res->stats = initEntityStatFromArray(stats);
     res->effects = initEffectBar();
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
+    res->items = importItemFromIdArray(items, itemslength);
     return res;
 }
 
@@ -21,6 +28,8 @@ entity_t *importCaracter(entity_import entitySkel)
     return initEntity(
         entitySkel.name,
         entitySkel.stats,
+        entitySkel.items,
+        entitySkel.itemslength,
         entitySkel.cardDeck,
         entitySkel.diffCardSize);
 }
@@ -45,6 +54,8 @@ entity_t *importEnemy(enemy_import enemySkel)
     return initEntity(
         enemySkel.name,
         stats,
+        enemySkel.items,
+        enemySkel.itemslength,
         enemySkel.cardDeck,
         enemySkel.diffCardSize);
 }
@@ -95,9 +106,15 @@ void displayEntity(entity_t *entity)
         displayStat(entity->stats[stats_ID]);
     };
     printf("\nEFFECTS: \n________\n");
-    for (size_t effects_ID = 0; effects_ID < 5; effects_ID++)
+    for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
     {
         displayEffect(entity->effects[effects_ID]);
+    };
+    printf("\nITEMS: \n______\n");
+
+    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    {
+        displayItem(entity->items[itemsIdx]);
     };
     printf("\nDECK: \n_____\n");
     displayDeck(entity->cardDeck);
@@ -119,6 +136,29 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
     }
 }
 
+void applyAllItemsEffect(entity_t *entity)
+{
+    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    {
+        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].launcherEffectsSize; itemEffectIdx++)
+        {
+            mergeEffect(entity, entity->items[itemsIdx].launcherEffects[itemEffectIdx]);
+        }
+        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].receiverEffectsSize; itemEffectIdx++)
+        {
+            mergeEffect(entity, entity->items[itemsIdx].receiverEffects[itemEffectIdx]);
+        }
+    }
+}
+
+void wipeAllEffect(entity_t *entity)
+{
+    for (size_t effectIdx = 0; effectIdx < 9; effectIdx++)
+    {
+        entity->effects[effectIdx].value = 0;
+    }
+}
+
 // GETTER / SETTER
 
 //      GETTER
@@ -136,9 +176,7 @@ effect_t *getEffect(entity_t *entity, effect_ID id)
     }
     return &entity->effects[id - 4];
 }
-
 //      SETTER
-
 void mergeEffect(entity_t *entity, effect_t effect)
 {
     if (effect.id < 4)
@@ -176,21 +214,10 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 {
     printf("\nTEST applyCard\n==============");
 
-    card_t *test = createCard(
-        "Strike",
-        BASIC,
-        0,
-        1,
-        false,
-        (int[][2]){{STR_E, 6}, {DODGE_E, 10}},
-        2,
-        (int[][2]){{HP_E, -6}},
-        1,
-        "Inflige 6 dégats",
-        "Attaque de base");
+    card_t *testCard = importCardFromId(SPECTRUM);
     displayEntity(testCar);
     displayEntity(testEnemy);
-    applyCardEffect(test, testCar, testEnemy);
+    applyCardEffect(testCard, testCar, testEnemy);
     printf("\napply effect\n");
     displayEntity(testCar);
     displayEntity(testEnemy);
@@ -198,23 +225,54 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 
 void testEntity()
 {
-    // entity_t *testCar = initEntity("peter", testStat, (int[][2]){{DODGE_A, 1}, {PULVERIZE, 2}, {DEFENSE, 3}}, 3);
-    entity_t *testEnemy = getRandomMiniBoss();
-    displayEntity(testEnemy);
+    entity_t *testCar = importCaracterFromId(TEST_CAR);
+    // entity_t *testEnemy = getRandomMiniBoss();
+    displayEntity(testCar);
+    // applyAllItemsEffect(testCar);
+    // displayEntity(testCar);
+    // wipeAllEffect(testCar);
+    // displayEntity(testCar);
 
     // testGetterSetter(testCar);
-    // testApplyCardEffect(testCar, testEnemy);
+    testApplyCardEffect(testCar, testCar);
 }
 
 entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Peter",
         .stats = {
-            {75, false},
+            {75, true},
             {999, true},
             {3, true},
             {100, true},
         },
+        .items = {
+            LUNCH_BOX,
+        },
+        .itemslength = 1,
+        .cardDeck = {
+            {STRIKE, 5},
+            {DODGE_A, 5},
+            {SPECTRUM, 1},
+        },
+        .diffCardSize = 3,
+    },
+    {
+        .name = "Tester",
+        .stats = {
+            {75, true},
+            {999, true},
+            {3, true},
+            {100, true},
+        },
+        .items = {
+            LUNCH_BOX,
+            ARMOR,
+            WEAPON,
+            HELMET,
+            SHOES,
+        },
+        .itemslength = 5,
         .cardDeck = {
             {STRIKE, 5},
             {DODGE_A, 5},
@@ -232,6 +290,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
             {JAWURM_FIST, 1},
             {JAWURM_CROUCH, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 3,
     },
     {
@@ -241,6 +300,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
             {BLOUNI_JAB, 1},
             {BLOUNI_KICK, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 2,
     },
     {
@@ -250,6 +310,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
             {KELIKO_NUDGE, 1},
             {KELIKO_PINCH, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 2,
     },
 };
@@ -261,6 +322,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
             {JAWURM2_HAIRPULLING, 1},
             {JAWURM2_SPIT, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 2,
     },
     {
@@ -270,6 +332,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
             {REDONI_SLAP, 1},
             {REDONI_SPANKING, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 2,
     },
     {
@@ -278,6 +341,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         .cardDeck = {
             {MANGOUSTINE_SNARE, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 1,
     },
 };
@@ -290,6 +354,7 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
             {HEADBUTT, 1},
             {ELDAN_TOTAL, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 3,
     },
     {
@@ -299,6 +364,7 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
             {PYROX_FIRESPIT, 1},
             {PYROX_FIRESTORM, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 2,
     },
 };
@@ -312,6 +378,7 @@ enemy_import BOSS_ENCYCLOPEDIA[] = {
             {CLAW_COMBO, 1},
             {SLEEP, 1},
         },
+        .itemslength = 0,
         .diffCardSize = 4,
     },
 };

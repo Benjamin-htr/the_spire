@@ -4,17 +4,20 @@
 
 // GLOBAL VARIABLES
 
-char *const EFFECT_NAME[10] = {
-    "DAMAGE",
-    "DODGE",
+char *const EFFECT_NAME[13] = {
+    "VIE",
+    "ESQUIVE",
     "MANA",
-    "ENERGY",
-    "STRENGTH",
-    "DEXTERITY",
-    "FIRE",
-    "WEAKNESS",
-    "SLOWNESS",
-    "sheee",
+    "ENERGIE",
+    "VIE MAX",
+    "ESQUIVE MAX",
+    "MANA MAX",
+    "ENERGIE MAX",
+    "FORCE",
+    "DEXTERITE",
+    "FEU",
+    "FAIBLESSE",
+    "LENTEUR",
 };
 
 // CONSTRUCTORS
@@ -31,7 +34,7 @@ effect_t *initEffect(effect_ID id, int value)
 effect_t *initEffectBar()
 {
     effect_t *res = calloc(5, sizeof(effect_t *));
-    for (size_t effects_ID = 0; effects_ID < 5; effects_ID++)
+    for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
     {
         res[effects_ID] = *initEffect(effects_ID + 4, 0);
     };

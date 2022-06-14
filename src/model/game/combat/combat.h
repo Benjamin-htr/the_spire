@@ -1,14 +1,15 @@
 #ifndef COMBAT
 #define COMBAT
 
-#include "../entity/caracter/caracter.h"
-#include "../entity/enemy/enemy.h"
+#include "../misc/board/board.h"
+#include "../entity/entity.h"
 
 typedef struct
 {
-    caracter* caracterSlot;
-    enemy* enemySlot;
-}combat;
+    entity_t* caracter;
+    entity_t* enemy;
+    int caracterTurn;
+}combat_t;
 
 
 #endif

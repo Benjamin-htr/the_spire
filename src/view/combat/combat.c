@@ -7,6 +7,9 @@ static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
 static Texture2D EnergyICon = {0};
 
+static Texture2D BasicCardPatch = {0};
+NPatchInfo cardInfo = {0};
+
 static Sprite ennemySprite = {0};
 
 //----------------------------------------------------------------------------------
@@ -80,6 +83,62 @@ void drawStatBoard()
     }
 }
 
+int GuiCard(Vector2 position, float scaleFactor, int forcedState)
+{
+    int nbFrames = 2;
+    float cardWidth = (float)cardInfo.source.width * scaleFactor;
+    float cardHeight = (float)cardInfo.source.height * scaleFactor;
+    Rectangle bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
+
+    const int titleCardColor = 0xdfdfbeff;
+
+    int state = (forcedState >= 0) ? forcedState : 0; // NORMAL
+    bool pressed = false;
+    // Vector2 textSize = MeasureTextEx(font, text, font.baseSize, 1);
+
+    int textPosAdd = 0;
+
+    // Update control
+    //--------------------------------------------------------------------
+    if ((state < 3) && (forcedState < 0))
+    {
+        Vector2 mousePoint = GetMousePosition();
+
+        // Check button state
+        if (CheckCollisionPointRec(mousePoint, bounds))
+        {
+            // PRESSED
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+            {
+                state = 2;
+                textPosAdd = 10;
+            }
+            else
+                state = 1; // FOCUSED
+
+            if (IsGestureDetected(GESTURE_TAP))
+            {
+                pressed = true;
+                PlaySound(buttonSound);
+            }
+        }
+    }
+
+    cardInfo.source.x = 96 * state;
+
+    //--------------------------------------------------------------------
+
+    // Draw control
+    //--------------------------------------------------------------------
+    // DrawRectangleRec(bounds, GREEN);
+    // DrawRectangleLinesEx(bounds, 4, DARKGREEN);
+    DrawTextureNPatch(BasicCardPatch, cardInfo, bounds, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
+    // DrawTextEx(font, text, (Vector2){bounds.x + bounds.width / 2 - textSize.x / 2, bounds.y + bounds.height / 2 - textSize.y / 2 - 4 + textPosAdd}, font.baseSize, 1, GetColor(textColor[state]));
+    //------------------------------------------------------------------
+
+    return pressed;
+}
+
 void InitCombatScreen(void)
 {
     finishScreen = 0;
@@ -88,6 +147,12 @@ void InitCombatScreen(void)
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyICon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+    BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
+    cardInfo.source = (Rectangle){0, 0, 96, 156},
+    cardInfo.left = 00;
+    cardInfo.top = 00;
+    cardInfo.right = 00;
+    cardInfo.bottom = 00;
 
     constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
 }
@@ -117,6 +182,11 @@ void DrawCombatScreen(void)
     if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "MAP", -1))
     {
         finishScreen = 1;
+    }
+
+    if (GuiCard((Vector2){50, 50}, 3.0f, -1))
+    {
+        printf("card click");
     }
 }
 void UnloadCombatScreen(void)

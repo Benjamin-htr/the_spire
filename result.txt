@@ -1,0 +1,88 @@
+
+==============================
+	TEST DE L'ENTITY
+==============================
+
+NAME:
+_____
+Peter
+
+STATS: 
+______
+
+VIE
+w/O Effect : 	0/75
+w Effect : 	0/75
+
+ESQUIVE
+w/O Effect : 	0/999
+w Effect : 	0/999
+
+MANA
+w/O Effect : 	0/3
+w Effect : 	0/3
+
+ENERGY
+w/O Effect : 	0/100
+w Effect : 	0/100
+
+EFFECTS: 
+________
+
+nom: VIE MAX
+valeur: 0
+
+nom: ESQUIVE MAX
+valeur: 0
+
+nom: MANA MAX
+valeur: 0
+
+nom: ENERGIE MAX
+valeur: 0
+
+nom: FORCE
+valeur: 0
+
+nom: DEXTERITE
+valeur: 0
+
+nom: FEU
+valeur: 0
+
+nom: FAIBLESSE
+valeur: 0
+
+nom: LENTEUR
+valeur: 0
+
+ITEMS: 
+______
+
+NAME:
+_____
+Casse-Croute
+
+LAUNCHER EFFECT:
+________________
+
+nom: VIE
+valeur: 6
+
+RECEIVER EFFECT:
+________________
+
+DECK: 
+_____
+Element 0 Strike: 
+Element 1 Strike: 
+Element 2 Strike: 
+Element 3 Strike: 
+Element 4 Strike: 
+Element 5 Dodge: 
+Element 6 Dodge: 
+Element 7 Dodge: 
+Element 8 Dodge: 
+Element 9 Dodge: 
+Element 10 Spectre complet: 
+============================================

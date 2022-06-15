@@ -85,12 +85,13 @@ void drawStatBoard()
 
 int GuiCard(Vector2 position, float scaleFactor, int forcedState)
 {
+    int manaCost = 13;
+    char *title = "Pulvériser";
+
     int nbFrames = 2;
     float cardWidth = (float)cardInfo.source.width * scaleFactor;
     float cardHeight = (float)cardInfo.source.height * scaleFactor;
     Rectangle bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
-
-    const int titleCardColor = 0xdfdfbeff;
 
     int state = (forcedState >= 0) ? forcedState : 0; // NORMAL
     bool pressed = false;
@@ -125,16 +126,15 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     }
 
     cardInfo.source.x = 96 * state;
-
-    //--------------------------------------------------------------------
-
-    // Draw control
-    //--------------------------------------------------------------------
-    // DrawRectangleRec(bounds, GREEN);
-    // DrawRectangleLinesEx(bounds, 4, DARKGREEN);
     DrawTextureNPatch(BasicCardPatch, cardInfo, bounds, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
-    // DrawTextEx(font, text, (Vector2){bounds.x + bounds.width / 2 - textSize.x / 2, bounds.y + bounds.height / 2 - textSize.y / 2 - 4 + textPosAdd}, font.baseSize, 1, GetColor(textColor[state]));
-    //------------------------------------------------------------------
+
+    // Draw mana cost :
+    Vector2 manaCostPos = (Vector2){position.x + cardWidth * (14 / 96.0f), position.y + cardHeight * (15 / 156.0f)};
+    DrawTextEx(font, TextFormat("%d", manaCost), manaCostPos, 0.155 * cardWidth, 1, GetColor(0x639bffff));
+
+    // Draw title :
+    Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
+    DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
     return pressed;
 }
@@ -184,7 +184,7 @@ void DrawCombatScreen(void)
         finishScreen = 1;
     }
 
-    if (GuiCard((Vector2){50, 50}, 3.0f, -1))
+    if (GuiCard((Vector2){50, 50}, 2.0f, -1))
     {
         printf("card click");
     }

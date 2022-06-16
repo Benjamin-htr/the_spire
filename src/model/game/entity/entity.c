@@ -99,24 +99,24 @@ entity_t *importBOSSFromId(BOSS_ID id)
 
 void displayEntity(entity_t *entity)
 {
-    printf("\nNAME:\n_____\n%s\n", entity->name);
-    printf("\nSTATS: \n______\n");
+    printf("NAME:\n_____\n%s\n", entity->name);
+    printf("STATS: \n______\n");
     for (size_t stats_ID = 0; stats_ID < 4; stats_ID++)
     {
         displayStat(entity->stats[stats_ID]);
-    };
-    printf("\nEFFECTS: \n________\n");
+    }
+    printf("EFFECTS: \n________\n");
     for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
     {
         displayEffect(entity->effects[effects_ID]);
-    };
-    printf("\nITEMS: \n______\n");
+    }
+    printf("ITEMS: \n______\n");
 
     for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
     {
         displayItem(entity->items[itemsIdx]);
-    };
-    printf("\nDECK: \n_____\n");
+    }
+    printf("DECK: \n_____\n");
     displayDeck(entity->cardDeck);
 
     printf("============================================\n");
@@ -234,7 +234,7 @@ void testEntity()
     // displayEntity(testCar);
 
     // testGetterSetter(testCar);
-    testApplyCardEffect(testCar, testCar);
+    // testApplyCardEffect(testCar, testCar);
 }
 
 entity_import CARATER_ENCYCLOPEDIA[] = {

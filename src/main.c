@@ -57,7 +57,7 @@ static void DrawTransition(void);   // Draw transition effect (full-screen recta
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = true;
+const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {
@@ -98,8 +98,8 @@ int main(void)
         buttonInfo.bottom = 60;
 
         // Setup and Init first screen
-        currentScreen = MENU;
-        InitMenuScreen();
+        currentScreen = COMBAT;
+        InitCombatScreen();
 
         SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 

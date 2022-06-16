@@ -5,10 +5,19 @@
 
 typedef struct {
     char* dialogue;
-    select_* actions;
+    option actions[2];
     void* data;
 }event;
 
-event *event_init(char* dialogue, select_* actions, void* data);
+typedef struct {
+    char* dialogue;
+    option actions[2];
+    void* data;
+}event_import;
+
+event *event_init(char* dialogue, option actions[], void* data);
+event *importEvent(event_import event_import_);
+
+extern event_import EVENT_ENCYCLOPEDIA[];
 
 #endif

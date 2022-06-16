@@ -7,12 +7,12 @@
 
 typedef struct
 {
-    boolean isEvent;
+    int isWhat;
     event* eventData;
     entity_t* enemyData;
 }place;
 
-place place_init(boolean isEvent, event *eventData, entity_t *enemyData);
+place place_init(int isWhat, event *eventData, entity_t *enemyData);
 place test();
 void testPlace();
 

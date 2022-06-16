@@ -11,6 +11,7 @@ typedef struct
     int caracterTurn;
 }combat_t;
 
+combat_t * startCombat(entity_t* caracter, entity_t* enemy);
 
 void playTurn(combat_t* combat, board_t* board);
 

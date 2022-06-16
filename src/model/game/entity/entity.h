@@ -46,7 +46,7 @@ typedef struct
 {
     char *name;
     deck_t *cardDeck;
-    item_t *items;
+    item_t **items;
     effect_t **effects;
     stat_t **stats;
     board_t *board;

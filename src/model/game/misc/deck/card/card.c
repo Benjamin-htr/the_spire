@@ -35,6 +35,8 @@ card_t *createCard(
 
 void freeCard(card_t *card)
 {
+    freeEffectArray(card->launcherEffects, card->launcherEffectsSize);
+    freeEffectArray(card->receiverEffects, card->receiverEffectsSize);
     free(card);
 }
 

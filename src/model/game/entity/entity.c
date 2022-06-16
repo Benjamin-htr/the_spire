@@ -31,7 +31,7 @@ entity_t *initEntity(
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
     printf("\n test6");
     fflush(stdout);
-    res->items = importItemFromIdArray(items, itemslength);
+    res->items = importEntityItemFromIdArray(itemslength, items);
     printf("\n test7");
     fflush(stdout);
     return res;
@@ -130,7 +130,7 @@ void displayEntity(entity_t *entity)
     }
     printf("ITEMS: \n______\n");
 
-    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx]->description != NULL; itemsIdx++)
     {
         displayItem(entity->items[itemsIdx]);
     }
@@ -156,15 +156,15 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 
 void applyAllItemsEffect(entity_t *entity)
 {
-    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx]->description != NULL; itemsIdx++)
     {
-        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].launcherEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx]->launcherEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx].launcherEffects[itemEffectIdx]);
+            mergeEffect(entity, entity->items[itemsIdx]->launcherEffects[itemEffectIdx]);
         }
-        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].receiverEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx]->receiverEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx].receiverEffects[itemEffectIdx]);
+            mergeEffect(entity, entity->items[itemsIdx]->receiverEffects[itemEffectIdx]);
         }
     }
 }
@@ -243,6 +243,7 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 
 void testEntity()
 {
+    printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
     // entity_t *testEnemy = getRandomMiniBoss();
     displayEntity(testCar);

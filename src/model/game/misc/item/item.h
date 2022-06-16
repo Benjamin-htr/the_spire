@@ -47,11 +47,11 @@ item_t *createItem(
 
 item_t *importItem(item_import itemImport);
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId);
-item_t *importItemFromIdArray(int itemsId[], int itemLength);
+item_t **importEntityItemFromIdArray(int itemLength, int itemsId[itemLength]);
 
 // DISPLAY FUNCTION
 
-void displayItem(item_t item);
+void displayItem(item_t *item);
 
 // TEST FUNCTION
 

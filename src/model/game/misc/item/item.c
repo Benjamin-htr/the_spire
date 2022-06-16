@@ -10,34 +10,32 @@ item_t *createItem(
     char *technic,
     char *description)
 {
-    printf("\n test init item 1");
-    fflush(stdout);
     item_t *res = malloc(sizeof(item_t));
-    printf("\n test init item 2");
-    fflush(stdout);
     res->name = name;
-    printf("\n test init item 3");
-    fflush(stdout);
     res->launcherEffects = initEffectFromArray(launcherEffectsSize, launcherEffects);
-    printf("\n test init item 4");
-    fflush(stdout);
     res->launcherEffectsSize = launcherEffectsSize;
-    printf("\n test init item 5");
-    fflush(stdout);
     res->receiverEffects = initEffectFromArray(receiverEffectsSize, receiverEffects);
-    printf("\n test init item 6");
-    fflush(stdout);
     res->receiverEffectsSize = receiverEffectsSize;
-    printf("\n test init item 7");
-    fflush(stdout);
     res->technic = technic;
-    printf("\n test init item 8");
-    fflush(stdout);
     res->description = description;
-    printf("\n test init item 9");
-    fflush(stdout);
 
     return res;
+}
+
+void freeItem(item_t *item)
+{
+    freeEffectArray(item->launcherEffects, item->launcherEffectsSize);
+    freeEffectArray(item->receiverEffects, item->receiverEffectsSize);
+    free(item);
+}
+
+void freeEntityItem(item_t **items)
+{
+    for (int itemsIdx = 0; itemsIdx < 5 && items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        freeItem(items[itemsIdx]);
+    }
+    free(items);
 }
 
 item_t *importItem(item_import itemImport)
@@ -57,44 +55,38 @@ item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
     return importItem(ITEM_ENCYCLOPEDIA[itemId]);
 }
 
-item_t *importItemFromIdArray(int itemsId[], int itemLength)
+item_t **importEntityItemFromIdArray(int itemLength, int itemsId[itemLength])
 {
-    printf("\n test");
-    fflush(stdout);
-    item_t *res = calloc(5, sizeof(item_t *));
-    printf("\n test");
-    fflush(stdout);
+    item_t **res = malloc(5 * sizeof(item_t *));
     int item_ID;
-    printf("\n test");
-    fflush(stdout);
     for (item_ID = 0; item_ID < itemLength; item_ID++)
     {
-        printf("\n test loop 1");
-        fflush(stdout);
-        res[item_ID] = *importItemFromId(itemsId[item_ID]);
+        res[item_ID] = importItemFromId(itemsId[item_ID]);
     };
     for (; item_ID < 5; item_ID++)
     {
-        printf("\n test loop 1");
-        fflush(stdout);
-        res[item_ID] = *importItemFromId(NONE_ITEM);
+        res[item_ID] = importItemFromId(NONE_ITEM);
     };
     return res;
 }
 
 // DISPLAY FUNCTION
 
-void displayItem(item_t item)
+void displayItem(item_t *item)
 {
-    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", item.name);
-    for (int launcherEffectID = 0; launcherEffectID < item.launcherEffectsSize; launcherEffectID++)
-    {
-        displayEffect(item.launcherEffects[launcherEffectID]);
-    }
+    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", item->name);
+    displayEffectArray(item->launcherEffects, item->launcherEffectsSize);
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (int receiverEffectID = 0; receiverEffectID < item.receiverEffectsSize; receiverEffectID++)
+    displayEffectArray(item->receiverEffects, item->receiverEffectsSize);
+}
+
+void displayEntityItems(item_t **items)
+{
+    printf("ITEMS: \n______\n");
+
+    for (int itemsIdx = 0; itemsIdx < 5 && items[itemsIdx]->description != NULL; itemsIdx++)
     {
-        displayEffect(item.receiverEffects[receiverEffectID]);
+        displayItem(items[itemsIdx]);
     }
 }
 
@@ -102,11 +94,11 @@ void displayItem(item_t item)
 
 void testItem()
 {
-    item_t *testItem = importItemFromIdArray((int[]){NONE_ITEM, WEAPON, ARMOR}, 3);
-    for (int i = 0; i < 5; i++)
-    {
-        displayItem(testItem[i]);
-    }
+
+    printf("\n==============================\n\tTEST DE ITEM\n==============================\n");
+    item_t **testItem = importEntityItemFromIdArray(2, (int[]){WEAPON, ARMOR});
+    displayEntityItems(testItem);
+    freeEntityItem(testItem);
     // testItem = importItemFromId(WEAPON);
     // displayItem(*testItem);
     // testItem = importItemFromId(HELMET);

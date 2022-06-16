@@ -14,21 +14,21 @@ board_t * createBoard(deck_t * playerDeck){
 }
 
 int drawCardsFromDeck(board_t * myBoard,int nbCardsDrew){ // returns number of cards drawed,
-                                            //second parameter is the number of cards drew this turn
+                                            //second parameter is the number of cards drew this turn*
     while(nbCardsDrew <5 && myBoard->cardDeck != NULL){
         card_t * cardToDraw = myBoard->cardDeck->data;
         removeFirstCard(myBoard->cardDeck);
         myBoard->cardDeck = myBoard->cardDeck->next;
         addCard(myBoard->hand,cardToDraw);
         nbCardsDrew++;
-    } 
+   } 
     return nbCardsDrew;
 }
 
 deck_t * putCardsFromOnePlaceToAnother(deck_t* firstPlace, deck_t* secondPlace){  // returns the firstPlace, which is empty.
     // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
     firstPlace=  shuffleDeck(firstPlace);
-    while(firstPlace!=NULL){
+    while(firstPlace!=NULL && firstPlace->data!=NULL){
         card_t * cardToDraw = firstPlace->data;
         firstPlace = removeFirstCard(firstPlace);
         addCard(secondPlace,cardToDraw);
@@ -39,9 +39,9 @@ deck_t * putCardsFromOnePlaceToAnother(deck_t* firstPlace, deck_t* secondPlace){
 board_t *  drawCards(board_t * myBoard){ // returns the board, please use "board = drawCards(board) 
     int nbCardsDrawed =   drawCardsFromDeck(myBoard,0);
     if(nbCardsDrawed<NB_CARDS_TO_DRAW){ // means no more cards are in the deck, lets try to fill the draw with discard
-       myBoard->cardDeck = createDeck(NULL);
-       myBoard->discardPile = putCardsFromOnePlaceToAnother(myBoard->discardPile,myBoard->cardDeck);
-       nbCardsDrawed += drawCardsFromDeck(myBoard,nbCardsDrawed);
+        myBoard->cardDeck = createDeck(NULL);
+        myBoard->discardPile = putCardsFromOnePlaceToAnother(myBoard->discardPile,myBoard->cardDeck);
+        nbCardsDrawed += drawCardsFromDeck(myBoard,nbCardsDrawed);
     }  
     return myBoard;
 }
@@ -67,15 +67,10 @@ void moveCardsFromHand(board_t * myBoard){ // move all cards from hand to abyss/
     myBoard ->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
 }
 
-card_t * getRandomCardFromHand(board_t* board){
+deck_t * getRandomCardFromHand(board_t* board){
     srand(time(NULL));
     int listSize = size(board->hand);
-    if(board->hand !=NULL){
-       return getElementFromDeckAtIndex(rand() %listSize, board->hand)->data;
-    }
-    else {
-       return NULL;
-    }
+    return getElementFromDeckAtIndex(rand() %listSize, board->hand);
 }
 
 void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
@@ -86,7 +81,7 @@ void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
         if(board->discardPile==NULL){
             board->discardPile = createDeck(NULL);
         }
-        removeCard(board->hand,cardToRemove->name);
+        removeCard(&board->hand,cardToRemove->name);
         if(cardToRemove->isAbyssal){
            addCard(board->abyss,cardToRemove);
         }
@@ -152,7 +147,7 @@ void testBoard(){
     printf("Pulverize devrait être ajouté à l'abysse \n");
     printf("Voici l'abysse (il doit y avoir 2 PULVERIZE) : \n");
     displayDeck(gameBoard->abyss);
-    card_t* randomCardFromHand = getRandomCardFromHand(gameBoard);
+    card_t* randomCardFromHand = getRandomCardFromHand(gameBoard)->data;
     printf("Voici une random card de la main : \n");
     displayCard(*randomCardFromHand);
 }

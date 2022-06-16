@@ -5,12 +5,13 @@
 #include "../model/game/misc/board/board.h"
 #include "../model/game/map/map.h"
 #include "../model/game/misc/item/item.h"
+#include "../model/game/combat/combat.h"
 #include <stdio.h>
 
 void testFunction()
 {
-    // printf("\n==============================\n\tTEST DE STAT\n==============================\n");
-    // testStat();
+    printf("\n==============================\n\tTEST DE STAT\n==============================\n");
+    testStat();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
     // testPlace(); 
     printf("\n==============================\n\tTEST DE MAP\n==============================\n");
@@ -23,5 +24,7 @@ void testFunction()
     // testEntity();
     // printf("\n==============================\n\tTEST BOARDY\n==============================\n");
     // testBoard();
+//     printf("\n==============================\n\tTEST COMBAT\n==============================\n");
+//    testCombat();
     fflush(stdout);
 }

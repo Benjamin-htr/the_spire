@@ -13,21 +13,20 @@ typedef struct
 
 combat_t * startCombat(entity_t* caracter, entity_t* enemy);
 
-void playTurn(combat_t* combat);
-
-void playEnemyTurn(combat_t* combat);
+void playTurn(combat_t* combat, board_t* board);
 
 int getChoosenCardId(deck_t* hand);
 
 deck_t * pickCardFromHand(deck_t * hand);
 
-void playPlayerTurn(combat_t* combat);
 
-void playCaracterCards(combat_t* combat);
+void playCards(combat_t* combat);
 
 void playOnePlayerCard(combat_t* combat, card_t* cardToPlay);
 
+void playOneEnemyCard(combat_t* combat, card_t* cardToPlay);
+
 void testCombat();
 
-int getChoosenCardId(deck_t* hand);
+void startFight(combat_t* combat);
 #endif

@@ -31,5 +31,5 @@ void moveOneCardFromHand(board_t * board, card_t * cardToRemove);
 
 void moveCardsFromHand(board_t * myBoard); // move all cards from hand to abyss/discard 
  
-card_t * getRandomCardFromHand(board_t* board);
+deck_t * getRandomCardFromHand(board_t* board);
 #endif

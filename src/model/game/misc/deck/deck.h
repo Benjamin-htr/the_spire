@@ -25,7 +25,7 @@ void swapElements(deck_t *myDeck, int n, int m);
 
 void displayDeck(deck_t *myDeck);
 
-deck_t *removeCard(deck_t *deck, char *cardName);
+void removeCard(deck_t **deck, char *cardName);
 
 void testDeck();
 #endif

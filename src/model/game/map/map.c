@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include "./place/event/event.h"
+// #include "./place/event/event.h"
 #include "./place/place.h"
 #include "map.h"
 
@@ -59,7 +59,7 @@ boolean* event_place(){
     {
         array[i] = false;
     }
-    int random = rand();
+    int random = (rand()%(MAP_HEIGHT-3));
     boolean flag = false;
     array[4] = true;
     int j = 0;
@@ -67,12 +67,12 @@ boolean* event_place(){
     {
         do
         {
-            if(array[(random%(MAP_HEIGHT-3))] == false){
-                array[(random%(MAP_HEIGHT-3))] = true;
+            if(array[random] == false){
+                array[random] = true;
                 flag = true;
                 j ++;
             } 
-            random = rand();
+            random = (rand()%(MAP_HEIGHT-3));
         } while (!flag);
         flag = false;   
     }
@@ -84,26 +84,26 @@ void set_event(map *m){
     boolean *where = event_place();
     int sanctuary = 2;
     int boss = 3;
-    int random = rand();
+    int random = (random%2);
     for (int i = 1; i < MAP_HEIGHT-1; i++)
     {
         for (int j = 0; j < MAP_WIDTH; j++)
         {
             if(m->places[i][j].isWhat == 1){
                 if(where[i-1] == true){
-                    printf("random = %d\n", (random%2));
-                    if((random%2) && sanctuary != 0){
+                    printf("random = %d\n", random);
+                    if(random && sanctuary != 0){
                         m->places[i][j].isWhat = 2;
                         sanctuary--;
-                    }else if (!(random%2) && boss != 0){
+                    }else if (!random && boss != 0){
                         m->places[i][j].isWhat = 3;
                         boss--;
                     }
                     random = rand();
-                    if(!(random%2) && sanctuary != 0){
-                        random = random+1;
-                    }if((random%2) && boss != 0){
-                        random = random+1;
+                    if(!random && sanctuary != 0){
+                        random = (random%2)+1;
+                    }if(random && boss != 0){
+                        random = (random%2)+1;
                     }
                 }
             }
@@ -133,7 +133,7 @@ map* map_init()
         {
             m->places[i] = calloc(MAP_WIDTH, sizeof(place));
         }
-        random =(int) (rand() % MAP_WIDTH);	// 0, 1, 2, 3
+        random =(rand() % MAP_WIDTH);	// 0, 1, 2, 3
         for (j = 0; j < ((i==0||i==MAP_HEIGHT-1)?1:MAP_WIDTH); j++)
         {
             if(i == 5){

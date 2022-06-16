@@ -4,6 +4,7 @@
 #include "../model/game/misc/deck/card/card.h"
 #include "../model/game/misc/board/board.h"
 #include "../model/game/map/map.h"
+#include "../model/game/misc/item/item.h"
 #include <stdio.h>
 
 void testFunction()

@@ -14,17 +14,33 @@ entity_t *initEntity(
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
+    printf("\n test 1");
+    fflush(stdout);
     entity_t *res = malloc(sizeof(entity_t));
+    printf("\n test2");
+    fflush(stdout);
     res->name = name;
+    printf("\n test3");
+    fflush(stdout);
     res->stats = initEntityStatFromArray(stats);
-    res->effects = initEffectBar();
+    printf("\n test4");
+    fflush(stdout);
+    res->effects = initEntityEffectArray();
+    printf("\n test5");
+    fflush(stdout);
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
+    printf("\n test6");
+    fflush(stdout);
     res->items = importItemFromIdArray(items, itemslength);
+    printf("\n test7");
+    fflush(stdout);
     return res;
 }
 
 entity_t *importCaracter(entity_import entitySkel)
 {
+    printf("\n test");
+    fflush(stdout);
     return initEntity(
         entitySkel.name,
         entitySkel.stats,
@@ -36,6 +52,8 @@ entity_t *importCaracter(entity_import entitySkel)
 
 entity_t *importCaracterFromId(CARACTER_ID id)
 {
+    printf("\n test");
+    fflush(stdout);
     return importCaracter(CARATER_ENCYCLOPEDIA[id]);
 }
 
@@ -101,18 +119,18 @@ void displayEntity(entity_t *entity)
 {
     printf("NAME:\n_____\n%s\n", entity->name);
     printf("STATS: \n______\n");
-    for (size_t stats_ID = 0; stats_ID < 4; stats_ID++)
+    for (int stats_ID = 0; stats_ID < 4; stats_ID++)
     {
         displayStat(entity->stats[stats_ID]);
     }
     printf("EFFECTS: \n________\n");
-    for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
+    for (int effects_ID = 0; effects_ID < 9; effects_ID++)
     {
         displayEffect(entity->effects[effects_ID]);
     }
     printf("ITEMS: \n______\n");
 
-    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
     {
         displayItem(entity->items[itemsIdx]);
     }
@@ -126,11 +144,11 @@ void displayEntity(entity_t *entity)
 
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 {
-    for (size_t launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
+    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
         mergeEffect(launcher, card->launcherEffects[launcherEffectID]);
     }
-    for (size_t receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
     {
         mergeEffect(receiver, card->receiverEffects[receiverEffectID]);
     }
@@ -138,13 +156,13 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 
 void applyAllItemsEffect(entity_t *entity)
 {
-    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
     {
-        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].launcherEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].launcherEffectsSize; itemEffectIdx++)
         {
             mergeEffect(entity, entity->items[itemsIdx].launcherEffects[itemEffectIdx]);
         }
-        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].receiverEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].receiverEffectsSize; itemEffectIdx++)
         {
             mergeEffect(entity, entity->items[itemsIdx].receiverEffects[itemEffectIdx]);
         }
@@ -153,9 +171,9 @@ void applyAllItemsEffect(entity_t *entity)
 
 void wipeAllEffect(entity_t *entity)
 {
-    for (size_t effectIdx = 0; effectIdx < 9; effectIdx++)
+    for (int effectIdx = 0; effectIdx < 9; effectIdx++)
     {
-        entity->effects[effectIdx].value = 0;
+        entity->effects[effectIdx]->value = 0;
     }
 }
 
@@ -163,31 +181,31 @@ void wipeAllEffect(entity_t *entity)
 
 //      GETTER
 
-stat_t *getStat(entity_t *entity, stat_ID statId)
+stat_t *getEntityStat(entity_t *entity, stat_ID statId)
 {
-    return &entity->stats[statId - 1];
+    return entity->stats[statId - 1];
 }
 
-effect_t *getEffect(entity_t *entity, effect_ID id)
+effect_t *getEntityEffect(entity_t *entity, effect_ID id)
 {
     if (id < 3)
     {
         return NULL;
     }
-    return &entity->effects[id - 4];
+    return entity->effects[id - 4];
 }
 //      SETTER
-void mergeEffect(entity_t *entity, effect_t effect)
+void mergeEffect(entity_t *entity, effect_t *effect)
 {
-    if (effect.id < 4)
+    if (effect->id < 4)
     {
-        stat_t *currentStat = getStat(entity, effect.id + 1);
-        updateStat(currentStat, effect.value, CURR, PERCISTANT);
+        stat_t *currentStat = getEntityStat(entity, effect->id + 1);
+        updateStat(currentStat, effect->value, false);
     }
     else
     {
-        effect_t *currentEffect = getEffect(entity, effect.id);
-        currentEffect->value += effect.value;
+        effect_t *currentEffect = getEntityEffect(entity, effect->id);
+        currentEffect->value += effect->value;
     }
 }
 
@@ -198,16 +216,16 @@ void testGetterSetter(entity_t *testCar)
     // GETTER TESTS
 
     printf("TEST GETTER/SETTER\n==================\n");
-    printf("TEST getStat\n____________");
-    stat_t *testStatGetter = getStat(testCar, DODGE);
-    displayStat(*testStatGetter);
+    printf("TEST getEntityStat\n____________");
+    stat_t *testStatGetter = getEntityStat(testCar, DODGE);
+    displayStat(testStatGetter);
 
-    printf("TEST getEffect\n______________");
-    effect_t *testEffectGetter = getEffect(testCar, FIRE_E);
-    displayEffect(*testEffectGetter);
+    printf("TEST getEntityEffect\n______________");
+    effect_t *testEffectGetter = getEntityEffect(testCar, FIRE_E);
+    displayEffect(testEffectGetter);
 
     effect_t *testEffect = initEffect(STR_E, 10);
-    mergeEffect(testCar, *testEffect);
+    mergeEffect(testCar, testEffect);
 }
 
 void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
@@ -228,6 +246,9 @@ void testEntity()
     entity_t *testCar = importCaracterFromId(TEST_CAR);
     // entity_t *testEnemy = getRandomMiniBoss();
     displayEntity(testCar);
+    // entity_t *testCar2 = importCaracterFromId(PETER);
+    // // entity_t *testEnemy = getRandomMiniBoss();
+    // displayEntity(testCar2);
     // applyAllItemsEffect(testCar);
     // displayEntity(testCar);
     // wipeAllEffect(testCar);

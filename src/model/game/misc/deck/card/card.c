@@ -12,9 +12,9 @@ card_t *createCard(
     int energyCost,
     boolean isAbyssal,
     int launcherEffects[][2],
-    size_t launcherEffectsSize,
+    int launcherEffectsSize,
     int receiverEffects[][2],
-    size_t receiverEffectsSize,
+    int receiverEffectsSize,
     char *technic,
     char *description)
 {
@@ -24,9 +24,9 @@ card_t *createCard(
     res->manaCost = manaCost;
     res->energyCost = energyCost;
     res->isAbyssal = isAbyssal;
-    res->launcherEffects = initEffectFromArray(launcherEffects, launcherEffectsSize);
+    res->launcherEffects = initEffectFromArray(launcherEffectsSize, launcherEffects);
     res->launcherEffectsSize = launcherEffectsSize;
-    res->receiverEffects = initEffectFromArray(receiverEffects, receiverEffectsSize);
+    res->receiverEffects = initEffectFromArray(receiverEffectsSize, receiverEffects);
     res->receiverEffectsSize = receiverEffectsSize;
     res->technic = technic;
     res->description = description;
@@ -59,12 +59,12 @@ card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId)
 void displayCard(card_t card)
 {
     printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", card.name);
-    for (size_t launcherEffectID = 0; launcherEffectID < card.launcherEffectsSize; launcherEffectID++)
+    for (int launcherEffectID = 0; launcherEffectID < card.launcherEffectsSize; launcherEffectID++)
     {
         displayEffect(card.launcherEffects[launcherEffectID]);
     }
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (size_t receiverEffectID = 0; receiverEffectID < card.receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < card.receiverEffectsSize; receiverEffectID++)
     {
         displayEffect(card.receiverEffects[receiverEffectID]);
     }

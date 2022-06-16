@@ -12,33 +12,27 @@ typedef enum
     ENERGY,
 } stat_ID;
 
-typedef enum
-{
-    PERCISTANT,
-    TEMPORARY,
-} statTemporalRange;
-
-typedef enum
-{
-    CURR,
-    MAX,
-} statCurrOrMax;
-
 typedef struct
 {
     stat_ID id;
-    int **stat_bar;
+    int current;
+    int max;
 } stat_t;
 
 // CONSTRUCTOR
 stat_t *initStat(stat_ID id, int max, boolean currZero); // If curr is null curr = max
-stat_t *initEntityStatFromArray(int stats[][2]);
+stat_t **initEntityStatFromArray(int stats[4][2]);
+
+// DECONSTRUCTOR
+void freeStat(stat_t *statPt);
+void freeEntityStatArray(stat_t **entityStatArray);
 
 // DISPLAY FUNCTION
-void displayStat(stat_t stat);
+void displayStat(stat_t *stat);
+void displayEntityStatArray(stat_t **entityStatArray);
 
 // METHOD
-void updateStat(stat_t *stat, int value, statCurrOrMax currOrMax, statTemporalRange temporalRange);
+void updateStat(stat_t *stat, int value, boolean isMax);
 
 // TEST FUNCTION
 void testStat();

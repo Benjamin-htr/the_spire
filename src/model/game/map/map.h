@@ -35,5 +35,5 @@ void map_print(map *m);
 // map *putToRight(map *arbre, double value);
 // void _localSort(map *arbre, double value);
 // void _sortTree(map *arbre, map *sorted_arbre);
-// map *initTreeWithRandom(size_t randRange);
+// map *initTreeWithRandom(int randRange);
 #endif

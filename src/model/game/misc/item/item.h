@@ -17,10 +17,10 @@ typedef enum
 typedef struct
 {
     char *name;
-    effect_t *launcherEffects;
-    size_t launcherEffectsSize;
-    effect_t *receiverEffects;
-    size_t receiverEffectsSize;
+    effect_t **launcherEffects;
+    int launcherEffectsSize;
+    effect_t **receiverEffects;
+    int receiverEffectsSize;
     char *technic;
     char *description;
 } item_t;
@@ -29,19 +29,19 @@ typedef struct
 {
     char *name;
     int launcherEffects[6][2];
-    size_t launcherEffectsSize;
+    int launcherEffectsSize;
     int receiverEffects[6][2];
-    size_t receiverEffectsSize;
+    int receiverEffectsSize;
     char *technic;
     char *description;
 } item_import;
 
 item_t *createItem(
     char *name,
-    int launcherEffects[6][2],
-    size_t launcherEffectsSize,
-    int receiverEffects[6][2],
-    size_t receiverEffectsSize,
+    int launcherEffectsSize,
+    int launcherEffects[launcherEffectsSize][2],
+    int receiverEffectsSize,
+    int receiverEffects[receiverEffectsSize][2],
     char *technic,
     char *description);
 

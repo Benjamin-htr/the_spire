@@ -47,8 +47,8 @@ typedef struct
     char *name;
     deck_t *cardDeck;
     item_t *items;
-    effect_t *effects;
-    stat_t *stats;
+    effect_t **effects;
+    stat_t **stats;
     board_t *board;
 } entity_t;
 
@@ -100,11 +100,11 @@ void displayEntity(entity_t *entity);
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
 
 // GETTER / SETTER
-stat_t *getStat(entity_t *entity, stat_ID statId);
-effect_t *getEffect(entity_t *entity, effect_ID id);
+stat_t *getEntityStat(entity_t *entity, stat_ID statId);
+effect_t *getEntityEffect(entity_t *entity, effect_ID id);
 
 //      SETTER
-void mergeEffect(entity_t *entity, effect_t effect);
+void mergeEffect(entity_t *entity, effect_t *effect);
 
 // TEST FUNCTION
 void testEntity();

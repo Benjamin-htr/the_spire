@@ -3,21 +3,39 @@
 
 item_t *createItem(
     char *name,
-    int launcherEffects[6][2],
-    size_t launcherEffectsSize,
-    int receiverEffects[6][2],
-    size_t receiverEffectsSize,
+    int launcherEffectsSize,
+    int launcherEffects[launcherEffectsSize][2],
+    int receiverEffectsSize,
+    int receiverEffects[receiverEffectsSize][2],
     char *technic,
     char *description)
 {
+    printf("\n test init item 1");
+    fflush(stdout);
     item_t *res = malloc(sizeof(item_t));
+    printf("\n test init item 2");
+    fflush(stdout);
     res->name = name;
-    res->launcherEffects = initEffectFromArray(launcherEffects, launcherEffectsSize);
+    printf("\n test init item 3");
+    fflush(stdout);
+    res->launcherEffects = initEffectFromArray(launcherEffectsSize, launcherEffects);
+    printf("\n test init item 4");
+    fflush(stdout);
     res->launcherEffectsSize = launcherEffectsSize;
-    res->receiverEffects = initEffectFromArray(receiverEffects, receiverEffectsSize);
+    printf("\n test init item 5");
+    fflush(stdout);
+    res->receiverEffects = initEffectFromArray(receiverEffectsSize, receiverEffects);
+    printf("\n test init item 6");
+    fflush(stdout);
     res->receiverEffectsSize = receiverEffectsSize;
+    printf("\n test init item 7");
+    fflush(stdout);
     res->technic = technic;
+    printf("\n test init item 8");
+    fflush(stdout);
     res->description = description;
+    printf("\n test init item 9");
+    fflush(stdout);
 
     return res;
 }
@@ -26,10 +44,10 @@ item_t *importItem(item_import itemImport)
 {
     return createItem(
         itemImport.name,
-        itemImport.launcherEffects,
         itemImport.launcherEffectsSize,
-        itemImport.receiverEffects,
+        itemImport.launcherEffects,
         itemImport.receiverEffectsSize,
+        itemImport.receiverEffects,
         itemImport.technic,
         itemImport.description);
 }
@@ -41,14 +59,24 @@ item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
 
 item_t *importItemFromIdArray(int itemsId[], int itemLength)
 {
+    printf("\n test");
+    fflush(stdout);
     item_t *res = calloc(5, sizeof(item_t *));
+    printf("\n test");
+    fflush(stdout);
     int item_ID;
+    printf("\n test");
+    fflush(stdout);
     for (item_ID = 0; item_ID < itemLength; item_ID++)
     {
+        printf("\n test loop 1");
+        fflush(stdout);
         res[item_ID] = *importItemFromId(itemsId[item_ID]);
     };
     for (; item_ID < 5; item_ID++)
     {
+        printf("\n test loop 1");
+        fflush(stdout);
         res[item_ID] = *importItemFromId(NONE_ITEM);
     };
     return res;
@@ -59,12 +87,12 @@ item_t *importItemFromIdArray(int itemsId[], int itemLength)
 void displayItem(item_t item)
 {
     printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", item.name);
-    for (size_t launcherEffectID = 0; launcherEffectID < item.launcherEffectsSize; launcherEffectID++)
+    for (int launcherEffectID = 0; launcherEffectID < item.launcherEffectsSize; launcherEffectID++)
     {
         displayEffect(item.launcherEffects[launcherEffectID]);
     }
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (size_t receiverEffectID = 0; receiverEffectID < item.receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < item.receiverEffectsSize; receiverEffectID++)
     {
         displayEffect(item.receiverEffects[receiverEffectID]);
     }
@@ -75,7 +103,7 @@ void displayItem(item_t item)
 void testItem()
 {
     item_t *testItem = importItemFromIdArray((int[]){NONE_ITEM, WEAPON, ARMOR}, 3);
-    for (size_t i = 0; i < 5; i++)
+    for (int i = 0; i < 5; i++)
     {
         displayItem(testItem[i]);
     }

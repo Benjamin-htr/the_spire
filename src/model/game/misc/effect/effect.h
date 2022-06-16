@@ -28,11 +28,19 @@ typedef struct
 
 // CONSTRUCTOR
 effect_t *initEffect(effect_ID id, int value);
-effect_t *initEffectBar();
-effect_t *initEffectFromArray(int effects[][2], size_t size);
+effect_t **initEffectFromArray(int size, int effects[size][2]);
+effect_t **initEntityEffectArray();
+
+// DECONSTRUCTOR
+
+void freeEffect(effect_t *effect);
+void freeEffectArray(effect_t **effectArray, int size);
+void freeEntityEffectArray(effect_t **effectArray);
 
 // DISPLAY FUNCTION
-void displayEffect(effect_t effect);
+void displayEffect(effect_t *effect);
+void displayEffectArray(effect_t **effectArray, int size);
+void displayEntityEffectArray(effect_t **effectArray);
 
 // TEST FUNCTION
 void testEffect();

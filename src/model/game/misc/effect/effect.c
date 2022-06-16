@@ -33,10 +33,18 @@ effect_t *initEffect(effect_ID id, int value)
 // used in entity
 effect_t *initEffectBar()
 {
-    effect_t *res = calloc(5, sizeof(effect_t *));
+     printf("init effect bar \n");
+    fflush(stdout);
+    effect_t *res = malloc(sizeof(effect_t *));
+    printf("calloc init effect bar \n");
+    fflush(stdout);
     for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
     {
+            printf("before init effet call\n");
+    fflush(stdout);
         res[effects_ID] = *initEffect(effects_ID + 4, 0);
+            printf("after init effectcall \n");
+    fflush(stdout);
     };
     return res;
 }

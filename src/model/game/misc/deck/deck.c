@@ -6,7 +6,7 @@
 
 deck_t *createDeck(card_t *myCard)
 {
-    deck_t *res = malloc(sizeof(deck_t));
+    deck_t *res = malloc(sizeof(deck_t) *5);
     res->next = NULL;
     res->data = myCard;
     return res;
@@ -17,35 +17,78 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
 // 2nd Param is just the size of the array
 {
     deck_t *res = createDeck(NULL);
+    printf("ON ARRIVE A CREER LE DECK DE MORT \n");
+    fflush(stdout);
     for (int cardIdx = 0; cardIdx < diffCardNumber; cardIdx++)
     {
         for (int cardExemplar = 0; cardExemplar < cardIds[cardIdx][1]; cardExemplar++)
         {
-            addCard(res, importCardFromId(cardIds[cardIdx][0]));
+            card_t * card = importCardFromId(cardIds[cardIdx][0]);
+            printf("CREATION DE LA CARTE MARCHE");
+            fflush(stdout);
+            addCard(res, card);
+            printf("LE ADD CARD MARCHE \n");
+            fflush(stdout);
         }
     }
+    printf("LE ADD CARD MARCHE A LA FIN\n");
+            fflush(stdout);
     return res;
 }
 
 void addCard(deck_t *deck, card_t *card)
 {
+    printf("add CARD CALLED \n");
+    fflush(stdout);
+    if (deck == NULL)
+        {
+            printf("DECK IS NULL \n");
+            fflush(stdout);
+            deck = createDeck(card);
+            return;
+    }
     if (deck->data == NULL)
     {
+         printf("DATAK IS NULL \n");
+    fflush(stdout);
         deck->data = card;
     }
     else
     {
-        if (deck == NULL)
+         if (deck == NULL)
         {
+            printf("DECK IS NULL, ON VA RETURN \n");
+            fflush(stdout);
             deck = createDeck(card);
             return;
-        }
-        while (deck->next != NULL)
+           }
+        
+        while (deck !=NULL && deck->next != NULL)
         {
+             printf("On rentre dans le putain de whileL \n");
+            fflush(stdout);
             deck = deck->next;
+            printf(" DECK = DECK NEXT FAIT BUGUER ? IMPOSSIBLE MEC\n");
+            fflush(stdout);
+            if(deck ==NULL){
+                 printf("CEC HIEN DE DECK EST NULLn \n");
+                  fflush(stdout); 
+                  deck->next = NULL;
+                  printf("LA CA VA CRASH CHIEN \n");
+                  fflush(stdout);
+            }
+            displayDeck(deck);
+                  fflush(stdout);
+              printf("CEC HIEN DE DECK EST NULLn 45 \n");
+                  fflush(stdout); 
+                  
         }
+        printf("SORTIE DU WHILE\n");
+        fflush(stdout);
         deck->next = createDeck(card);
     }
+     printf("SORTIE DE ADD CARD \n");
+    fflush(stdout);
 }
 
 deck_t *removeFirstCard(deck_t *deck)
@@ -99,7 +142,7 @@ void removeCard(deck_t **deck, char *cardName){
                 if(strcmp(myCard->name,cardName)==0){
                     tmp=current->next;
                     current->next = current->next->next;
-                    free(tmp);
+                 //   free(tmp);
                     break;
                 }
                 else {

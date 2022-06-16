@@ -14,12 +14,24 @@ entity_t *initEntity(
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
+     printf("INIT ENTITY \n ");
+    fflush(stdout);
     entity_t *res = malloc(sizeof(entity_t));
+     printf("malloc fait \n");
+    fflush(stdout);
     res->name = name;
     res->stats = initEntityStatFromArray(stats);
+     printf("init entity stat from arry work \n");
+    fflush(stdout);
     res->effects = initEffectBar();
+     printf("importCEffetBar work( 1  \n");
+    fflush(stdout);
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
+     printf("create dek ok  \n");
+    fflush(stdout);
     res->items = importItemFromIdArray(items, itemslength);
+     printf("importItemFroMidArray \n");
+    fflush(stdout);
     return res;
 }
 
@@ -36,6 +48,8 @@ entity_t *importCaracter(entity_import entitySkel)
 
 entity_t *importCaracterFromId(CARACTER_ID id)
 {
+    printf("importCaracterFromId( 1 ");
+    fflush(stdout);
     return importCaracter(CARATER_ENCYCLOPEDIA[id]);
 }
 
@@ -226,8 +240,15 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 void testEntity()
 {
     entity_t *testCar = importCaracterFromId(TEST_CAR);
+    entity_t *testEntity2 = importCaracterFromId(PETER);
     // entity_t *testEnemy = getRandomMiniBoss();
+    
+    printf("on arrive A LA FIN \n");
+    fflush(stdout);
     displayEntity(testCar);
+     printf("display 1 marche \n");
+    fflush(stdout);
+    displayEntity(testEntity2);
     // applyAllItemsEffect(testCar);
     // displayEntity(testCar);
     // wipeAllEffect(testCar);

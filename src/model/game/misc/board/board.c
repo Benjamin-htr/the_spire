@@ -15,12 +15,12 @@ board_t *createBoard(deck_t *playerDeck)
 }
 
 int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew)
-{   // returns number of cards drawed,
+{ // returns number of cards drawed,
     // second parameter is the number of cards drew this turn*
     while (nbCardsDrew < 5 && myBoard->cardDeck != NULL)
     {
         card_t *cardToDraw = myBoard->cardDeck->data;
-        removeFirstCard(myBoard->cardDeck);
+        removeFirstCard(&(myBoard->cardDeck));
         myBoard->cardDeck = myBoard->cardDeck->next;
         addCard(myBoard->hand, cardToDraw);
         nbCardsDrew++;
@@ -31,11 +31,11 @@ int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew)
 deck_t *putCardsFromOnePlaceToAnother(deck_t *firstPlace, deck_t *secondPlace)
 { // returns the firstPlace, which is empty.
     // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
-    firstPlace = shuffleDeck(firstPlace);
+    shuffleDeck(&firstPlace);
     while (firstPlace != NULL && firstPlace->data != NULL)
     {
         card_t *cardToDraw = firstPlace->data;
-        firstPlace = removeFirstCard(firstPlace);
+        removeFirstCard(&(firstPlace));
         addCard(secondPlace, cardToDraw);
     }
     return firstPlace;
@@ -67,7 +67,7 @@ void moveCardsFromHand(board_t *myBoard)
     while (hand != NULL && hand->data != NULL)
     {
         card_t *cardToRemove = hand->data;
-        hand = removeFirstCard(hand);
+        removeFirstCard(&(hand));
         if (cardToRemove->isAbyssal)
         {
             addCard(myBoard->abyss, cardToRemove);
@@ -83,7 +83,7 @@ void moveCardsFromHand(board_t *myBoard)
 deck_t *getRandomCardFromHand(board_t *board)
 {
 
-    int listSize = size(board->hand);
+    int listSize = getDeckSize(board->hand);
     return getElementFromDeckAtIndex(rand() % listSize, board->hand);
 }
 

@@ -7,7 +7,8 @@
 void testFunction()
 {
     // testStat();
-    testEffect();
+    // testEffect();
+    testDeck();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
     // testPlace();
     // printf("\n==============================\n\tTEST DE MAP\n==============================\n");

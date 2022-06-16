@@ -11,8 +11,8 @@ combat_t *startCombat(entity_t *caracter, entity_t *enemy)
     combat->caracterTurn = 1;
     combat->caracter->board = createBoard(combat->caracter->cardDeck);
     combat->enemy->board = createBoard(combat->enemy->cardDeck);
-    combat->caracter->board->cardDeck = shuffleDeck(combat->caracter->board->cardDeck);
-    combat->enemy->board->cardDeck = shuffleDeck(combat->enemy->board->cardDeck);
+    shuffleDeck(&combat->caracter->board->cardDeck);
+    shuffleDeck(&combat->enemy->board->cardDeck);
     return combat;
 }
 
@@ -62,7 +62,7 @@ void playCards(combat_t *combat)
         boardToCheck = combat->enemy->board;
     }
     card_t *card;
-    while (size(boardToCheck->hand) > 0)
+    while (getDeckSize(boardToCheck->hand) > 0)
     { // tant que le tour n'est pas fini
         // (pour l'instant on considère qu'un tour est fini quand il n'y a plus de cartes)
         if (combat->caracterTurn == 1)
@@ -84,8 +84,8 @@ void playCards(combat_t *combat)
 int getChoosenCardId(deck_t *hand)
 {
 
-    hand->data = hand->data;    // pour ce chien de warning
-    return rand() % size(hand); // pour l'instant on prend juste une random blc
+    hand->data = hand->data;           // pour ce chien de warning
+    return rand() % getDeckSize(hand); // pour l'instant on prend juste une random blc
 }
 
 // int getChoosenCardIdGUI(deck_t* hand){

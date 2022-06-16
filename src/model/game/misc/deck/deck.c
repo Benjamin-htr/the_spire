@@ -12,6 +12,24 @@ deck_t *createDeck(card_t *myCard)
     return res;
 }
 
+void freeDeck(deck_t *deck)
+{
+    free(deck);
+}
+
+void freeDeckList(deck_t *deckList)
+{
+    deck_t *toFree = deckList;
+    deck_t *next;
+    while (toFree != NULL)
+    {
+        next = toFree->next;
+        // TODO FREE CARD
+        freeDeck(toFree);
+        toFree = next;
+    }
+}
+
 deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
 // first int is the card id 2nd one is the number of card
 // 2nd Param is just the size of the array
@@ -25,39 +43,6 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
         }
     }
     return res;
-}
-
-void addCard(deck_t *deck, card_t *card)
-{
-    if (deck->data == NULL)
-    {
-        deck->data = card;
-    }
-    else
-    {
-        if (deck == NULL)
-        {
-            deck = createDeck(card);
-            return;
-        }
-        while (deck->next != NULL)
-        {
-            deck = deck->next;
-        }
-        deck->next = createDeck(card);
-    }
-}
-
-deck_t *removeFirstCard(deck_t *deck)
-{
-    if (deck == NULL)
-        return createDeck(NULL);
-    deck = deck->next;
-    if (deck == NULL)
-    {
-        deck = createDeck(NULL);
-    }
-    return deck;
 }
 
 int getPositionOfCard(deck_t *deck, char *cardName)
@@ -76,10 +61,79 @@ int getPositionOfCard(deck_t *deck, char *cardName)
     return -1;
 }
 
-void removeCard(deck_t **deck, char *cardName)
+void addCard(deck_t *deck, card_t *card)
+{
+    if (deck == NULL)
+    {
+        deck = createDeck(card);
+        return;
+    }
+    else
+    {
+        while (deck->next != NULL && deck->data != NULL)
+        {
+            deck = deck->next;
+        }
+        if (deck->data == NULL)
+        {
+            deck->data = card;
+            return;
+        }
+        deck->next = createDeck(card);
+    }
+}
+
+card_t *removeFirstCard(deck_t **deck)
+{
+    if (getDeckSize(*deck) > 0)
+    {
+        deck_t *tmp = *deck;
+        card_t *cardToReturn = tmp->data;
+        *deck = (*deck)->next;
+        free(tmp);
+        return cardToReturn;
+    }
+    return NULL;
+    // if (deck == NULL)
+    //     return createDeck(NULL);
+    // deck = deck->next;
+    // if (deck == NULL)
+    // {
+    //     deck = createDeck(NULL);
+    // }
+    // return deck;
+}
+
+card_t *removeCardatIndex(deck_t **deck, int cardIdx)
+{
+    if (cardIdx == 0)
+    {
+        return removeFirstCard(deck);
+    }
+    else
+    {
+        deck_t *current = *deck;
+        int incrementor = 1;
+        while (current->next != NULL)
+        {
+            if (incrementor == cardIdx)
+            {
+                deck_t *tmp = current->next;
+                card_t *cardToReturn = tmp->data;
+                current->next = current->next->next;
+                free(tmp);
+                return cardToReturn;
+            }
+            incrementor++;
+            current = current->next;
+        }
+    }
+    return NULL;
+}
+
+card_t *removeCard(deck_t **deck, char *cardName)
 {
     int pos = getPositionOfCard(*deck, cardName);
-    deck_t *tmp;
     if (pos == -1)
     {
         printf("La carte n'est pas dans le deck \n");
@@ -87,46 +141,15 @@ void removeCard(deck_t **deck, char *cardName)
     }
     else
     {
-        if (pos == 0)
-        {
-            if (size(*deck) > 0)
-            {
-                tmp = *deck;
-                *deck = (*deck)->next;
-                free(tmp);
-                if (*deck == NULL)
-                {
-                    *deck = createDeck(NULL);
-                }
-                return;
-            }
-        }
-        else
-        {
-            deck_t *current = *deck;
-            while (current->next != NULL)
-            {
-                card_t *myCard = current->next->data;
-                if (strcmp(myCard->name, cardName) == 0)
-                {
-                    tmp = current->next;
-                    current->next = current->next->next;
-                    free(tmp);
-                    break;
-                }
-                else
-                {
-                    current = current->next;
-                }
-            }
-        }
+        return removeCardatIndex(deck, pos);
     }
+    return NULL;
 }
 
 card_t *draw(deck_t *deck)
 {
     card_t *res = deck->data;
-    deck = deck->next;
+    removeFirstCard(&deck);
     return res;
 }
 
@@ -145,7 +168,7 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck)
     return deck;
 }
 
-int size(deck_t *deck)
+int getDeckSize(deck_t *deck)
 {
     int res = 0;
     while (deck != NULL && deck->data != NULL)
@@ -158,65 +181,79 @@ int size(deck_t *deck)
 
 void swapElements(deck_t *deck, int n, int m)
 {
-    if (n > 0 && m > 0)
+    deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
+    deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
+    deck_t *tmp;
+    if (myDeckAtM->next != NULL && myDeckAtN->next != NULL)
     {
-        deck_t *myDeckBeforeN = getElementFromDeckAtIndex(n - 1, deck);
-        deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
-        deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
-        deck_t *deckAfterM = getElementFromDeckAtIndex(m + 1, deck);
-        deck_t *deckAfterN = getElementFromDeckAtIndex(n + 1, deck);
-        deck_t *myDeckBeforeM = getElementFromDeckAtIndex(m - 1, deck);
-        myDeckBeforeN->next = myDeckAtM;
-        myDeckAtM->next = deckAfterN;
-        myDeckBeforeM->next = myDeckAtN;
-        myDeckAtN->next = deckAfterM;
+        // on remplace les befores
+        tmp = myDeckAtM->next;
+        myDeckAtM->next = myDeckAtN->next;
+        myDeckAtN->next = tmp;
+        // on remplace les nexts
+        tmp = myDeckAtM->next->next;
+        myDeckAtM->next->next = myDeckAtN->next->next;
+        myDeckAtN->next->next = tmp;
+        // deck_t *myDeckBeforeN = getElementFromDeckAtIndex(n - 1, deck);
+        // deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
+        // deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
+        // deck_t *deckAfterM = getElementFromDeckAtIndex(m + 1, deck);
+        // deck_t *deckAfterN = getElementFromDeckAtIndex(n + 1, deck);
+        // deck_t *myDeckBeforeM = getElementFromDeckAtIndex(m - 1, deck);
+        // myDeckBeforeN->next = myDeckAtM;
+        // myDeckAtM->next = deckAfterN;
+        // myDeckBeforeM->next = myDeckAtN;
+        // myDeckAtN->next = deckAfterM;
     }
 }
 
-deck_t *shuffleDeck(deck_t *deck)
+void shuffleDeck(deck_t **deck)
 {
-    displayDeck(deck);
-    fflush(stdout);
-    int listSize = size(deck);
+    int listSize = getDeckSize(*deck);
 
-    int number1;
-    int number2;
+    int idDeck1;
+    int idDeck2;
     for (int i = 0; i < listSize * 10; i++)
     {
-        number1 = rand() % listSize;
-        number2 = rand() % listSize;
-        if (number1 != number2 && (number2 - number1 > 1 || number1 - number2 > 1))
+        idDeck1 = rand() % listSize;
+        idDeck2 = rand() % listSize;
+        if (idDeck1 != idDeck2 && (idDeck2 - idDeck1 > 1 || idDeck1 - idDeck2 > 1))
         {
-            swapElements(deck, number1, number2);
+            swapElements(*deck, idDeck1, idDeck2);
         }
     }
     // ici on swap le premier element avec l'élement du milieu
-    deck_t *middleElement = getElementFromDeckAtIndex((int)(listSize / 2), deck);
-    deck_t *beforeMiddleElement = getElementFromDeckAtIndex((int)(listSize / 2) - 1, deck);
-    deck_t *afterMiddleElement = getElementFromDeckAtIndex((int)(listSize / 2) + 1, deck);
-    middleElement->next = deck->next;
-    beforeMiddleElement->next = deck;
-    deck->next = afterMiddleElement;
-    deck = middleElement;
-    return deck;
+    deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 3)) + 1, *deck);
+    deck_t *middle = beforeMiddleElement->next;
+    deck_t *firstNext = (*deck)->next;
+    (*deck)->next = middle->next;
+    middle->next = firstNext;
+    beforeMiddleElement->next = *deck;
+    // middleElement->next = deck;
+    // beforeMiddleElement->next = deck;
+    // deck->next = afterMiddleElement;
+    // deck = middleElement;
+    *deck = middle;
 }
 
 void testDeck()
 {
-    // deck_t *myDeck = createDeck(&CARD_DODGE);
-    // addCard(myDeck, &PULVERIZE);
-    // addCard(myDeck, &BLOUNI_JAB);
-    // addCard(myDeck, &ACCELERATION);
-    // addCard(myDeck, &DEFENSE);
-    // addCard(myDeck, &BLOUNI_KICK);
-    // myDeck = shuffleDeck(myDeck);
-    // displayDeck(myDeck);
-    deck_t *myDeck = createDeckFromArray((int[][2]){{DODGE_A, 1}, {PULVERIZE, 2}, {DEFENSE, 3}}, 3);
+
+    printf("\n==============================\n\tTEST DE DECK\n==============================\n");
+    deck_t *myDeck = createDeckFromArray((int[][2]){{DODGE_A, 4}, {PULVERIZE, 3}, {DEFENSE, 3}, {JAWURM2_HAIRPULLING, 3}, {SPECTRUM, 3}}, 5);
     displayDeck(myDeck);
+    removeFirstCard(&myDeck);
+    displayDeck(myDeck);
+    removeCardatIndex(&myDeck, 3);
+    displayDeck(myDeck);
+    shuffleDeck(&myDeck);
+    displayDeck(myDeck);
+    freeDeckList(myDeck);
 }
 
 void displayDeck(deck_t *myDeck)
 {
+    printf("\n=======================\n");
     int i = 0;
     if (myDeck == NULL || myDeck->data == NULL)
     {
@@ -229,4 +266,5 @@ void displayDeck(deck_t *myDeck)
         myDeck = myDeck->next;
         i++;
     }
+    printf("\n=======================\n");
 }

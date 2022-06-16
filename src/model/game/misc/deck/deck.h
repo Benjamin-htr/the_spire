@@ -14,21 +14,21 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber);
 
 void addCard(deck_t *deck, card_t *card);
 
-deck_t *removeFirstCard(deck_t *myDeck);
+card_t *removeFirstCard(deck_t **deck);
+card_t *removeCard(deck_t **deck, char *cardName);
+card_t *removeCardatIndex(deck_t **deck, int cardIdx);
 
 card_t *draw(deck_t *deck);
 
-deck_t *shuffleDeck(deck_t *deck);
+void shuffleDeck(deck_t **deck);
 
 deck_t *getElementFromDeckAtIndex(int idx, deck_t *myDeck);
 
-int size(deck_t *myDeck);
+int getDeckSize(deck_t *myDeck);
 
 void swapElements(deck_t *myDeck, int n, int m);
 
 void displayDeck(deck_t *myDeck);
-
-void removeCard(deck_t **deck, char *cardName);
 
 void testDeck();
 #endif

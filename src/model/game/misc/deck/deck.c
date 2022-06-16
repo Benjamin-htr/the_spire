@@ -17,7 +17,7 @@ void freeDeck(deck_t *deck)
     free(deck);
 }
 
-void freeDeckList(deck_t *deckList)
+void freeDeckListAndCard(deck_t *deckList)
 {
     deck_t *toFree = deckList;
     deck_t *next;
@@ -25,6 +25,7 @@ void freeDeckList(deck_t *deckList)
     {
         next = toFree->next;
         // TODO FREE CARD
+        freeCard(toFree->data);
         freeDeck(toFree);
         toFree = next;
     }
@@ -248,7 +249,7 @@ void testDeck()
     displayDeck(myDeck);
     shuffleDeck(&myDeck);
     displayDeck(myDeck);
-    freeDeckList(myDeck);
+    freeDeckListAndCard(myDeck);
 }
 
 void displayDeck(deck_t *myDeck)

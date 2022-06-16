@@ -8,13 +8,12 @@ void testFunction()
 {
     // testStat();
     // testEffect();
-    testDeck();
+    // testDeck();
+    testCard();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
     // testPlace();
     // printf("\n==============================\n\tTEST DE MAP\n==============================\n");
     // testMap();
-    // printf("\n==============================\n\tTEST DE CARD\n==============================\n");
-    // testCard();
     // printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     // testEntity();
     // printf("\n==============================\n\tTEST BOARDY\n==============================\n");

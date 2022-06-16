@@ -33,6 +33,11 @@ card_t *createCard(
     return res;
 }
 
+void freeCard(card_t *card)
+{
+    free(card);
+}
+
 card_t *importCard(card_import cardImport)
 {
     return createCard(
@@ -74,20 +79,10 @@ void displayCard(card_t card)
 
 void testCard()
 {
-    // card_t *test = createCard(
-    //     "Strike",
-    //     BASIC,
-    //     0,
-    //     1,
-    //     false,
-    //     (int[][2]){{STR_E, 6}, {DODGE_E, 10}},
-    //     2,
-    //     (int[][2]){{HP_E, -6}},
-    //     1,
-    //     "Inflige 6 dégats",
-    //     "Attaque de base");
+    printf("\n==============================\n\tTEST DE CARD\n==============================\n");
     card_t *test = importCardFromId(ACCELERATION);
     displayCard(*test);
+    freeCard(test);
 }
 
 card_import CARD_ENCYCLOPEDIA[] = {

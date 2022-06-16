@@ -92,6 +92,9 @@ card_t *createCard(
     char *technic,
     char *description);
 
+// DECONSTRUCTOR
+void freeCard(card_t *card);
+
 card_t *importCard(card_import cardImport);
 card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId);
 

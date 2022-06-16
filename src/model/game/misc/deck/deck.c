@@ -52,7 +52,6 @@ deck_t *removeFirstCard(deck_t *deck)
 {
     if (deck == NULL)
         return createDeck(NULL);
-    deck_t *temp = deck;
     deck = deck->next;
     if(deck ==NULL){
         deck = createDeck(NULL);
@@ -60,37 +59,55 @@ deck_t *removeFirstCard(deck_t *deck)
     return deck;
 }
 
-deck_t *removeCard(deck_t *deck, char *cardName)
-{
-    deck_t *previousElement = NULL;
-    deck_t *origin = deck;
-    int isRemoved = 0;
-    while (deck != NULL)
-    {
-        card_t *card = deck->data;
-        if (strcmp(card->name, cardName) == 0)
-        {
-            if (previousElement == NULL)
-            {
-                deck = removeFirstCard(deck);
-                origin = deck;
-                if(origin==NULL){
-                    origin = createDeck(NULL);
+
+int getPositionOfCard(deck_t *deck, char *cardName){
+    int i =0;
+    while(deck!=NULL && deck->data!=NULL){
+        card_t* card = deck->data;
+        if(strcmp(card->name,cardName)==0){
+            return i;
+        }
+        deck=deck->next;
+        i++;
+    }
+    return -1;
+}
+
+void removeCard(deck_t **deck, char *cardName){
+    int pos = getPositionOfCard(*deck,cardName);
+    deck_t * tmp ;
+    if(pos==-1){
+        printf("La carte n'est pas dans le deck \n");
+        fflush(stdout);
+    }
+    else {
+        if(pos==0){
+            if(size(*deck)>0){
+                tmp = *deck;
+                *deck = (*deck)->next;
+                free(tmp);
+                if(*deck==NULL){
+                    *deck = createDeck(NULL);
                 }
-                return origin;
-            }
-            else
-            {
-                previousElement->next = deck->next;
+                return; 
             }
         }
-        previousElement = deck;
-        deck = deck->next;
-    }
-    if(origin==NULL){
-        origin = createDeck(NULL);
-    }
-    return origin;
+        else {
+            deck_t* current = *deck;
+            while(current->next!=NULL){
+                card_t * myCard =  current->next->data;
+                if(strcmp(myCard->name,cardName)==0){
+                    tmp=current->next;
+                    current->next = current->next->next;
+                    free(tmp);
+                    break;
+                }
+                else {
+                    current = current->next;
+                }
+            }
+        }
+}
 }
 
 card_t *draw(deck_t *deck)
@@ -118,7 +135,7 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck)
 int size(deck_t *deck)
 {
     int res = 0;
-    while (deck != NULL)
+    while (deck != NULL && deck->data!=NULL)
     {
         res++;
         deck = deck->next;

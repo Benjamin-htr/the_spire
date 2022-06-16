@@ -67,15 +67,10 @@ void moveCardsFromHand(board_t * myBoard){ // move all cards from hand to abyss/
     myBoard ->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
 }
 
-card_t * getRandomCardFromHand(board_t* board){
+deck_t * getRandomCardFromHand(board_t* board){
     srand(time(NULL));
     int listSize = size(board->hand);
-    if(board->hand !=NULL){
-       return getElementFromDeckAtIndex(rand() %listSize, board->hand)->data;
-    }
-    else {
-       return NULL;
-    }
+    return getElementFromDeckAtIndex(rand() %listSize, board->hand);
 }
 
 void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
@@ -86,7 +81,7 @@ void moveOneCardFromHand(board_t * board, card_t * cardToRemove){
         if(board->discardPile==NULL){
             board->discardPile = createDeck(NULL);
         }
-        board->hand=removeCard(board->hand,cardToRemove->name);
+        removeCard(&board->hand,cardToRemove->name);
         if(cardToRemove->isAbyssal){
            addCard(board->abyss,cardToRemove);
         }
@@ -152,7 +147,7 @@ void testBoard(){
     printf("Pulverize devrait être ajouté à l'abysse \n");
     printf("Voici l'abysse (il doit y avoir 2 PULVERIZE) : \n");
     displayDeck(gameBoard->abyss);
-    card_t* randomCardFromHand = getRandomCardFromHand(gameBoard);
+    card_t* randomCardFromHand = getRandomCardFromHand(gameBoard)->data;
     printf("Voici une random card de la main : \n");
     displayCard(*randomCardFromHand);
 }

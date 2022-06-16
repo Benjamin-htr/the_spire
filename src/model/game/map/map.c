@@ -52,48 +52,69 @@ int* playable_move(map* m){
     }
 }
 
+boolean* event_place(){
+    boolean *array = malloc(sizeof(boolean)*MAP_HEIGHT-2);
+    for (int i = 0; i < MAP_HEIGHT-2; i++)
+    {
+        array[i] = false;
+    }
+    int random = rand();
+    boolean flag = false;
+    array[4] = true;
+    int j = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        do
+        {
+            if(array[(random%(MAP_HEIGHT-3))] == false){
+                array[(random%(MAP_HEIGHT-3))] = true;
+                flag = true;
+                j ++;
+            } 
+            random = rand();
+        } while (!flag);
+        flag = false;   
+    }
+    for (int i = 0; i < MAP_HEIGHT-2; i++)
+    {
+        printf("boolean = %d\n",array[i]);
+    }
+    
+    return array;
+}
+
 void set_event(map *m){
-    int random_boss = (int) (1+(rand()%4));
-    int random_sanctuary = (int) (1+(rand()%4));
-    printf("\npa %d\n", random_boss);
-    printf("\nyo %d\n", random_sanctuary);
-    for (int i = 0; i < MAP_HEIGHT; i++)
+    boolean *where = event_place();
+    int sanctuary = 2;
+    int boss = 3;
+    int random = rand();
+    for (int i = 1; i < MAP_HEIGHT-1; i++)
     {
         for (int j = 0; j < MAP_WIDTH; j++)
         {
-            if(m->places[i][j].isWhat >= 1 ){
-                if(i < 5 && i == random_boss ){
-                    m->places[i][j].isWhat = 3;
-                    printf("\nrandom_boss : %d\n", random_boss);
-                    random_boss = (int) ((6+(rand()%3)));
-                }else if(i > 5 && i == random_boss){
-                    m->places[i][j].isWhat = 3;
-                    printf("\nrandom_boss : %d\n", random_boss);
-                    random_boss = (int) (((i+1)+(rand()%(MAP_HEIGHT-(i+1)))));
-                    printf("\nrandom_boss : %d\n", random_boss);
-
-                }
-                if(i < 5 && i == random_sanctuary ){
-                    if(m->places[i][j].isWhat == 3){
+            if(m->places[i][j].isWhat == 1){
+                if(where[i-1] == true){
+                    printf("random = %d\n", (random%2));
+                    if((random%2) && sanctuary != 0){
                         m->places[i][j].isWhat = 2;
-                    }else{
-                        m->places[i][j].isWhat = 2;
+                        sanctuary--;
+                    }else if (!(random%2) && boss != 0){
+                        m->places[i][j].isWhat = 3;
+                        boss--;
                     }
-                    printf("\nrandom_sanctuary : %d\n", random_sanctuary);
-                    random_sanctuary = (int) ((6+(rand()%3)));
-                }else if(i > 5 && i == random_sanctuary){
-                    if(m->places[i][j].isWhat == 3){
-                        printf("fhdsqmhg");
-                        m->places[i][j+random_sanctuary%MAP_WIDTH].isWhat = 2;
-                    }else{
-                        m->places[i][j].isWhat = 2;
+                    random = rand();
+                    if(!(random%2) && sanctuary != 0){
+                        random = random+1;
+                    }if((random%2) && boss != 0){
+                        random = random+1;
                     }
-                    printf("\n random_sanctuary : %d\n", random_sanctuary);
                 }
-            }   
+            }
         }
         
     }
+    
+
     
 }
 

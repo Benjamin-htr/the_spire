@@ -10,4 +10,6 @@ typedef struct
 }option;
 
 
+option option_init(char* label, action_t action);
+
 #endif

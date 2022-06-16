@@ -76,10 +76,6 @@ boolean* event_place(){
         } while (!flag);
         flag = false;   
     }
-    for (int i = 0; i < MAP_HEIGHT-2; i++)
-    {
-        printf("boolean = %d\n",array[i]);
-    }
     
     return array;
 }
@@ -213,13 +209,14 @@ void map_print(map *m)
 }
 
 // returns the event of the given tile
-place map_get(map *map, int x, int y)
+int map_get(map *map, int x, int y)
 {
-    return map->places[x][y];
+    return map->places[x][y].isWhat;
 }
 
 void testMap()
 {
+    show_event();
     map *m = map_init();
     map_print(m);
     printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);

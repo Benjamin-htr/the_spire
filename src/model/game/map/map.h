@@ -22,13 +22,15 @@ typedef struct _map
 
 void printtamere(char *chaine);
 position_player position_init(int x, int y);
-place map_get(map *map, int x, int y);
+int map_get(map *map, int x, int y);
+event *get_random_event();
 map *map_init();
 void testMap();
 void move_player(map *m, int y);
 position_player player_position(map *ma);
 boolean check_map(map *m, int y);
 void map_print(map *m);
+
 // map *newTree(double value, map *left, map *right);
 // map *putToLeft(map *arbre, double value);
 // map *putToMiddle(map *arbre, double value);

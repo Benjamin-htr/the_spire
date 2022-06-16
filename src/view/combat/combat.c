@@ -93,7 +93,7 @@ void drawStatBoard()
 
 int GuiCard(Vector2 position, float scaleFactor, int forcedState)
 {
-    card_t *card = importCardFromId(OVERWORK);
+    card_t *card = importCardFromId(ACCELERATION);
     int manaCost = card->manaCost;
     int energyCost = card->energyCost;
     char *title = card->name;
@@ -102,17 +102,12 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
                                                                  : card->rarity == RARE     ? RareCardPatch
                                                                                             : SpecialCardPatch;
 
-    int nbFrames = 2;
     float cardWidth = (float)cardInfo.source.width * scaleFactor;
     float cardHeight = (float)cardInfo.source.height * scaleFactor;
     Rectangle bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
 
     int state = (forcedState >= 0) ? forcedState : 0; // )NORMAL
     bool pressed = false;
-    // Vector2 textSize = MeasureTextEx(font, text, font.baseSize, 1);
-
-    int textPosAdd = 0;
-
     // Update control
     //--------------------------------------------------------------------
     if ((state < 3) && (forcedState < 0))
@@ -126,7 +121,6 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 state = 2;
-                textPosAdd = 10;
             }
             else
                 state = 1; // FOCUSED
@@ -155,10 +149,22 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
     DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
+    // Draw text description :
+    float fontDesc = 0.06333 * cardWidth;
+    Vector2 textDescSize = MeasureTextEx(font, TextFormat("%s", card->description), fontDesc, 1);
+    Vector2 textDescPos = (Vector2){position.x + cardWidth / 2 - (textDescSize.x / 2), position.y + cardHeight * (96 / 156.0f)};
+    DrawTextEx(font, TextFormat("%s", card->description), textDescPos, fontDesc, 1, WHITE);
+
+    // Draw text technique :
+    float fontTech = 0.06333 * cardWidth;
+    Vector2 textTechSize = MeasureTextEx(font, TextFormat("%s", card->technic), fontDesc, 1);
+    Vector2 textTechPos = (Vector2){position.x + cardWidth / 2 - (textTechSize.x / 2), textDescPos.y + textDescSize.y + cardHeight * (5 / 156.0f)};
+    DrawTextEx(font, TextFormat("%s", card->technic), textTechPos, fontTech, 1, WHITE);
+
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};
     float scaleEnergyIcon = 0.65f * scaleFactor;
-    float energyIconWidth = (float)EnergyIcon.width * scaleEnergyIcon;
+    // float energyIconWidth = (float)EnergyIcon.width * scaleEnergyIcon;
     float energyIconHeight = (float)EnergyIcon.height * scaleEnergyIcon;
     float gap = (float)((3.0f / 156.0f) * cardHeight);
     for (int i = 0; i < energyCost; i++)

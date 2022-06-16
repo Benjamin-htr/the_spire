@@ -5,7 +5,7 @@
 #include "./place/place.h"
 #include "map.h"
 
-int MAP_HEIGHT = 10;
+int MAP_HEIGHT = 11;
 int MAP_WIDTH = 4;
 
 position_player position_init(int x, int y)
@@ -53,7 +53,73 @@ int *playable_move(map *m)
     }
 }
 
-map *map_init()
+boolean* event_place(){
+    boolean *array = malloc(sizeof(boolean)*MAP_HEIGHT-2);
+    for (int i = 0; i < MAP_HEIGHT-2; i++)
+    {
+        array[i] = false;
+    }
+    int random = rand();
+    boolean flag = false;
+    array[4] = true;
+    int j = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        do
+        {
+            if(array[(random%(MAP_HEIGHT-3))] == false){
+                array[(random%(MAP_HEIGHT-3))] = true;
+                flag = true;
+                j ++;
+            } 
+            random = rand();
+        } while (!flag);
+        flag = false;   
+    }
+    for (int i = 0; i < MAP_HEIGHT-2; i++)
+    {
+        printf("boolean = %d\n",array[i]);
+    }
+    
+    return array;
+}
+
+void set_event(map *m){
+    boolean *where = event_place();
+    int sanctuary = 2;
+    int boss = 3;
+    int random = rand();
+    for (int i = 1; i < MAP_HEIGHT-1; i++)
+    {
+        for (int j = 0; j < MAP_WIDTH; j++)
+        {
+            if(m->places[i][j].isWhat == 1){
+                if(where[i-1] == true){
+                    printf("random = %d\n", (random%2));
+                    if((random%2) && sanctuary != 0){
+                        m->places[i][j].isWhat = 2;
+                        sanctuary--;
+                    }else if (!(random%2) && boss != 0){
+                        m->places[i][j].isWhat = 3;
+                        boss--;
+                    }
+                    random = rand();
+                    if(!(random%2) && sanctuary != 0){
+                        random = random+1;
+                    }if((random%2) && boss != 0){
+                        random = random+1;
+                    }
+                }
+            }
+        }
+        
+    }
+    
+
+    
+}
+
+map* map_init()
 {
     map *m = malloc(sizeof(map));
     srand(time(NULL));
@@ -71,19 +137,19 @@ map *map_init()
         {
             m->places[i] = calloc(MAP_WIDTH, sizeof(place));
         }
-        random = rand() % 4; // 0, 1, 2, 3
-        for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
+        random =(int) (rand() % MAP_WIDTH);	// 0, 1, 2, 3
+        for (j = 0; j < ((i==0||i==MAP_HEIGHT-1)?1:MAP_WIDTH); j++)
         {
-            if (random == j)
-            {
-                m->places[i][j] = place_init(true, NULL, NULL);
-            }
-            else
-            {
+            if(i == 5){
+                m->places[i][j] = place_init(2, NULL, NULL);
+            }else if (random == j){
+                m->places[i][j] = place_init(1, NULL, NULL);
+            }else{
                 m->places[i][j] = place_init(0, NULL, NULL);
             }
         }
     }
+    set_event(m);
     return m;
 }
 
@@ -138,7 +204,7 @@ void map_print(map *m)
     {
         for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
         {
-            printf("%d", m->places[i][j].isEvent);
+            printf("%d", m->places[i][j].isWhat);
             fflush(stdout);
         }
         printf("\n");

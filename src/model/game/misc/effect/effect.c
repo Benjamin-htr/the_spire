@@ -98,6 +98,7 @@ void displayEffectArray(effect_t **effectArray, int size)
 
 void displayEntityEffectArray(effect_t **effectArray)
 {
+    printf("EFFECTS: \n________\n");
     displayEffectArray(effectArray, 9);
 }
 

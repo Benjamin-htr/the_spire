@@ -14,33 +14,26 @@ entity_t *initEntity(
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
-    printf("\n test 1");
-    fflush(stdout);
     entity_t *res = malloc(sizeof(entity_t));
-    printf("\n test2");
-    fflush(stdout);
     res->name = name;
-    printf("\n test3");
-    fflush(stdout);
     res->stats = initEntityStatFromArray(stats);
-    printf("\n test4");
-    fflush(stdout);
     res->effects = initEntityEffectArray();
-    printf("\n test5");
-    fflush(stdout);
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
-    printf("\n test6");
-    fflush(stdout);
     res->items = importEntityItemFromIdArray(itemslength, items);
-    printf("\n test7");
-    fflush(stdout);
     return res;
+}
+
+void freeEntity(entity_t *entity)
+{
+    freeEntityStatArray(entity->stats);
+    freeEntityEffectArray(entity->effects);
+    freeDeckListAndCard(entity->cardDeck);
+    freeEntityItem(entity->items);
+    free(entity);
 }
 
 entity_t *importCaracter(entity_import entitySkel)
 {
-    printf("\n test");
-    fflush(stdout);
     return initEntity(
         entitySkel.name,
         entitySkel.stats,
@@ -52,8 +45,6 @@ entity_t *importCaracter(entity_import entitySkel)
 
 entity_t *importCaracterFromId(CARACTER_ID id)
 {
-    printf("\n test");
-    fflush(stdout);
     return importCaracter(CARATER_ENCYCLOPEDIA[id]);
 }
 
@@ -118,22 +109,9 @@ entity_t *importBOSSFromId(BOSS_ID id)
 void displayEntity(entity_t *entity)
 {
     printf("NAME:\n_____\n%s\n", entity->name);
-    printf("STATS: \n______\n");
-    for (int stats_ID = 0; stats_ID < 4; stats_ID++)
-    {
-        displayStat(entity->stats[stats_ID]);
-    }
-    printf("EFFECTS: \n________\n");
-    for (int effects_ID = 0; effects_ID < 9; effects_ID++)
-    {
-        displayEffect(entity->effects[effects_ID]);
-    }
-    printf("ITEMS: \n______\n");
-
-    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx]->description != NULL; itemsIdx++)
-    {
-        displayItem(entity->items[itemsIdx]);
-    }
+    displayEntityStatArray(entity->stats);
+    displayEntityEffectArray(entity->effects);
+    displayEntityItems(entity->items);
     printf("DECK: \n_____\n");
     displayDeck(entity->cardDeck);
 
@@ -245,8 +223,11 @@ void testEntity()
 {
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
-    // entity_t *testEnemy = getRandomMiniBoss();
+    entity_t *testPeter = importCaracterFromId(PETER);
     displayEntity(testCar);
+    displayEntity(testPeter);
+    freeEntity(testCar);
+    freeEntity(testPeter);
     // entity_t *testCar2 = importCaracterFromId(PETER);
     // // entity_t *testEnemy = getRandomMiniBoss();
     // displayEntity(testCar2);

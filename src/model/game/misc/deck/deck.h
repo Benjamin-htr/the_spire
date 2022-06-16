@@ -12,6 +12,9 @@ deck_t *createDeck(card_t *card);
 
 deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber);
 
+void freeDeck(deck_t *deck);
+void freeDeckListAndCard(deck_t *deckList);
+
 void addCard(deck_t *deck, card_t *card);
 
 card_t *removeFirstCard(deck_t **deck);

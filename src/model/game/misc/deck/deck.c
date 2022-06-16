@@ -267,5 +267,5 @@ void displayDeck(deck_t *myDeck)
         myDeck = myDeck->next;
         i++;
     }
-    printf("\n=======================\n");
+    printf("=======================\n");
 }

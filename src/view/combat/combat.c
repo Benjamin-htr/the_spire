@@ -1,6 +1,7 @@
 #include "./../../../include/raylib.h"
 #include "combat.h"
 #include "./../utils/utils.h"
+#include "./../../model/game/misc/deck/card/card.h"
 #include <stdio.h>
 
 static Texture2D StatBar = {0};
@@ -8,6 +9,13 @@ static Texture2D Statboard = {0};
 static Texture2D EnergyIcon = {0};
 
 static Texture2D BasicCardPatch = {0};
+static Texture2D CommonCardPatch = {0};
+static Texture2D AtypicCardPatch = {0};
+static Texture2D RareCardPatch = {0};
+static Texture2D SpecialCardPatch = {0};
+
+static Texture2D ImageCardUnknown = {0};
+
 NPatchInfo cardInfo = {0};
 
 static Sprite ennemySprite = {0};
@@ -85,9 +93,14 @@ void drawStatBoard()
 
 int GuiCard(Vector2 position, float scaleFactor, int forcedState)
 {
-    int manaCost = 13;
-    int energyCost = 2;
-    char *title = "Pulvériser";
+    card_t *card = importCardFromId(OVERWORK);
+    int manaCost = card->manaCost;
+    int energyCost = card->energyCost;
+    char *title = card->name;
+    Texture2D textureCard = card->rarity == BASIC ? BasicCardPatch : card->rarity == COMMON ? CommonCardPatch
+                                                                 : card->rarity == ATYPIC   ? AtypicCardPatch
+                                                                 : card->rarity == RARE     ? RareCardPatch
+                                                                                            : SpecialCardPatch;
 
     int nbFrames = 2;
     float cardWidth = (float)cardInfo.source.width * scaleFactor;
@@ -126,8 +139,13 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
         }
     }
 
+    // Draw image card :
+    Vector2 imageCardPos = (Vector2){position.x + cardWidth * (8 / 96.0f), position.y + cardHeight * (27 / 156.0f)};
+    DrawTextureEx(ImageCardUnknown, imageCardPos, 0, scaleFactor, WHITE);
+
+    // Draw card border :
     cardInfo.source.x = 96 * state;
-    DrawTextureNPatch(BasicCardPatch, cardInfo, bounds, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
+    DrawTextureNPatch(textureCard, cardInfo, bounds, (Vector2){0.0f, 0.0f}, 0.0f, WHITE);
 
     // Draw mana cost :
     Vector2 manaCostPos = (Vector2){position.x + cardWidth * (14 / 96.0f), position.y + cardHeight * (15 / 156.0f)};
@@ -159,7 +177,18 @@ void InitCombatScreen(void)
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+
+    // Cards textures loading :
     BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
+    CommonCardPatch = LoadTexture("./asset/Board/card-common.png");
+    AtypicCardPatch = LoadTexture("./asset/Board/card-atypic.png");
+    RareCardPatch = LoadTexture("./asset/Board/card-rare.png");
+    SpecialCardPatch = LoadTexture("./asset/Board/card-special.png");
+
+    // Image card unknown loading (for card that doesn't have specific image) :
+    ImageCardUnknown = LoadTexture("./asset/Board/image-card/image-card-unknown.png");
+
+    // Cards infos :
     cardInfo.source = (Rectangle){0, 0, 96, 156},
     cardInfo.left = 00;
     cardInfo.top = 00;
@@ -196,7 +225,7 @@ void DrawCombatScreen(void)
         finishScreen = 1;
     }
 
-    if (GuiCard((Vector2){50, 50}, 4.0f, -1))
+    if (GuiCard((Vector2){50, 50}, 2.0f, -1))
     {
         printf("card click");
     }

@@ -9,13 +9,12 @@ void testFunction()
     // testDeck();
     // testCard();
     // testItem();
-    testEntity();
+    // testEntity();
+    testBoard();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
     // testPlace();
     // printf("\n==============================\n\tTEST DE MAP\n==============================\n");
     // testMap();
-    // printf("\n==============================\n\tTEST BOARDY\n==============================\n");
-    // testBoard();
     //     printf("\n==============================\n\tTEST COMBAT\n==============================\n");
     //    testCombat();
     fflush(stdout);

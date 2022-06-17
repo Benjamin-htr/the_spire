@@ -14,12 +14,14 @@ typedef struct
 
 board_t *createBoard(deck_t *playerDeck);
 
+void freeBoard(board_t *board);
+
 int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew); // returns number of cards drawed,
                                                           // second parameter is the number of cards drew this turn
 void testBoard();
 
-deck_t *putCardsFromOnePlaceToAnother(deck_t *firstPlace, deck_t *secondPlace); // returns the firstPlace, which is empty.
-                                                                                // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
+void putCardsFromOnePlaceToAnother(deck_t *firstPlace, deck_t *secondPlace); // returns the firstPlace, which is empty.
+                                                                             // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
 
 board_t *drawCards(board_t *myBoard); // returns the board, please use "board = drawCards(board)
 

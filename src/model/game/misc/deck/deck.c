@@ -25,7 +25,10 @@ void freeDeckListAndCard(deck_t *deckList)
     {
         next = toFree->next;
         // TODO FREE CARD
-        freeCard(toFree->data);
+        if (toFree->data != NULL)
+        {
+            freeCard(toFree->data);
+        }
         freeDeck(toFree);
         toFree = next;
     }

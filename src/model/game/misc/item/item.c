@@ -8,7 +8,8 @@ item_t *createItem(
     int receiverEffectsSize,
     int receiverEffects[receiverEffectsSize][2],
     char *technic,
-    char *description)
+    char *description,
+    char *imageName)
 {
     item_t *res = malloc(sizeof(item_t));
     res->name = name;
@@ -18,6 +19,7 @@ item_t *createItem(
     res->receiverEffectsSize = receiverEffectsSize;
     res->technic = technic;
     res->description = description;
+    res->imageName = imageName;
 
     return res;
 }
@@ -47,7 +49,8 @@ item_t *importItem(item_import itemImport)
         itemImport.receiverEffectsSize,
         itemImport.receiverEffects,
         itemImport.technic,
-        itemImport.description);
+        itemImport.description,
+        itemImport.imageName);
 }
 
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
@@ -122,6 +125,8 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{HP_E, 6}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "casse-croute.png",
+
     },
     {
         .name = "Arme",
@@ -130,6 +135,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{STR_E, 4}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "weapon.png",
     },
     {
         .name = "Casque",
@@ -138,6 +144,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{DEX_E, 4}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "helmet.png",
     },
     // TODO: Refacto
     {
@@ -147,6 +154,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{HP_MAX_E, 20}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "armor.png",
     },
     // TODO: Refacto
     {
@@ -156,5 +164,6 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{ENERGY_MAX_E, 1}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "boots.png",
     },
 };

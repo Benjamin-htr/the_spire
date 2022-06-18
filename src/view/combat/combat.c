@@ -2,6 +2,7 @@
 #include "combat.h"
 #include "./../utils/utils.h"
 #include "./../../model/game/misc/deck/card/card.h"
+#include "./../../model/game/game.h"
 #include <stdio.h>
 
 static Texture2D StatBar = {0};
@@ -240,8 +241,7 @@ void InitCombatScreen(void)
 
     constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
 
-    entity_t *player = importCaracterFromId(PETER);
-    combat = startCombat(player, player);
+    combat = startCombat(game->caracterData, game->caracterData);
     combat->caracter->board = drawCards(combat->caracter->board);
     // playTurn(combat, combat->caracter->board);
 }

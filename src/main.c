@@ -31,6 +31,7 @@ NPatchInfo buttonInfo = {0};
 bool shouldClose = false;
 bool showInGameMenu = false;
 Game *game = {0};
+boolean isLaunched = false;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 float transAlpha = 0.0f;
@@ -98,8 +99,8 @@ int main(void)
         buttonInfo.bottom = 60;
 
         // Setup and Init first screen
-        currentScreen = COMBAT_SCREEN;
-        InitCombatScreen();
+        currentScreen = GAMEPLAY;
+        InitGameplayScreen();
 
         SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 

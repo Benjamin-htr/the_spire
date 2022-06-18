@@ -1,7 +1,5 @@
-#include "./../../../include/raylib.h"
 #include "gameplay.h"
 #include "./../utils/utils.h"
-#include "./../../model/game/game.h"
 #include "./../../model/game/map/map.h"
 
 #include <stdio.h>
@@ -118,6 +116,10 @@ void drawLifeBar()
     DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
 }
 
+void drawItem(item_t *item, Vector2 position, float scaleFactor)
+{
+}
+
 //----------------------------------------------------------------------------------
 // Screen functions :
 //----------------------------------------------------------------------------------
@@ -125,7 +127,12 @@ void InitGameplayScreen(void)
 {
     printf("Gameplay Screen Init\n");
 
-    initGame();
+    if (!isLaunched)
+    {
+        isLaunched = true;
+        printf("Game logic launched\n");
+        initGame();
+    }
 
     arrow = LoadTexture("./asset/UI_assets/arrow.png");
     arrowButtonBack = LoadTexture("./asset/UI_assets/button-arrow.png");

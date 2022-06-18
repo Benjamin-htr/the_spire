@@ -109,6 +109,8 @@ void mergeEffect(entity_t *entity, effect_t *effect);
 // TEST FUNCTION
 void testEntity();
 
+void freeEntity(entity_t *entity);
+
 extern entity_import CARATER_ENCYCLOPEDIA[];
 extern enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[];
 extern enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[];

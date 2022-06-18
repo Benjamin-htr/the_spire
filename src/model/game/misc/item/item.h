@@ -23,6 +23,7 @@ typedef struct
     int receiverEffectsSize;
     char *technic;
     char *description;
+    char *imageName;
 } item_t;
 
 typedef struct
@@ -34,6 +35,7 @@ typedef struct
     int receiverEffectsSize;
     char *technic;
     char *description;
+    char *imageName;
 } item_import;
 
 item_t *createItem(
@@ -43,7 +45,8 @@ item_t *createItem(
     int receiverEffectsSize,
     int receiverEffects[receiverEffectsSize][2],
     char *technic,
-    char *description);
+    char *description,
+    char *imageName);
 
 item_t *importItem(item_import itemImport);
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId);

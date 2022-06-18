@@ -33,6 +33,7 @@ void displayEntityStatArray(stat_t **entityStatArray);
 
 // METHOD
 void updateStat(stat_t *stat, int value, boolean isMax);
+void refillStat(stat_t *stat);
 
 // TEST FUNCTION
 void testStat();

@@ -11,146 +11,166 @@ combat_t *startCombat(entity_t *caracter, entity_t *enemy)
     combat->caracterTurn = 1;
     combat->caracter->board = createBoard(combat->caracter->cardDeck);
     combat->enemy->board = createBoard(combat->enemy->cardDeck);
-    shuffleDeck(&combat->caracter->board->cardDeck);
-    shuffleDeck(&combat->enemy->board->cardDeck);
     return combat;
 }
 
-void playOnePlayerCard(combat_t *combat, card_t *cardToPlay)
+void freeCombat(combat_t *combat)
 {
-    // stat_t* caracterMana = getEntityStat(combat->caracter,MANA);
-    // stat_t* caracterEnergy = getEntityStat(combat->caracter,ENERGY);
-
-    if (cardToPlay->energyCost < 1000 && cardToPlay->manaCost < 1000)
-    { // TODO : faire une fonction pour récupérer la valeur d'une stat
-        applyCardEffect(cardToPlay, combat->caracter, combat->enemy);
-        moveOneCardFromHand(combat->caracter->board, cardToPlay);
-    }
-    else
-    {
-        displayCard(*cardToPlay);
-        printf("plus d'energie enculer \n");
-    }
+    freeBoard(combat->caracter->board);
+    freeBoard(combat->enemy->board);
+    free(combat);
 }
 
-void playOneEnemyCard(combat_t *combat, card_t *cardToPlay)
+void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay)
 {
-    // stat_t* caracterMana = getEntityStat(combat->enemy,MANA);
-    // stat_t* caracterEnergy = getEntityStat(combat->enemy,ENERGY);
-    if (cardToPlay->energyCost < 1000 && cardToPlay->manaCost < 1000)
+    // TODO: add stat;
+    stat_t *entityMana = getEntityStat(launcher, MANA);
+    stat_t *entityEnergy = getEntityStat(launcher, ENERGY);
+
+    if (cardToPlay->energyCost <= entityEnergy->current && cardToPlay->manaCost <= entityMana->current)
     { // TODO : faire une fonction pour récupérer la valeur d'une stat
-        applyCardEffect(cardToPlay, combat->enemy, combat->caracter);
-        moveOneCardFromHand(combat->enemy->board, cardToPlay);
+        card_t *afterEffectCard = getTrueCardValue(launcher, cardToPlay);
+        applyCardEffect(afterEffectCard, launcher, receiver);
+        freeCard(afterEffectCard);
+        updateStat(entityMana, -(cardToPlay->manaCost), false);
+        updateStat(entityEnergy, -(cardToPlay->energyCost), false);
+        moveOneCardFromHand(launcher->board, cardToPlay);
     }
     else
     {
-        fflush(stdout);
+        printf("YOUR MANA:\t%d\nYOUR ENERGY:\t%d\n", entityMana->current, entityEnergy->current);
+        displayCard(cardToPlay);
         printf("plus d'energie enculer \n");
     }
 }
 
 void playCards(combat_t *combat)
 {
-    int i = 0;
     board_t *boardToCheck;
+    card_t *card;
     if (combat->caracterTurn == 1)
     {
         boardToCheck = combat->caracter->board;
+        while (getDeckSize(boardToCheck->hand) > 0)
+        {
+            card = pickCardFromHand(combat->caracter, getChoosenCardId);
+            if (card == NULL)
+            {
+                // On passe si l'id de la carte choisi == -1
+                printf("\nJE PASSE MON TOUR");
+                break;
+            }
+            playOneCard(combat->caracter, combat->enemy, card);
+        }
     }
     else
     {
         boardToCheck = combat->enemy->board;
-    }
-    card_t *card;
-    while (getDeckSize(boardToCheck->hand) > 0)
-    { // tant que le tour n'est pas fini
-        // (pour l'instant on considère qu'un tour est fini quand il n'y a plus de cartes)
-        if (combat->caracterTurn == 1)
-        {
-            card = pickCardFromHand(combat->caracter->board->hand)->data;
-            playOnePlayerCard(combat, card);
-        }
-        else
-        {
-            card = getRandomCardFromHand(combat->enemy->board)->data;
-            playOneEnemyCard(combat, card);
-        }
-
-        i++;
+        card = pickCardFromHand(combat->enemy, chooseRandomCardId);
+        playOneCard(combat->enemy, combat->caracter, card);
     }
     moveCardsFromHand(boardToCheck); // on déplace les cartes restantes de la main vers défausse/abysse
 }
 
 int getChoosenCardId(deck_t *hand)
-{
-
-    hand->data = hand->data;           // pour ce chien de warning
-    return rand() % getDeckSize(hand); // pour l'instant on prend juste une random blc
+{ // pour l'instant on prend juste une random blc
+    return (rand() % (getDeckSize(hand) + 1)) - 1;
+}
+int chooseRandomCardId(deck_t *hand)
+{ // pour l'instant on prend juste une random blc
+    return rand() % (getDeckSize(hand));
 }
 
 // int getChoosenCardIdGUI(deck_t* hand){
 
 // }
 
-deck_t *pickCardFromHand(deck_t *hand)
+card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(deck_t *))
 {
-    return getElementFromDeckAtIndex(getChoosenCardId(hand), hand);
+    deck_t *deckPicked;
+    stat_t *caracterMana = getEntityStat(caracter, MANA);
+    stat_t *caracterEnergy = getEntityStat(caracter, ENERGY);
+    do
+    {
+        deckPicked = getElementFromDeckAtIndex(cardChoosingFunc(caracter->board->hand), caracter->board->hand);
+        if (deckPicked == NULL)
+        {
+            return NULL;
+        }
+    } while (deckPicked->data->energyCost > caracterEnergy->current || deckPicked->data->manaCost > caracterMana->current);
+    return deckPicked->data;
 }
 
 void testCombat()
 {
+    printf("\n==============================\n\tTEST COMBAT\n==============================\n");
     entity_t *player = importCaracterFromId(PETER);
+    // Test peter perd
+    // getEntityStat(player, HP)->current = 3;
+    entity_t *enemy = importEnemyPhase1FromId(JAWURM);
     displayEntity(player);
-    combat_t *combat = startCombat(player, player);
+    displayEntity(enemy);
+    combat_t *combat = startCombat(player, enemy);
     startFight(combat);
+    freeEntity(player);
+    freeEntity(enemy);
 }
 
-void playTurn(combat_t *combat, board_t *board)
+void playTurn(combat_t *combat, entity_t *entity)
 {
-    board = drawCards(board);
-
-    // POUR LES TESTS
-    printf("Le deck après avoir pioché :  \n");
-    displayDeck(board->cardDeck);
-    fflush(stdout);
-    printf("La main après avoir pioché : \n");
-    displayDeck(board->hand);
-    ///////////////
-
+    // on applique l'effet de feu et diminue la valeur des effets le necessitant
+    turnBeginEffectUpdate(entity);
+    // On recharge l'energy pour le debut du tour
+    refillStat(getEntityStat(entity, ENERGY));
+    // On pioche au debut du tour
+    drawCardsFromDeckWithRefillFromDiscard(entity->board);
+    // On joue des cartes
     playCards(combat);
-
-    // POUR LES TESTS
-    printf("Après avoir joué toutes les cartes, voici le deck : \n");
-    displayDeck(board->cardDeck);
-    printf("Voici la main : \n");
-    displayDeck(board->hand);
-    printf("Voici la défausse : \n");
-    displayDeck(board->discardPile);
-    printf("Voici l'abysse : \n");
-    displayDeck(board->abyss);
-    ///////////////////
-
-    // FIN DE TOUR
-    combat->caracterTurn = !combat->caracterTurn;
 }
 
 void startFight(combat_t *combat)
 {
-    int i = 0;
-    while (i < 11)
+    stat_t *caracterHealth = getEntityStat(combat->caracter, HP);
+    stat_t *enemyHealth = getEntityStat(combat->enemy, HP);
+    stat_t *caracterDodge = getEntityStat(combat->caracter, DODGE);
+    stat_t *enemyDodge = getEntityStat(combat->enemy, DODGE);
+    int demiturn = 0;
+    while (caracterHealth->current > 0 && enemyHealth->current > 0) // && demiturn < 1)
     {
-        if (combat->caracterTurn == true)
+
+        if (!(demiturn % 2))
         {
-            printf("------------------------TOUR %d ---------------- \n", i);
-            playTurn(combat, combat->caracter->board);
-            fflush(stdout);
+            printf("\n\t==========================\n*****************TOUR N°%d****************\n\t==========================\n", demiturn / 2);
         }
-        else
-        {
-            printf("------------------------TOUR ennemi %d ---------------- \n", i);
-            playTurn(combat, combat->enemy->board);
-            fflush(stdout);
-        }
-        i++;
+        printf("\n***DEBUT DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
+        playTurn(combat, ((combat->caracterTurn) ? (combat->caracter) : (combat->enemy)));
+        printf("\n***FIN DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
+        printf("%s:\n", combat->caracter->name);
+        displayStat(caracterHealth);
+        displayStat(caracterDodge);
+        printf("%s:\n", combat->caracter->name);
+        displayStat(enemyHealth);
+        displayStat(enemyDodge);
+        combat->caracterTurn = !combat->caracterTurn;
+        demiturn++;
     }
+    if (caracterHealth->current > 0 && enemyHealth->current <= 0)
+    {
+        // LE JOUEUR GAGNE
+        printf("PETER GAGNE!");
+        deck_t *rewardDeck = createRewardDeck();
+        displayDeck(rewardDeck);
+        tranferOneCardBetweenDeck(
+            &rewardDeck,
+            &(combat->caracter->cardDeck),
+            getChoosenCardId(rewardDeck));
+        displayDeck(combat->caracter->cardDeck);
+        freeDeckListAndCard(rewardDeck);
+    }
+    else
+    {
+        // LE JOUEUR PERD
+        printf("PETER PERD");
+    }
+    freeCombat(combat);
 }

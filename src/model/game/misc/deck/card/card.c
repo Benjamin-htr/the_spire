@@ -61,19 +61,54 @@ card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId)
     return importCard(CARD_ENCYCLOPEDIA[cardId]);
 }
 
+int getRandomPlayerCardId()
+{
+    // On prend JAWURM_BACKSTAB parce que c'est la premiere carte non jouable par le joueur
+    return rand() % (JAWURM_BACKSTAB);
+}
+
+card_t *copyCard(card_t *cardToCopy)
+{
+    int launcherEffects[cardToCopy->launcherEffectsSize][2];
+    for (int launcherEffectID = 0; launcherEffectID < cardToCopy->launcherEffectsSize; launcherEffectID++)
+    {
+        launcherEffects[launcherEffectID][0] = cardToCopy->launcherEffects[launcherEffectID]->id;
+        launcherEffects[launcherEffectID][1] = cardToCopy->launcherEffects[launcherEffectID]->value;
+    }
+    int receiverEffects[cardToCopy->receiverEffectsSize][2];
+    for (int receiverEffectID = 0; receiverEffectID < cardToCopy->receiverEffectsSize; receiverEffectID++)
+    {
+        receiverEffects[receiverEffectID][0] = cardToCopy->receiverEffects[receiverEffectID]->id;
+        receiverEffects[receiverEffectID][1] = cardToCopy->receiverEffects[receiverEffectID]->value;
+    }
+    card_t *res = createCard(
+        cardToCopy->name,
+        cardToCopy->rarity,
+        cardToCopy->manaCost,
+        cardToCopy->energyCost,
+        cardToCopy->isAbyssal,
+        launcherEffects,
+        cardToCopy->launcherEffectsSize,
+        receiverEffects,
+        cardToCopy->receiverEffectsSize,
+        cardToCopy->technic,
+        cardToCopy->description);
+    return res;
+}
+
 // DISPLAY FUNCTION
 
-void displayCard(card_t card)
+void displayCard(card_t *card)
 {
-    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", card.name);
-    for (int launcherEffectID = 0; launcherEffectID < card.launcherEffectsSize; launcherEffectID++)
+    printf("\nNAME:\n_____\n%s\nMANA: %d\n_____\nENERGY: %d\n_______\nLAUNCHER EFFECT:\n________________\n", card->name, card->manaCost, card->energyCost);
+    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
-        displayEffect(card.launcherEffects[launcherEffectID]);
+        displayEffect(card->launcherEffects[launcherEffectID]);
     }
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (int receiverEffectID = 0; receiverEffectID < card.receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
     {
-        displayEffect(card.receiverEffects[receiverEffectID]);
+        displayEffect(card->receiverEffects[receiverEffectID]);
     }
 }
 
@@ -82,8 +117,11 @@ void displayCard(card_t card)
 void testCard()
 {
     printf("\n==============================\n\tTEST DE CARD\n==============================\n");
-    card_t *test = importCardFromId(ACCELERATION);
-    displayCard(*test);
+    card_t *test = importCardFromId(getRandomPlayerCardId());
+    displayCard(test);
+    // card_t *testCopy = copyCard(test);
+    // displayCard(testCopy);
+    // freeCard(testCopy);
     freeCard(test);
 }
 

@@ -92,16 +92,24 @@ entity_t *importMiniBossFromId(MINIBOSS_ID id);
 entity_t *getRandomMiniBoss();
 entity_t *importBOSSFromId(BOSS_ID id);
 
+// DEXCONSTRUTOR
+
+void freeEntity(entity_t *entity);
+
 // DISPLAY FUNCTION
 void displayEntity(entity_t *entity);
 
 // METHOD
 
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
+void applyAllItemsEffect(entity_t *entity);
+void turnBeginEffectUpdate(entity_t *entity);
+void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect);
 
 // GETTER / SETTER
 stat_t *getEntityStat(entity_t *entity, stat_ID statId);
 effect_t *getEntityEffect(entity_t *entity, effect_ID id);
+card_t *getTrueCardValue(entity_t *entity, card_t *card); // On oublie pas de free la carte retourné une fois l'utilisation fini
 
 //      SETTER
 void mergeEffect(entity_t *entity, effect_t *effect);

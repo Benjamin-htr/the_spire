@@ -56,15 +56,20 @@ void updateStat(stat_t *stat, int value, boolean isMax)
     if (isMax)
     {
         stat->max += value;
-        if (stat->max < stat->current)
-        {
-            stat->current = stat->max;
-        }
     }
     else
     {
         stat->current += value;
     }
+    if (stat->max < stat->current)
+    {
+        stat->current = stat->max;
+    }
+}
+
+void refillStat(stat_t *stat)
+{
+    stat->current = stat->max;
 }
 
 // DISPLAY FUNCTION

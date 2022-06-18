@@ -97,10 +97,14 @@ void freeCard(card_t *card);
 
 card_t *importCard(card_import cardImport);
 card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId);
+card_t *copyCard(card_t *cardToCopy);
+
+// GETTER
+int getRandomPlayerCardId();
 
 // DISPLAY FUNCTION
 
-void displayCard(card_t card);
+void displayCard(card_t *card);
 
 // TEST FUNCTION
 

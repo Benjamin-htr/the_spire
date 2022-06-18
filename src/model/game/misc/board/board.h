@@ -16,15 +16,13 @@ board_t *createBoard(deck_t *playerDeck);
 
 void freeBoard(board_t *board);
 
+void tranferOneCardBetweenDeck(deck_t **firstPlace, deck_t **secondPlace, int cardIdx);
+void putCardsFromOnePlaceToAnother(deck_t **firstPlace, deck_t **secondPlace); // returns the firstPlace, which is empty.
+                                                                               // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
+
+void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard);
 int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew); // returns number of cards drawed,
                                                           // second parameter is the number of cards drew this turn
-void testBoard();
-
-void putCardsFromOnePlaceToAnother(deck_t *firstPlace, deck_t *secondPlace); // returns the firstPlace, which is empty.
-                                                                             // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
-
-board_t *drawCards(board_t *myBoard); // returns the board, please use "board = drawCards(board)
-
 void moveOneCardFromHandByIdx(board_t *board, int idx);
 
 void moveOneCardFromHand(board_t *board, card_t *cardToRemove);
@@ -32,4 +30,8 @@ void moveOneCardFromHand(board_t *board, card_t *cardToRemove);
 void moveCardsFromHand(board_t *myBoard); // move all cards from hand to abyss/discard
 
 deck_t *getRandomCardFromHand(board_t *board);
+
+void displayBoard(board_t *board);
+
+void testBoard();
 #endif

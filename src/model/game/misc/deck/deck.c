@@ -12,6 +12,24 @@ deck_t *createDeck(card_t *myCard)
     return res;
 }
 
+deck_t *copyDeck(deck_t *deck)
+{
+    if (deck == NULL)
+    {
+        return createDeck(NULL);
+    }
+
+    deck_t *res = createDeck(copyCard(deck->data));
+    deck_t *readingHead = deck->next;
+    while (readingHead != NULL)
+    {
+        fflush(stdout);
+        addCard(res, copyCard(readingHead->data));
+        readingHead = readingHead->next;
+    }
+    return res;
+}
+
 void freeDeck(deck_t *deck)
 {
     free(deck);
@@ -43,10 +61,23 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
     {
         for (int cardExemplar = 0; cardExemplar < cardIds[cardIdx][1]; cardExemplar++)
         {
+            // printf("\n%d", cardIds[cardIdx][0]);
+            // fflush(stdout);
             addCard(res, importCardFromId(cardIds[cardIdx][0]));
         }
     }
     return res;
+}
+
+deck_t *createRewardDeck()
+{
+    return createDeckFromArray(
+        (int[3][2]){
+            {getRandomPlayerCardId(), 1},
+            {getRandomPlayerCardId(), 1},
+            {getRandomPlayerCardId(), 1},
+        },
+        3);
 }
 
 int getPositionOfCard(deck_t *deck, char *cardName)
@@ -169,7 +200,7 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck)
         deck = deck->next;
         i++;
     }
-    return deck;
+    return NULL;
 }
 
 int getDeckSize(deck_t *deck)
@@ -227,7 +258,7 @@ void shuffleDeck(deck_t **deck)
         }
     }
     // ici on swap le premier element avec l'élement du milieu
-    deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 3)) + 1, *deck);
+    deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 2)) + 1, *deck);
     deck_t *middle = beforeMiddleElement->next;
     deck_t *firstNext = (*deck)->next;
     (*deck)->next = middle->next;
@@ -242,9 +273,9 @@ void shuffleDeck(deck_t **deck)
 
 void testDeck()
 {
-
     printf("\n==============================\n\tTEST DE DECK\n==============================\n");
     deck_t *myDeck = createDeckFromArray((int[][2]){{DODGE_A, 4}, {PULVERIZE, 3}, {DEFENSE, 3}, {JAWURM2_HAIRPULLING, 3}, {SPECTRUM, 3}}, 5);
+    deck_t *copyedDeck = copyDeck(myDeck);
     displayDeck(myDeck);
     removeFirstCard(&myDeck);
     displayDeck(myDeck);
@@ -253,6 +284,8 @@ void testDeck()
     shuffleDeck(&myDeck);
     displayDeck(myDeck);
     freeDeckListAndCard(myDeck);
+    displayDeck(copyedDeck);
+    freeDeckListAndCard(copyedDeck);
 }
 
 void displayDeck(deck_t *myDeck)

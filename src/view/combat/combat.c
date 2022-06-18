@@ -206,7 +206,7 @@ void drawHand(void)
         Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
         if (GuiCardHand(myCard, position, scaleFactor, i))
         {
-            displayCard(*myCard);
+            displayCard(myCard);
         }
         myHand = myHand->next;
         i++;
@@ -242,7 +242,7 @@ void InitCombatScreen(void)
     constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
 
     combat = startCombat(game->caracterData, game->caracterData);
-    combat->caracter->board = drawCards(combat->caracter->board);
+    drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
     // playTurn(combat, combat->caracter->board);
 }
 void UpdateCombatScreen(void)

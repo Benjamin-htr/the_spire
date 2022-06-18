@@ -2,6 +2,7 @@
 #include "../misc/stat/stat.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // CONSTRUCTORS
 entity_t *initEntity(
@@ -120,8 +121,25 @@ void displayEntity(entity_t *entity)
 
 // METHODS
 
+void takeDamage(entity_t *entity, int value)
+{
+    stat_t *entityDodge = getEntityStat(entity, DODGE);
+    stat_t *entityHealth = getEntityStat(entity, HP);
+    if (-value >= entityDodge->current)
+    {
+        value += entityDodge->current;
+        entityDodge->current = 0;
+        updateStat(entityHealth, value, false);
+    }
+    else
+    {
+        updateStat(entityDodge, value, false);
+    }
+}
+
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 {
+    printf("la carte %s est joué\n", card->name);
     for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
         mergeEffect(launcher, card->launcherEffects[launcherEffectID]);
@@ -132,6 +150,7 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
     }
 }
 
+// dupplication de code pas ouf :/
 void applyAllItemsEffect(entity_t *entity)
 {
     for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx]->description != NULL; itemsIdx++)
@@ -149,9 +168,69 @@ void applyAllItemsEffect(entity_t *entity)
 
 void wipeAllEffect(entity_t *entity)
 {
-    for (int effectIdx = 0; effectIdx < 9; effectIdx++)
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
         entity->effects[effectIdx]->value = 0;
+    }
+}
+
+void turnBeginEffectUpdate(entity_t *entity)
+{
+    effect_t *entityFIRE = getEntityEffect(entity, FIRE_E);
+    effect_t *entityWEAK = getEntityEffect(entity, WEAK_E);
+    effect_t *entitySLOW = getEntityEffect(entity, SLOW_E);
+    takeDamage(entity, entityFIRE->value);
+    entityFIRE->value = floor(entityFIRE->value / 2.0);
+    if (entitySLOW->value > 0)
+    {
+        (entitySLOW->value)--;
+    }
+    if (entityWEAK->value > 0)
+    {
+        (entityWEAK->value)--;
+    }
+}
+
+void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect)
+{
+    effect_t *entityStr = getEntityEffect(entity, STR_E);
+    effect_t *entityDex = getEntityEffect(entity, DEX_E);
+    effect_t *entityWeak = getEntityEffect(entity, WEAK_E);
+    effect_t *entitySlow = getEntityEffect(entity, SLOW_E);
+    if (cardEffect->value < 0)
+    {
+        if (cardEffect->id == DODGE_E)
+        {
+            cardEffect->value = ceil(((cardEffect->value + entityDex->value) / (entitySlow->value ? 2.0 : 1.0)));
+        }
+        else if (cardEffect->id == HP_E)
+        {
+            cardEffect->value = floor(((cardEffect->value + entityStr->value) * (entityWeak->value ? 0.75 : 1.0)));
+        }
+    }
+}
+
+void mergeEffect(entity_t *entity, effect_t *effect)
+{
+    fflush(stdout);
+    if (effect->id == HP_E && effect->value < 0)
+    {
+        takeDamage(entity, effect->value);
+    }
+    else if (effect->id < 4)
+    {
+        stat_t *currentStat = getEntityStat(entity, effect->id + 1);
+        updateStat(currentStat, effect->value, false);
+    }
+    else if (effect->id < 8)
+    {
+        stat_t *currentStat = getEntityStat(entity, effect->id - 3);
+        updateStat(currentStat, effect->value, true);
+    }
+    else
+    {
+        effect_t *currentEffect = getEntityEffect(entity, effect->id);
+        currentEffect->value += effect->value;
     }
 }
 
@@ -170,22 +249,27 @@ effect_t *getEntityEffect(entity_t *entity, effect_ID id)
     {
         return NULL;
     }
-    return entity->effects[id - 4];
+    return entity->effects[id - 8];
 }
-//      SETTER
-void mergeEffect(entity_t *entity, effect_t *effect)
+
+card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de free la carte retourné une fois l'utilisation fini
 {
-    if (effect->id < 4)
+    card_t *res = copyCard(card);
+    effect_t *cardEffect;
+    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
-        stat_t *currentStat = getEntityStat(entity, effect->id + 1);
-        updateStat(currentStat, effect->value, false);
+        cardEffect = card->launcherEffects[launcherEffectID];
+        updateCardEffectWithEntityEffect(entity, cardEffect);
     }
-    else
+    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
     {
-        effect_t *currentEffect = getEntityEffect(entity, effect->id);
-        currentEffect->value += effect->value;
+        cardEffect = card->receiverEffects[receiverEffectID];
+        updateCardEffectWithEntityEffect(entity, cardEffect);
     }
+    return res;
 }
+
+//      SETTER
 
 // TEST
 
@@ -223,11 +307,14 @@ void testEntity()
 {
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
-    entity_t *testPeter = importCaracterFromId(PETER);
+    // entity_t *testPeter = importCaracterFromId(PETER);
+    getEntityStat(testCar, DODGE)->current = 3;
     displayEntity(testCar);
-    displayEntity(testPeter);
+    takeDamage(testCar, -10);
+    displayEntity(testCar);
+    // displayEntity(testPeter);
     freeEntity(testCar);
-    freeEntity(testPeter);
+    // freeEntity(testPeter);
     // entity_t *testCar2 = importCaracterFromId(PETER);
     // // entity_t *testEnemy = getRandomMiniBoss();
     // displayEntity(testCar2);
@@ -244,7 +331,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Peter",
         .stats = {
-            {75, true},
+            {75, false},
             {999, true},
             {3, true},
             {100, true},
@@ -263,7 +350,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Tester",
         .stats = {
-            {75, true},
+            {75, false},
             {999, true},
             {3, true},
             {100, true},

@@ -44,11 +44,7 @@ effect_t **initEffectFromArray(int size, int effects[size][2])
 // used in entity
 effect_t **initEntityEffectArray()
 {
-    return initEffectFromArray(9, (int[9][2]){
-                                      {HP_MAX_E, 0},
-                                      {DODGE_MAX_E, 0},
-                                      {MANA_MAX_E, 0},
-                                      {ENERGY_MAX_E, 0},
+    return initEffectFromArray(5, (int[5][2]){
                                       {STR_E, 0},
                                       {DEX_E, 0},
                                       {FIRE_E, 0},
@@ -75,7 +71,7 @@ void freeEffectArray(effect_t **effectArray, int size)
 
 void freeEntityEffectArray(effect_t **effectArray)
 {
-    freeEffectArray(effectArray, 9);
+    freeEffectArray(effectArray, 5);
 }
 
 // DISPLAY FUNCTION
@@ -99,7 +95,7 @@ void displayEffectArray(effect_t **effectArray, int size)
 void displayEntityEffectArray(effect_t **effectArray)
 {
     printf("EFFECTS: \n________\n");
-    displayEffectArray(effectArray, 9);
+    displayEffectArray(effectArray, 5);
 }
 
 // TEST FUNCTION

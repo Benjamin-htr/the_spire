@@ -6,27 +6,25 @@
 
 typedef struct
 {
-    entity_t* caracter;
-    entity_t* enemy;
+    entity_t *caracter;
+    entity_t *enemy;
     int caracterTurn;
-}combat_t;
+} combat_t;
 
-combat_t * startCombat(entity_t* caracter, entity_t* enemy);
+combat_t *startCombat(entity_t *caracter, entity_t *enemy);
 
-void playTurn(combat_t* combat, board_t* board);
+void playTurn(combat_t *combat, entity_t *entity);
 
-int getChoosenCardId(deck_t* hand);
+int getChoosenCardId(deck_t *hand);
+int chooseRandomCardId(deck_t *hand);
 
-deck_t * pickCardFromHand(deck_t * hand);
+card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(deck_t *));
 
+void playCards(combat_t *combat);
 
-void playCards(combat_t* combat);
-
-void playOnePlayerCard(combat_t* combat, card_t* cardToPlay);
-
-void playOneEnemyCard(combat_t* combat, card_t* cardToPlay);
+void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay);
 
 void testCombat();
 
-void startFight(combat_t* combat);
+void startFight(combat_t *combat);
 #endif

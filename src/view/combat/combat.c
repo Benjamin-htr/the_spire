@@ -243,7 +243,8 @@ void InitCombatScreen(void)
 
     combat = startCombat(game->caracterData, game->caracterData);
     combat->caracter->board = drawCards(combat->caracter->board);
-    // playTurn(combat, combat->caracter->board);
+    displayDeck(combat->caracter->board->hand);
+    //  playTurn(combat, combat->caracter->board);
 }
 void UpdateCombatScreen(void)
 {
@@ -273,7 +274,7 @@ void DrawCombatScreen(void)
         finishScreen = 1;
     }
 
-    drawHand();
+    // drawHand();
 
     // if (GuiCardHand((Vector2){50, 50}, 2.0f, -1))
     //{
@@ -282,6 +283,18 @@ void DrawCombatScreen(void)
 }
 void UnloadCombatScreen(void)
 {
+    UnloadTexture(StatBar);
+    UnloadTexture(Statboard);
+    UnloadTexture(EnergyIcon);
+
+    UnloadTexture(BasicCardPatch);
+    UnloadTexture(CommonCardPatch);
+    UnloadTexture(AtypicCardPatch);
+    UnloadTexture(RareCardPatch);
+    UnloadTexture(SpecialCardPatch);
+
+    UnloadTexture(ImageCardUnknown);
+    UnloadTexture(ennemySprite.texture);
 }
 int FinishCombatScreen(void)
 {

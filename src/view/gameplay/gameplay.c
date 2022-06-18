@@ -3,6 +3,7 @@
 #include "./../../model/game/map/map.h"
 
 #include <stdio.h>
+#include <string.h>
 
 static int finishScreen = 0;
 
@@ -10,6 +11,7 @@ static Texture2D arrowButtonBack = {0};
 static Texture2D arrow = {0};
 static Texture2D StatBar = {0};
 static Texture2D HeartIcon = {0};
+static Texture2D objectsTextures[5];
 
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
@@ -116,8 +118,27 @@ void drawLifeBar()
     DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
 }
 
-void drawItem(item_t *item, Vector2 position, float scaleFactor)
+void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor)
 {
+    DrawTextureEx(texture, position, 0, scaleFactor, WHITE);
+}
+void drawItems()
+{
+    int padding = 10;
+    int fontSize = 25;
+    char *text = "Liste des objets :";
+    Vector2 textSize = MeasureTextEx(font, text, fontSize, 1.0f);
+    DrawTextEx(font, text, (Vector2){GetScreenWidth() - textSize.x - padding, padding}, fontSize, 1, WHITE);
+
+    float scaleFactor = 1.5f;
+    int gap = 10;
+    float posY = textSize.y + padding + gap;
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        Vector2 pos = (Vector2){GetScreenWidth() - objectsTextures[itemsIdx].width * scaleFactor - padding, posY};
+        drawItem(game->caracterData->items[itemsIdx], objectsTextures[itemsIdx], pos, scaleFactor);
+        posY += objectsTextures[itemsIdx].height * scaleFactor + gap;
+    }
 }
 
 //----------------------------------------------------------------------------------
@@ -145,6 +166,16 @@ void InitGameplayScreen(void)
     constructSprite(&roomSprite2Doors_top_blocked, "./asset/map/room_2_doors_top_blocked.png", 3, 1);
     constructSprite(&roomSprite2Doors_bottom_blocked, "./asset/map/room_2_doors_bottom_blocked.png", 3, 1);
     constructSprite(&roomSpriteEnd, "./asset/map/room_end.png", 3, 1);
+
+    char *objectsTexturePath = "./asset/Objects/";
+    char *texturePath;
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        texturePath = (char *)malloc(1 + strlen(objectsTexturePath) + strlen(game->caracterData->items[itemsIdx]->imageName));
+        strcpy(texturePath, objectsTexturePath);
+        strcat(texturePath, game->caracterData->items[itemsIdx]->imageName);
+        objectsTextures[itemsIdx] = LoadTexture(texturePath);
+    }
 }
 void UpdateGameplayScreen(void)
 {
@@ -241,6 +272,8 @@ void DrawGameplayScreen(void)
             move_player(game->mapData, room + 1);
         }
     }
+
+    drawItems();
 }
 void UnloadGameplayScreen(void)
 {
@@ -252,6 +285,11 @@ void UnloadGameplayScreen(void)
     UnloadTexture(roomSprite3Doors.texture);
     UnloadTexture(roomSpriteEnd.texture);
     UnloadTexture(StatBar);
+
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        UnloadTexture(objectsTextures[itemsIdx]);
+    }
 }
 int FinishGameplayScreen(void)
 {

@@ -120,7 +120,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
     },
     {
         .name = "Casse-Croute",
-        .description = "Recupère un petit peut de vie a chaque debut de combat",
+        .description = "Recupère un petit peut de vie a chaque début de combat",
         .technic = "PV +6",
         .launcherEffects = {{HP_E, 6}},
         .launcherEffectsSize = 1,

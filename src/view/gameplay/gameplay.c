@@ -95,8 +95,8 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 }
 void drawLifeBar()
 {
-    int HpMax = 75;
-    int HpActuel = 10;
+    int HpMax = getEntityStat(game->caracterData, HP)->max;
+    int HpActuel = getEntityStat(game->caracterData, HP)->current;
 
     float scaleBar = 4.0f;
     float scaleHeart = 3.0f;
@@ -120,7 +120,25 @@ void drawLifeBar()
 
 void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor)
 {
+    int gap = 20;
     DrawTextureEx(texture, position, 0, scaleFactor, WHITE);
+
+    int fontSize = 20;
+    Vector2 textSize = MeasureTextEx(font, TextFormat("%s", item->name), fontSize, 1);
+    Vector2 textPos = (Vector2){position.x - textSize.x - gap, position.y + (texture.height * scaleFactor / 2) - textSize.y / 2};
+    DrawTextEx(font, TextFormat("%s", item->name), textPos, fontSize, 1, LIGHTGRAY);
+
+    Rectangle bounds = (Rectangle){textPos.x, position.y, textSize.x + gap + texture.width * scaleFactor, texture.height * scaleFactor};
+
+    Vector2 mousePoint = GetMousePosition();
+    // Check if hover :
+    if (CheckCollisionPointRec(mousePoint, bounds))
+    {
+
+        Rectangle hoverRect = (Rectangle){bounds.x - 300 - 20, bounds.y, 300, 140};
+        DrawRectangleRec(hoverRect, GetColor(0x242424ff));
+        DrawTextBoxed(font, TextFormat("%s :\n%s", item->technic, item->description), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 18, 1.0f, true, WHITE);
+    }
 }
 void drawItems()
 {
@@ -128,11 +146,11 @@ void drawItems()
     int fontSize = 25;
     char *text = "Liste des objets :";
     Vector2 textSize = MeasureTextEx(font, text, fontSize, 1.0f);
-    DrawTextEx(font, text, (Vector2){GetScreenWidth() - textSize.x - padding, padding}, fontSize, 1, WHITE);
+    DrawTextEx(font, text, (Vector2){GetScreenWidth() - textSize.x - padding * 8, padding}, fontSize, 1, LIGHTGRAY);
 
-    float scaleFactor = 1.5f;
-    int gap = 10;
-    float posY = textSize.y + padding + gap;
+    float scaleFactor = 2.0f;
+    float posY = textSize.y + padding + 20;
+    int gap = 25;
     for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
     {
         Vector2 pos = (Vector2){GetScreenWidth() - objectsTextures[itemsIdx].width * scaleFactor - padding, posY};

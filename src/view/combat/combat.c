@@ -32,14 +32,14 @@ static int finishScreen = 0;
 
 void drawStatBoard()
 {
-    int HpMax = 75;
-    int HpActuel = 70;
+    int HpMax = getEntityStat(game->caracterData, HP)->max;
+    int HpActuel = getEntityStat(game->caracterData, HP)->current;
 
-    int ManaMax = 100;
-    int ManaActuel = 50;
+    int ManaMax = getEntityStat(game->caracterData, MANA)->max;
+    int ManaActuel = getEntityStat(game->caracterData, MANA)->current;
 
     // int EnergyMax = 3;
-    int EnergyActuel = 3;
+    int EnergyActuel = getEntityStat(game->caracterData, ENERGY)->current;
 
     float scaleMain = 3.0f;
 

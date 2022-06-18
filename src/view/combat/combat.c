@@ -164,13 +164,10 @@ int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
     DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
-    // Draw text technique :
-    float fontTech = 0.050f * cardWidth;
-
     // textBox calc :
     Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
 
-    // Draw text description :
+    // Draw text description and technic:
     float fontDesc = 0.058f * cardWidth;
     DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
 
@@ -273,12 +270,7 @@ void DrawCombatScreen(void)
         finishScreen = 1;
     }
 
-    // drawHand();
-
-    // if (GuiCardHand((Vector2){50, 50}, 2.0f, -1))
-    //{
-    //     printf("card click");
-    // }
+    drawHand();
 }
 void UnloadCombatScreen(void)
 {

@@ -149,17 +149,26 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
     DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
-    // Draw text description :
-    float fontDesc = 0.06333 * cardWidth;
-    Vector2 textDescSize = MeasureTextEx(font, TextFormat("%s", card->description), fontDesc, 1);
-    Vector2 textDescPos = (Vector2){position.x + cardWidth / 2 - (textDescSize.x / 2), position.y + cardHeight * (96 / 156.0f)};
-    DrawTextEx(font, TextFormat("%s", card->description), textDescPos, fontDesc, 1, WHITE);
+    // float fontDesc = 0.058f * cardWidth;
+    // Vector2 textDescSize = MeasureTextEx(font, TextFormat("%s", card->description), fontDesc, 1);
+    // Vector2 textDescPos = (Vector2){position.x + cardWidth / 2 - (textDescSize.x / 2), position.y + cardHeight * (96 / 156.0f)};
+    // DrawTextEx(font, TextFormat("%s", card->description), textDescPos, fontDesc, 1, WHITE);
 
     // Draw text technique :
-    float fontTech = 0.06333 * cardWidth;
-    Vector2 textTechSize = MeasureTextEx(font, TextFormat("%s", card->technic), fontDesc, 1);
-    Vector2 textTechPos = (Vector2){position.x + cardWidth / 2 - (textTechSize.x / 2), textDescPos.y + textDescSize.y + cardHeight * (5 / 156.0f)};
-    DrawTextEx(font, TextFormat("%s", card->technic), textTechPos, fontTech, 1, WHITE);
+    float fontTech = 0.050f * cardWidth;
+    // Vector2 textTechSize = MeasureTextEx(font, TextFormat("%s", card->technic), fontDesc, 1);
+    // Vector2 textTechPos = (Vector2){position.x + cardWidth / 2 - (textTechSize.x / 2), textDescPos.y + textDescSize.y + cardHeight * (5 / 156.0f)};
+    //  DrawTextEx(font, TextFormat("%s", card->technic), textTechPos, fontTech, 1, WHITE);
+
+    // textBox calc :
+    Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
+
+    // Draw text description :
+    float fontDesc = 0.058f * cardWidth;
+    DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
+
+    // float fontTech = 0.050f * cardWidth;
+    // DrawTextBoxed(font, card->technic, (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 1.0f, true, WHITE);
 
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};

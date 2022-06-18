@@ -13,6 +13,12 @@ void drawLifeBar();
 // Draw object of character :
 void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor);
 
+// Draw all items :
+void drawItems();
+
+// Draw choice of current event :
+void drawEventChoice(event *event);
+
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void);
 

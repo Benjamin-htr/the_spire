@@ -21,6 +21,8 @@ static Sprite roomSpriteEnd = {0};
 
 static int roomGapX = -200;
 
+static modalOpen = -1;
+
 // static int etage = 0;
 // static int room = 1;
 
@@ -158,6 +160,15 @@ void drawItems()
         posY += objectsTextures[itemsIdx].height * scaleFactor + gap;
     }
 }
+void drawEventChoice(event *event)
+{
+    modalOpen = 0;
+    // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+    float backgroundWidth = GetScreenWidth() * 0.7f;
+    float backgroundHeight = GetScreenHeight() * 0.7f;
+    Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+    DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+}
 
 //----------------------------------------------------------------------------------
 // Screen functions :
@@ -261,14 +272,14 @@ void DrawGameplayScreen(void)
     int arrowButtonWidth = 72;
     int padding = 4;
 
-    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))
+    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, modalOpen))
     {
         printf("ArrowButton RIGHT\n");
         move_player(game->mapData, room);
     }
     if (etage == 0)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, modalOpen))
         {
             printf("ArrowButton LEFT\n");
             move_player(game->mapData, room + 2);
@@ -276,7 +287,7 @@ void DrawGameplayScreen(void)
     }
     if (room != 0 && etage != 10)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, modalOpen))
         {
             printf("ArrowButton TOP\n");
             move_player(game->mapData, room - 1);
@@ -284,14 +295,16 @@ void DrawGameplayScreen(void)
     }
     if (room != 3 && etage != 10)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, modalOpen))
         {
             printf("ArrowButton BOTTOM\n");
             move_player(game->mapData, room + 1);
         }
     }
-
     drawItems();
+
+    // event *eventExaample = get_random_event();
+    // drawEventChoice(eventExaample);
 }
 void UnloadGameplayScreen(void)
 {

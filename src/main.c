@@ -98,7 +98,7 @@ int main(void)
         buttonInfo.bottom = 60;
 
         // Setup and Init first screen
-        currentScreen = COMBAT;
+        currentScreen = COMBAT_SCREEN;
         InitCombatScreen();
 
         SetTargetFPS(24); // Set our game to run at 60 frames-per-second
@@ -170,7 +170,7 @@ void ChangeToScreen(int screen)
     case GAMEPLAY:
         UnloadGameplayScreen();
         break;
-    case COMBAT:
+    case COMBAT_SCREEN:
         UnloadCombatScreen();
         break;
     case ENDING:
@@ -192,7 +192,7 @@ void ChangeToScreen(int screen)
     case GAMEPLAY:
         InitGameplayScreen();
         break;
-    case COMBAT:
+    case COMBAT_SCREEN:
         InitCombatScreen();
         break;
     case ENDING:
@@ -230,7 +230,7 @@ static void UpdateTransition(void)
             case GAMEPLAY:
                 UnloadGameplayScreen();
                 break;
-            case COMBAT:
+            case COMBAT_SCREEN:
                 UnloadCombatScreen();
                 break;
             case ENDING:
@@ -252,7 +252,7 @@ static void UpdateTransition(void)
             case GAMEPLAY:
                 InitGameplayScreen();
                 break;
-            case COMBAT:
+            case COMBAT_SCREEN:
                 InitCombatScreen();
                 break;
             case ENDING:
@@ -328,7 +328,7 @@ static void UpdateDrawFrame(void)
             // else if (FinishGameplayScreen() == 2) TransitionToScreen(TITLE);
         }
         break;
-        case COMBAT:
+        case COMBAT_SCREEN:
         {
             UpdateCombatScreen();
 
@@ -369,7 +369,7 @@ static void UpdateDrawFrame(void)
     case GAMEPLAY:
         DrawGameplayScreen();
         break;
-    case COMBAT:
+    case COMBAT_SCREEN:
         DrawCombatScreen();
         break;
     case ENDING:

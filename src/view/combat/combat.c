@@ -20,6 +20,10 @@ NPatchInfo cardInfo = {0};
 
 static Sprite ennemySprite = {0};
 
+combat_t *combat = {0};
+
+static int idxHoverCard = -1;
+
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
@@ -91,9 +95,10 @@ void drawStatBoard()
     }
 }
 
-int GuiCard(Vector2 position, float scaleFactor, int forcedState)
+int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
 {
-    card_t *card = importCardFromId(ACCELERATION);
+    idxHoverCard = -1;
+    // card_t *card = importCardFromId(ACCELERATION);
     int manaCost = card->manaCost;
     int energyCost = card->energyCost;
     char *title = card->name;
@@ -104,13 +109,14 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
 
     float cardWidth = (float)cardInfo.source.width * scaleFactor;
     float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
     Rectangle bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
 
-    int state = (forcedState >= 0) ? forcedState : 0; // )NORMAL
+    int state = 0; // )NORMAL
     bool pressed = false;
     // Update control
     //--------------------------------------------------------------------
-    if ((state < 3) && (forcedState < 0))
+    if ((state < 3))
     {
         Vector2 mousePoint = GetMousePosition();
 
@@ -123,7 +129,14 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
                 state = 2;
             }
             else
+            {
+                idxHoverCard = idx;
                 state = 1; // FOCUSED
+                scaleFactor += 0.8f;
+                cardWidth = (float)cardInfo.source.width * scaleFactor;
+                cardHeight = (float)cardInfo.source.height * scaleFactor;
+                position.y = GetScreenHeight() - cardHeight;
+            }
 
             if (IsGestureDetected(GESTURE_TAP))
             {
@@ -133,6 +146,7 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
         }
     }
 
+    bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
     // Draw image card :
     Vector2 imageCardPos = (Vector2){position.x + cardWidth * (8 / 96.0f), position.y + cardHeight * (27 / 156.0f)};
     DrawTextureEx(ImageCardUnknown, imageCardPos, 0, scaleFactor, WHITE);
@@ -149,16 +163,8 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
     DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
-    // float fontDesc = 0.058f * cardWidth;
-    // Vector2 textDescSize = MeasureTextEx(font, TextFormat("%s", card->description), fontDesc, 1);
-    // Vector2 textDescPos = (Vector2){position.x + cardWidth / 2 - (textDescSize.x / 2), position.y + cardHeight * (96 / 156.0f)};
-    // DrawTextEx(font, TextFormat("%s", card->description), textDescPos, fontDesc, 1, WHITE);
-
     // Draw text technique :
     float fontTech = 0.050f * cardWidth;
-    // Vector2 textTechSize = MeasureTextEx(font, TextFormat("%s", card->technic), fontDesc, 1);
-    // Vector2 textTechPos = (Vector2){position.x + cardWidth / 2 - (textTechSize.x / 2), textDescPos.y + textDescSize.y + cardHeight * (5 / 156.0f)};
-    //  DrawTextEx(font, TextFormat("%s", card->technic), textTechPos, fontTech, 1, WHITE);
 
     // textBox calc :
     Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
@@ -167,13 +173,9 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     float fontDesc = 0.058f * cardWidth;
     DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
 
-    // float fontTech = 0.050f * cardWidth;
-    // DrawTextBoxed(font, card->technic, (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 1.0f, true, WHITE);
-
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};
     float scaleEnergyIcon = 0.65f * scaleFactor;
-    // float energyIconWidth = (float)EnergyIcon.width * scaleEnergyIcon;
     float energyIconHeight = (float)EnergyIcon.height * scaleEnergyIcon;
     float gap = (float)((3.0f / 156.0f) * cardHeight);
     for (int i = 0; i < energyCost; i++)
@@ -182,6 +184,32 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     }
 
     return pressed;
+}
+void drawHand(void)
+{
+    float scaleFactor = 1.5f;
+
+    float cardWidth = (float)cardInfo.source.width * scaleFactor;
+    float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
+    int i = 0;
+    float decal = 0.0f;
+    deck_t *myHand = combat->caracter->board->hand;
+    while (myHand != NULL && myHand->data != NULL)
+    {
+        card_t *myCard = myHand->data;
+        if (idxHoverCard != -1 && i > idxHoverCard)
+        {
+            decal += (cardInfo.source.width * (scaleFactor + 0.8f)) - cardWidth;
+        }
+        Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
+        if (GuiCardHand(myCard, position, scaleFactor, i))
+        {
+            displayCard(*myCard);
+        }
+        myHand = myHand->next;
+        i++;
+    }
 }
 
 void InitCombatScreen(void)
@@ -211,6 +239,11 @@ void InitCombatScreen(void)
     cardInfo.bottom = 00;
 
     constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
+
+    entity_t *player = importCaracterFromId(PETER);
+    combat = startCombat(player, player);
+    combat->caracter->board = drawCards(combat->caracter->board);
+    // playTurn(combat, combat->caracter->board);
 }
 void UpdateCombatScreen(void)
 {
@@ -235,15 +268,17 @@ void DrawCombatScreen(void)
     // POUR TEST COMBAT : (A RETIRER PLUS TARD)
     int buttonWidth = 150;
     int buttonHeight = 50;
-    if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "MAP", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth - 10, 10, buttonWidth, buttonHeight}, "MAP", -1))
     {
         finishScreen = 1;
     }
 
-    if (GuiCard((Vector2){50, 50}, 2.0f, -1))
-    {
-        printf("card click");
-    }
+    drawHand();
+
+    // if (GuiCardHand((Vector2){50, 50}, 2.0f, -1))
+    //{
+    //     printf("card click");
+    // }
 }
 void UnloadCombatScreen(void)
 {

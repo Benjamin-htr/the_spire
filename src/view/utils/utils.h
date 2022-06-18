@@ -11,7 +11,7 @@ typedef enum GameScreen
     MENU = 0,
     CREDITS,
     GAMEPLAY,
-    COMBAT,
+    COMBAT_SCREEN,
     ENDING
 } GameScreen;
 

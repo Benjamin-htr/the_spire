@@ -177,7 +177,7 @@ void DrawGameplayScreen(void)
     if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "COMBAT", -1))
     {
         // TransitionToScreen(COMBAT);
-        ChangeToScreen(COMBAT);
+        ChangeToScreen(COMBAT_SCREEN);
     }
 
     // Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);

@@ -17,9 +17,8 @@ void freeGame()
 {
     if (game != NULL)
     {
-        freeEntity(game->caracterData);
-        free(game);
-        game = {0};
+
         printf("free game \n");
+        isLaunched = false;
     }
 }

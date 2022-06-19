@@ -11,7 +11,8 @@ entity_t *initEntity(
     int items[],
     int itemslength,
     int cards[][2],
-    int diffCardSize)
+    int diffCardSize,
+    char *spriteName)
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
@@ -21,6 +22,7 @@ entity_t *initEntity(
     res->effects = initEntityEffectArray();
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
     res->items = importEntityItemFromIdArray(itemslength, items);
+    res->spriteName = spriteName;
     return res;
 }
 
@@ -41,7 +43,8 @@ entity_t *importCaracter(entity_import entitySkel)
         entitySkel.items,
         entitySkel.itemslength,
         entitySkel.cardDeck,
-        entitySkel.diffCardSize);
+        entitySkel.diffCardSize,
+        entitySkel.spriteName);
 }
 
 entity_t *importCaracterFromId(CARACTER_ID id)
@@ -67,7 +70,8 @@ entity_t *importEnemy(enemy_import enemySkel)
         enemySkel.items,
         enemySkel.itemslength,
         enemySkel.cardDeck,
-        enemySkel.diffCardSize);
+        enemySkel.diffCardSize,
+        enemySkel.spriteName);
 }
 
 entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id)
@@ -346,6 +350,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
             {SPECTRUM, 1},
         },
         .diffCardSize = 3,
+        .spriteName = "",
     },
     {
         .name = "Tester",
@@ -369,6 +374,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
             {SPECTRUM, 1},
         },
         .diffCardSize = 3,
+        .spriteName = "",
     },
 };
 enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
@@ -382,6 +388,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 3,
+        .spriteName = "jawurm.png",
     },
     {
         .name = "Blouni",
@@ -392,6 +399,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "blouni.png",
     },
     {
         .name = "Keliko",
@@ -402,6 +410,7 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "keliko.png",
     },
 };
 enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
@@ -414,6 +423,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "jawurm2.png",
     },
     {
         .name = "Redoni",
@@ -424,6 +434,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "redoni.png",
     },
     {
         .name = "Mangoustine",
@@ -433,6 +444,7 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 1,
+        .spriteName = "mangoustine.png",
     },
 };
 enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
@@ -446,6 +458,7 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 3,
+        .spriteName = "eldan.png",
     },
     {
         .name = "Pyrox",
@@ -456,6 +469,7 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "",
     },
 };
 enemy_import BOSS_ENCYCLOPEDIA[] = {
@@ -470,5 +484,6 @@ enemy_import BOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 4,
+        .spriteName = "",
     },
 };

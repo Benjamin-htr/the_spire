@@ -4,13 +4,13 @@
 
 void testFunction()
 {
-    testStat();
-    testEffect();
-    testCard();
-    testDeck();
-    testItem();
-    testEntity();
-    testBoard();
+    // testStat();
+    // testEffect();
+    // testCard();
+    // testDeck();
+    // testItem();
+    // testEntity();
+    // testBoard();
     testCombat();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
     // testPlace();

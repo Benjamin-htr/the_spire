@@ -3,7 +3,9 @@
 #include "./../utils/utils.h"
 #include "./../../model/game/misc/deck/card/card.h"
 #include "./../../model/game/game.h"
+
 #include <stdio.h>
+#include <string.h>
 
 static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
@@ -236,11 +238,21 @@ void InitCombatScreen(void)
     cardInfo.right = 00;
     cardInfo.bottom = 00;
 
-    constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
+    // Enemy example :
+    entity_t *enemy = importEnemyPhase1FromId(KELIKO);
 
+    // We load the ennemy sprite :
+    char *ennemySpritePath = "./asset/monsters/";
+    char *spritePath;
+    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(enemy->spriteName));
+    strcpy(spritePath, ennemySpritePath);
+    strcat(spritePath, enemy->spriteName);
+    printf("%s\n", spritePath);
+    constructSprite(&ennemySprite, spritePath, 4, 1);
+
+    // We start combat :
     combat = startCombat(game->caracterData, game->caracterData);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
-    // playTurn(combat, combat->caracter->board);
 }
 void UpdateCombatScreen(void)
 {

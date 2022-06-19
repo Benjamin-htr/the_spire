@@ -84,27 +84,27 @@ void set_event(map *m){
     boolean *where = event_place();
     int sanctuary = 2;
     int boss = 3;
-    int random = (random%2);
+    int random = 0;
     for (int i = 1; i < MAP_HEIGHT-1; i++)
     {
         for (int j = 0; j < MAP_WIDTH; j++)
         {
             if(m->places[i][j].isWhat == 1){
                 if(where[i-1] == true){
-                    printf("random = %d\n", random);
-                    if(random && sanctuary != 0){
+                    // printf("random = %d\n", random);
+                    if((random%2) && sanctuary != 0){
                         m->places[i][j].isWhat = 2;
                         sanctuary--;
-                    }else if (!random && boss != 0){
+                    }else if (!(random%2) && boss != 0){
                         m->places[i][j].isWhat = 3;
                         boss--;
                     }
-                    random = rand();
-                    if(!random && sanctuary != 0){
-                        random = (random%2)+1;
-                    }if(random && boss != 0){
-                        random = (random%2)+1;
-                    }
+                    random ++;
+                    // if(!random && sanctuary != 0){
+                    //     random = (random%2)+1;
+                    // }if(random && boss != 0){
+                    //     random = (random%2)+1;
+                    // }
                 }
             }
         }
@@ -216,7 +216,7 @@ int map_get(map *map, int x, int y)
 
 void testMap()
 {
-    show_event();
+    Test_EVENT();
     map *m = map_init();
     map_print(m);
     printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);

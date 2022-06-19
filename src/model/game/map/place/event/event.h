@@ -17,7 +17,7 @@ typedef struct {
 
 event *event_init(char* dialogue, option *actions, void* data);
 event *importEvent(event_import event_import_);
-void show_event();
+void Test_EVENT();
 event **import_all_event();
 
 

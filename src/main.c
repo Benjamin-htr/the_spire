@@ -58,7 +58,7 @@ static void DrawTransition(void);   // Draw transition effect (full-screen recta
 
 static void UpdateDrawFrame(void); // Update and draw one frame
 
-const boolean isInNonGraphicalTestes = true;
+const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {

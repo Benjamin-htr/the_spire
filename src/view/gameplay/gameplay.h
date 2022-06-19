@@ -11,7 +11,7 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState);
 void drawLifeBar();
 
 // Draw object of character :
-void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor);
+void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor, int forcedState);
 
 // Draw all items :
 void drawItems();

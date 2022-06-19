@@ -66,9 +66,10 @@ void playCards(combat_t *combat)
     else
     {
         boardToCheck = combat->enemy->board;
-        card = pickCardFromHand(combat->enemy, chooseRandomCardId);
-        playOneCard(combat->enemy, combat->caracter, card);
+        card = pickCardFromHand(combat->enemy, chooseRandomCardId); // CA VIENT SUREMENT DE LA
+        playOneCard(combat->enemy, combat->caracter, card);         // CA VIENT DE LA
     }
+    printf("\n\t\tJ'ai fini de jouer\n");
     moveCardsFromHand(boardToCheck); // on déplace les cartes restantes de la main vers défausse/abysse
 }
 
@@ -104,12 +105,10 @@ card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(deck_t *))
 void testCombat()
 {
     printf("\n==============================\n\tTEST COMBAT\n==============================\n");
-    entity_t *player = importCaracterFromId(PETER);
+    entity_t *player = importCaracterFromId(TEST_CAR);
     // Test peter perd
     // getEntityStat(player, HP)->current = 3;
-    entity_t *enemy = importEnemyPhase1FromId(JAWURM);
-    displayEntity(player);
-    displayEntity(enemy);
+    entity_t *enemy = getRandomEnemyPhase1(); // importEnemyPhase1FromId(JAWURM);
     combat_t *combat = startCombat(player, enemy);
     startFight(combat);
     freeEntity(player);
@@ -118,8 +117,14 @@ void testCombat()
 
 void playTurn(combat_t *combat, entity_t *entity)
 {
+    stat_t *entityHealth = getEntityStat(entity, HP);
     // on applique l'effet de feu et diminue la valeur des effets le necessitant
     turnBeginEffectUpdate(entity);
+    // au cas ou l'entité meurt a cause des ticks de feu
+    if (entityHealth->current <= 0)
+    {
+        return;
+    }
     // On recharge l'energy pour le debut du tour
     refillStat(getEntityStat(entity, ENERGY));
     // On pioche au debut du tour
@@ -135,9 +140,10 @@ void startFight(combat_t *combat)
     stat_t *caracterDodge = getEntityStat(combat->caracter, DODGE);
     stat_t *enemyDodge = getEntityStat(combat->enemy, DODGE);
     int demiturn = 0;
-    while (caracterHealth->current > 0 && enemyHealth->current > 0) // && demiturn < 1)
+    applyAllItemsEffect(combat->caracter, combat->enemy);
+    applyAllItemsEffect(combat->enemy, combat->caracter);
+    while (caracterHealth->current > 0 && enemyHealth->current > 0)
     {
-
         if (!(demiturn % 2))
         {
             printf("\n\t==========================\n*****************TOUR N°%d****************\n\t==========================\n", demiturn / 2);
@@ -148,9 +154,11 @@ void startFight(combat_t *combat)
         printf("%s:\n", combat->caracter->name);
         displayStat(caracterHealth);
         displayStat(caracterDodge);
-        printf("%s:\n", combat->caracter->name);
+        displayEntityEffectArray(combat->caracter->effects);
+        printf("%s:\n", combat->enemy->name);
         displayStat(enemyHealth);
         displayStat(enemyDodge);
+        displayEntityEffectArray(combat->enemy->effects);
         combat->caracterTurn = !combat->caracterTurn;
         demiturn++;
     }

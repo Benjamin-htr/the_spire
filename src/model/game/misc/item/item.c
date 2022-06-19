@@ -33,7 +33,7 @@ void freeItem(item_t *item)
 
 void freeEntityItem(item_t **items)
 {
-    for (int itemsIdx = 0; itemsIdx < 5 && items[itemsIdx]->description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5; itemsIdx++)
     {
         freeItem(items[itemsIdx]);
     }
@@ -58,17 +58,24 @@ item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
     return importItem(ITEM_ENCYCLOPEDIA[itemId]);
 }
 
-item_t **importEntityItemFromIdArray(int itemLength, int itemsId[itemLength])
+item_t **createEmptyEntityItemList()
 {
     item_t **res = malloc(5 * sizeof(item_t *));
     int item_ID;
-    for (item_ID = 0; item_ID < itemLength; item_ID++)
-    {
-        res[item_ID] = importItemFromId(itemsId[item_ID]);
-    };
-    for (; item_ID < 5; item_ID++)
+    for (item_ID = 0; item_ID < 5; item_ID++)
     {
         res[item_ID] = importItemFromId(NONE_ITEM);
+    };
+    return res;
+}
+
+item_t **importItemFromIdArray(int itemLength, int itemsId[itemLength])
+{
+    item_t **res = malloc(itemLength * sizeof(item_t *));
+    int item_ID;
+    for (item_ID = 0; item_ID < itemLength; item_ID++)
+    {
+        res[itemsId[item_ID] - 1] = importItemFromId(itemsId[item_ID]);
     };
     return res;
 }
@@ -87,9 +94,12 @@ void displayEntityItems(item_t **items)
 {
     printf("ITEMS: \n______\n");
 
-    for (int itemsIdx = 0; itemsIdx < 5 && items[itemsIdx]->description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5; itemsIdx++)
     {
-        displayItem(items[itemsIdx]);
+        if (items[itemsIdx]->description != NULL)
+        {
+            displayItem(items[itemsIdx]);
+        }
     }
 }
 
@@ -99,7 +109,7 @@ void testItem()
 {
 
     printf("\n==============================\n\tTEST DE ITEM\n==============================\n");
-    item_t **testItem = importEntityItemFromIdArray(2, (int[]){WEAPON, ARMOR});
+    item_t **testItem = importItemFromIdArray(2, (int[]){WEAPON, ARMOR});
     displayEntityItems(testItem);
     freeEntityItem(testItem);
     // testItem = importItemFromId(WEAPON);

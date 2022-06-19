@@ -106,9 +106,14 @@ void displayEntity(entity_t *entity);
 // METHOD
 
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
-void applyAllItemsEffect(entity_t *entity);
+void applyAllItemsEffect(entity_t *launcher, entity_t *receiver);
+void applyItemMaxEffect(entity_t *launcher, item_t *item);
+void removeItemMaxEffect(entity_t *launcher, item_t *item);
+void addItemtoEntityItemList(entity_t *entity, ITEM_ENCYCLOPEDIA_ID id);
 void turnBeginEffectUpdate(entity_t *entity);
 void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect);
+void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength]);
+void takeDamage(entity_t *entity, int value);
 
 // GETTER / SETTER
 stat_t *getEntityStat(entity_t *entity, stat_ID statId);

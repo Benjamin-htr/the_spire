@@ -50,7 +50,8 @@ item_t *createItem(
 
 item_t *importItem(item_import itemImport);
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId);
-item_t **importEntityItemFromIdArray(int itemLength, int itemsId[itemLength]);
+item_t **importItemFromIdArray(int itemLength, int itemsId[itemLength]);
+item_t **createEmptyEntityItemList();
 
 // DECONSTRUCTOR
 void freeItem(item_t *item);

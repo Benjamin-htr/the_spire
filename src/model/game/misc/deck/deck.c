@@ -23,7 +23,6 @@ deck_t *copyDeck(deck_t *deck)
     deck_t *readingHead = deck->next;
     while (readingHead != NULL)
     {
-        fflush(stdout);
         addCard(res, copyCard(readingHead->data));
         readingHead = readingHead->next;
     }
@@ -61,8 +60,6 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
     {
         for (int cardExemplar = 0; cardExemplar < cardIds[cardIdx][1]; cardExemplar++)
         {
-            // printf("\n%d", cardIds[cardIdx][0]);
-            // fflush(stdout);
             addCard(res, importCardFromId(cardIds[cardIdx][0]));
         }
     }
@@ -125,7 +122,7 @@ card_t *removeFirstCard(deck_t **deck)
         deck_t *tmp = *deck;
         card_t *cardToReturn = tmp->data;
         *deck = (*deck)->next;
-        free(tmp);
+        freeDeck(tmp);
         return cardToReturn;
     }
     return NULL;
@@ -156,7 +153,7 @@ card_t *removeCardatIndex(deck_t **deck, int cardIdx)
                 deck_t *tmp = current->next;
                 card_t *cardToReturn = tmp->data;
                 current->next = current->next->next;
-                free(tmp);
+                freeDeck(tmp);
                 return cardToReturn;
             }
             incrementor++;
@@ -172,7 +169,6 @@ card_t *removeCard(deck_t **deck, char *cardName)
     if (pos == -1)
     {
         printf("La carte n'est pas dans le deck \n");
-        fflush(stdout);
     }
     else
     {
@@ -245,30 +241,31 @@ void swapElements(deck_t *deck, int n, int m)
 void shuffleDeck(deck_t **deck)
 {
     int listSize = getDeckSize(*deck);
-
-    int idDeck1;
-    int idDeck2;
-    for (int i = 0; i < listSize * 10; i++)
+    if (listSize > 5)
     {
-        idDeck1 = rand() % listSize;
-        idDeck2 = rand() % listSize;
-        if (idDeck1 != idDeck2 && (idDeck2 - idDeck1 > 1 || idDeck1 - idDeck2 > 1))
+        int idDeck1;
+        int idDeck2;
+        for (int i = 0; i < listSize * 10; i++)
         {
-            swapElements(*deck, idDeck1, idDeck2);
-        }
+            idDeck1 = rand() % listSize;
+            idDeck2 = rand() % listSize;
+            if (idDeck1 != idDeck2 && (idDeck2 - idDeck1 > 1 || idDeck1 - idDeck2 > 1))
+            {
+                swapElements(*deck, idDeck1, idDeck2);
+            }
+        } // ici on swap le premier element avec l'élement du milieu
+        deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 2)) + 1, *deck);
+        deck_t *middle = beforeMiddleElement->next;
+        deck_t *firstNext = (*deck)->next;
+        (*deck)->next = middle->next;
+        middle->next = firstNext;
+        beforeMiddleElement->next = *deck;
+        *deck = middle;
     }
-    // ici on swap le premier element avec l'élement du milieu
-    deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 2)) + 1, *deck);
-    deck_t *middle = beforeMiddleElement->next;
-    deck_t *firstNext = (*deck)->next;
-    (*deck)->next = middle->next;
-    middle->next = firstNext;
-    beforeMiddleElement->next = *deck;
     // middleElement->next = deck;
     // beforeMiddleElement->next = deck;
     // deck->next = afterMiddleElement;
     // deck = middleElement;
-    *deck = middle;
 }
 
 void testDeck()

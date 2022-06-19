@@ -11,6 +11,12 @@ static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
 static Texture2D EnergyIcon = {0};
 
+static Texture2D strenghtEffect = {0};
+static Texture2D dexterityEffect = {0};
+static Texture2D fireEffect = {0};
+static Texture2D weaknessEffect = {0};
+static Texture2D slowingEffect = {0};
+
 static Texture2D BasicCardPatch = {0};
 static Texture2D CommonCardPatch = {0};
 static Texture2D AtypicCardPatch = {0};
@@ -96,6 +102,19 @@ void drawStatBoard()
     for (int i = 0; i < EnergyActuel; i++)
     {
         DrawTextureEx(EnergyIcon, (Vector2){EnergyPos.x + (EnergyIcon.width * i * scaleMain) + (gap * i), EnergyPos.y}, 0, scaleMain, WHITE);
+    }
+
+    // Draw effects of character :
+    int marginBottom = 15;
+    gap = 18;
+
+    float scaleFactor = 3.0f;
+    float posX = GetScreenWidth() - (16 * scaleFactor) - padding;
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
+    {
+        Vector2 pos = (Vector2){posX, StatBoardPos.y - 16 * scaleFactor - marginBottom};
+        drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, false, -1);
+        posX -= 16 * scaleFactor + gap;
     }
 }
 
@@ -243,7 +262,50 @@ void drawEnnemy(entity_t *entity)
     int hpFontSize = 15;
     Vector2 hpTextSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpFontSize, 1);
     Vector2 hpTextPost = (Vector2){StatBarPos.x + StatBar.width * scaleBar + 10, StatBarPos.y + (StatBar.height * scaleBar / 2) - hpTextSize.y / 2};
-    DrawTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpTextPost, hpFontSize, 1, WHITE);
+    DrawTextEx(font, TextFormat("%d/%d  hp", HpActuel, HpMax), hpTextPost, hpFontSize, 1, WHITE);
+
+    // Draw effects of character :
+    int marginRight = 50;
+    int gap = 18;
+
+    float scaleFactor = 3.0f;
+    float posX = ennemyPos.x - (16 * scaleFactor) - marginRight;
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
+    {
+        Vector2 pos = (Vector2){posX, ennemyNamePos.y};
+        drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, true, -1);
+        posX -= 16 * scaleFactor + gap;
+    }
+}
+void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState)
+{
+    Texture2D textureEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FORCE"))
+        textureEffect = strenghtEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "DEXTERITE"))
+        textureEffect = dexterityEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FEU"))
+        textureEffect = fireEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FAIBLESSE"))
+        textureEffect = weaknessEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "LENTEUR"))
+        textureEffect = slowingEffect;
+
+    DrawTextureEx(textureEffect, position, 0, scaleFactor, WHITE);
+
+    Rectangle bounds = (Rectangle){position.x, position.y, textureEffect.width * scaleFactor, textureEffect.height * scaleFactor};
+
+    Vector2 mousePoint = GetMousePosition();
+    // Check if hover :
+    if (CheckCollisionPointRec(mousePoint, bounds) && forcedState < 0)
+    {
+        int rectWidth = 150;
+        int rectHeight = 100;
+        float posX = alignLeft ? bounds.x : (bounds.x + bounds.width) - rectWidth;
+        Rectangle hoverRect = (Rectangle){posX, bounds.y + bounds.height + 10, rectWidth, rectHeight};
+        DrawRectangleRec(hoverRect, GetColor(0x242424ff));
+        DrawTextBoxed(font, TextFormat("%s", "Test"), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
+    }
 }
 
 void InitCombatScreen(void)
@@ -254,6 +316,13 @@ void InitCombatScreen(void)
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+
+    // Effects texture loading :
+    strenghtEffect = LoadTexture("./asset/Misc/Effect/strength.png");
+    dexterityEffect = LoadTexture("./asset/Misc/Effect/dexterity.png");
+    fireEffect = LoadTexture("./asset/Misc/Effect/Fire.png");
+    weaknessEffect = LoadTexture("./asset/Misc/Effect/Weak.png");
+    slowingEffect = LoadTexture("./asset/Misc/Effect/Slow.png");
 
     // Cards textures loading :
     BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
@@ -287,6 +356,8 @@ void InitCombatScreen(void)
     // We start combat :
     combat = startCombat(game->caracterData, game->caracterData);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+
+    displayEntityEffectArray(game->caracterData->effects);
 }
 void UpdateCombatScreen(void)
 {

@@ -32,6 +32,7 @@ static int idxHoverCard = -1;
 //----------------------------------------------------------------------------------
 static int finishScreen = 0;
 
+// Draw stats of the player :
 void drawStatBoard()
 {
     int HpMax = getEntityStat(game->caracterData, HP)->max;
@@ -98,6 +99,7 @@ void drawStatBoard()
     }
 }
 
+// Draw one card of the hand player :
 int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
 {
     idxHoverCard = -1;
@@ -185,6 +187,8 @@ int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
 
     return pressed;
 }
+
+// Draw all cards of the hand player :
 void drawHand(void)
 {
     float scaleFactor = 1.5f;
@@ -210,6 +214,36 @@ void drawHand(void)
         myHand = myHand->next;
         i++;
     }
+}
+
+void drawEnnemy(entity_t *entity)
+{
+    float fontNameSize = 20;
+    float scaleEnnemy = 3.0f;
+
+    Vector2 ennemyNameSize = MeasureTextEx(font, TextFormat("%s", entity->name), fontNameSize, 1);
+    Vector2 ennemyNamePos = (Vector2){GetScreenWidth() / 2 - ennemyNameSize.x / 2, 15};
+    DrawTextEx(font, TextFormat("%s", entity->name), ennemyNamePos, fontNameSize, 1, WHITE);
+
+    const Vector2 ennemyPos = {ennemyNamePos.x + (ennemyNameSize.x / 2) - ennemySprite.frameRec.width * scaleEnnemy / 2, ennemyNamePos.y + ennemyNameSize.y + 3};
+    drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
+
+    int HpMax = getEntityStat(entity, HP)->max;
+    int HpActuel = getEntityStat(entity, HP)->current;
+
+    float scaleBar = 2.0f;
+
+    Vector2 StatBarPos = (Vector2){(ennemyPos.x + ennemySprite.frameRec.width * scaleEnnemy / 2) - (StatBar.width * scaleBar / 2), ennemyPos.y + ennemySprite.frameRec.height * scaleEnnemy + 10};
+
+    float HpBarWidth = (float)HpActuel / (float)HpMax * StatBar.width * scaleBar * 0.8f;
+    DrawRectangle(StatBarPos.x + StatBar.width * scaleBar / 10, StatBarPos.y + StatBar.height * scaleBar * 0.2f, HpBarWidth, StatBar.height * scaleBar * 0.6f, RED);
+
+    DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
+
+    int hpFontSize = 15;
+    Vector2 hpTextSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpFontSize, 1);
+    Vector2 hpTextPost = (Vector2){StatBarPos.x + StatBar.width * scaleBar + 10, StatBarPos.y + (StatBar.height * scaleBar / 2) - hpTextSize.y / 2};
+    DrawTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpTextPost, hpFontSize, 1, WHITE);
 }
 
 void InitCombatScreen(void)
@@ -265,12 +299,7 @@ void UpdateCombatScreen(void)
 }
 void DrawCombatScreen(void)
 {
-
     ClearBackground(GetColor(0x3f3f74ff));
-
-    float scaleEnnemy = 3.0f;
-    const Vector2 ennemyPos = {GetScreenWidth() / 2 - ennemySprite.frameRec.width * scaleEnnemy / 2, 20};
-    drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
 
     drawStatBoard();
 
@@ -282,6 +311,7 @@ void DrawCombatScreen(void)
         finishScreen = 1;
     }
 
+    drawEnnemy(combat->enemy);
     drawHand();
 }
 void UnloadCombatScreen(void)

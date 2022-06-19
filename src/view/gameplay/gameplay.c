@@ -21,7 +21,8 @@ static Sprite roomSpriteEnd = {0};
 
 static int roomGapX = -200;
 
-static modalOpen = -1;
+static int modalOpen = -1;
+static event *eventExample = {0};
 
 // static int etage = 0;
 // static int room = 1;
@@ -168,6 +169,39 @@ void drawEventChoice(event *event)
     float backgroundHeight = GetScreenHeight() * 0.7f;
     Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
     DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+
+    float margin = 0.05f;
+    // Draw event description :
+    Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
+    DrawTextBoxed(font, TextFormat("%s", event->dialogue), boundsDesc, 22, 1.0f, true, WHITE);
+
+    // Event choices options :
+    float marginTopTextAction = 0.15f;
+    float actionTextWidth = backgroundWidth * 0.35f;
+    float actionTextHeight = backgroundHeight * 0.30f;
+    float posY = boundsDesc.y + boundsDesc.height + (backgroundHeight * marginTopTextAction);
+    float gapX = backgroundWidth - actionTextWidth * 2 - (backgroundWidth * margin * 2);
+    //  Draw event text choices :
+    Rectangle boundsAction1 = (Rectangle){backgroundRect.x + (margin * backgroundWidth), posY, actionTextWidth, actionTextHeight};
+    DrawTextBoxed(font, TextFormat("%s", event->actions[0].label), boundsAction1, 17, 1.0f, true, WHITE);
+
+    Rectangle boundsAction2 = (Rectangle){boundsAction1.x + boundsAction1.width + gapX, posY, actionTextWidth, actionTextHeight};
+    DrawTextBoxed(font, TextFormat("%s", event->actions[1].label), boundsAction2, 17, 1.0f, true, WHITE);
+
+    // Draw button choices :
+    float marginTopButton = 0.10f;
+    posY = posY + actionTextHeight + (backgroundHeight * marginTopButton);
+    float buttonHeight = 60;
+    float buttonWidth = backgroundWidth * 0.20f;
+
+    if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+    {
+        printf("Choix 1 \n");
+    }
+    if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+    {
+        printf("Choix 2 \n");
+    }
 }
 
 //----------------------------------------------------------------------------------
@@ -205,6 +239,9 @@ void InitGameplayScreen(void)
         strcat(texturePath, game->caracterData->items[itemsIdx]->imageName);
         objectsTextures[itemsIdx] = LoadTexture(texturePath);
     }
+
+    eventExample = importEvent(EVENT_ENCYCLOPEDIA[1]);
+    // eventExample = get_random_event();
 }
 void UpdateGameplayScreen(void)
 {
@@ -303,8 +340,7 @@ void DrawGameplayScreen(void)
     }
     drawItems();
 
-    // event *eventExaample = get_random_event();
-    // drawEventChoice(eventExaample);
+    drawEventChoice(eventExample);
 }
 void UnloadGameplayScreen(void)
 {

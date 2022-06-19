@@ -1,6 +1,7 @@
 #ifndef OPTION
 #define OPTION
 
+
 typedef void*(*action_t)();
 
 typedef struct

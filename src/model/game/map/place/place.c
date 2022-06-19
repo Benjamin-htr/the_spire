@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "./event/event.h"
-
 #include "place.h"
 
 
@@ -21,7 +19,11 @@ place test(){
     return place_init(0, NULL, NULL);
 }
 
+
+
 void testPlace(){
     place p = test();
     printf("%d\n", p.isWhat);
 }
+
+

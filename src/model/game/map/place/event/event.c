@@ -25,7 +25,7 @@ event *event_init(char *dialogue, option *actions, void *data)
 }
 event *get_random_event()
 {
-    return importEvent(EVENT_ENCYCLOPEDIA[((rand() % NB_EVENT))]);
+    return importEvent(EVENT_ENCYCLOPEDIA[((rand() % (NB_EVENT - 1)) + 2)]);
 }
 
 event **import_all_event()
@@ -66,6 +66,7 @@ void Test_EVENT()
         printf("dialogue = %s\n", po[i]->dialogue);
         printf("action 1 = %s\naction 2 = %s\n", po[i]->actions[0]->label, po[i]->actions[1]->label);
     }
+    po[0]->actions[0]->action();
 }
 
 void show_event(event *ev)
@@ -90,6 +91,14 @@ event *get_sanctuary()
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
 
+
+void * do_nothing(){
+    printf("do nothing\n");
+    return NULL;
+}
+
+
+
 event_import EVENT_ENCYCLOPEDIA[] = {
 
     {
@@ -97,11 +106,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Lancer un combat contre un miniboss (gains normaux en cas de victoire)",
-                .action = &get_mini_boss,
+                .action = &do_nothing,
             },
             {
                 .label = "Ne pas faire le combat et avancer normalement",
-                .action = NULL,
+                .action = &do_nothing,
             },
         },
         .data = NULL, // get random miniboss if event is miniboss
@@ -111,11 +120,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Dormir pour regagner la moitié de ses HP max",
-                .action = NULL,
+                .action = &do_nothing,
             },
             {
                 .label = "Méditer pour retirer une carte du deck principal (afin d'avoir de meilleurs chances de piocher les cartes plus fortes)",
-                .action = NULL,
+                .action = &do_nothing,
             },
         },
         .data = NULL,
@@ -125,11 +134,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Entrer dans le téléporteur et aller dans une pièce adjacente (possibilités égales d'avancer, revenir en arrière ou de rester au même niveau)",
-                .action = NULL,
+                .action = &do_nothing,
             },
             {
                 .label = "Dépenser 10 points de vie pour garantir d’aller à un endroit choisi",
-                .action = NULL,
+                .action = &do_nothing,
             },
         },
         .data = NULL,
@@ -139,11 +148,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Transforme tous les strikes en esquives",
-                .action = NULL,
+                .action = &do_nothing,
             },
             {
                 .label = "Transforme tous les esquives en strikes",
-                .action = NULL,
+                .action = &do_nothing,
             },
         },
         .data = NULL,
@@ -153,11 +162,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Faire une potion de santé (hp max +10) ",
-                .action = NULL,
+                .action = &do_nothing,
             },
             {
-                .label = "Faire une potion de mana (mana max +2O",
-                .action = NULL,
+                .label = "Faire une potion de mana (mana max +2O)",
+                .action = &do_nothing,
             },
         },
         .data = NULL,

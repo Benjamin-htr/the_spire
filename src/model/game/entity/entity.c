@@ -21,7 +21,7 @@ entity_t *initEntity(
     res->stats = initEntityStatFromArray(stats);
     res->effects = initEntityEffectArray();
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
-    res->items = importEntityItemFromIdArray(itemslength, items);
+    importEntityItemFromIdArray(res, itemslength, items);
     res->spriteName = spriteName;
     return res;
 }
@@ -155,17 +155,55 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 }
 
 // dupplication de code pas ouf :/
-void applyAllItemsEffect(entity_t *entity)
+void applyAllItemsEffect(entity_t *launcher, entity_t *receiver)
 {
-    for (int itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx]->description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && launcher->items[itemsIdx]->description != NULL; itemsIdx++)
     {
-        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx]->launcherEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < launcher->items[itemsIdx]->launcherEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx]->launcherEffects[itemEffectIdx]);
+            if (
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id < HP_MAX_E ||
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id > ENERGY_MAX_E)
+            {
+                mergeEffect(launcher, launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]);
+            }
         }
-        for (int itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx]->receiverEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < launcher->items[itemsIdx]->receiverEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx]->receiverEffects[itemEffectIdx]);
+            if (
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id < HP_MAX_E ||
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id > ENERGY_MAX_E)
+            {
+                mergeEffect(receiver, launcher->items[itemsIdx]->receiverEffects[itemEffectIdx]);
+            }
+        }
+    }
+}
+
+void applyItemMaxEffect(entity_t *launcher, item_t *item)
+{
+    for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
+    {
+
+        if (
+            item->launcherEffects[itemEffectIdx]->id >= HP_MAX_E &&
+            item->launcherEffects[itemEffectIdx]->id <= ENERGY_MAX_E)
+        {
+            mergeEffect(launcher, item->launcherEffects[itemEffectIdx]);
+        }
+    }
+}
+
+void removeItemMaxEffect(entity_t *launcher, item_t *item)
+{
+    for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
+    {
+
+        if (
+            item->launcherEffects[itemEffectIdx]->id >= HP_MAX_E &&
+            item->launcherEffects[itemEffectIdx]->id <= ENERGY_MAX_E)
+        {
+            mergeEffect(launcher, item->launcherEffects[itemEffectIdx]);
         }
     }
 }
@@ -183,7 +221,7 @@ void turnBeginEffectUpdate(entity_t *entity)
     effect_t *entityFIRE = getEntityEffect(entity, FIRE_E);
     effect_t *entityWEAK = getEntityEffect(entity, WEAK_E);
     effect_t *entitySLOW = getEntityEffect(entity, SLOW_E);
-    takeDamage(entity, entityFIRE->value);
+    takeDamage(entity, -entityFIRE->value);
     entityFIRE->value = floor(entityFIRE->value / 2.0);
     if (entitySLOW->value > 0)
     {
@@ -201,22 +239,18 @@ void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect)
     effect_t *entityDex = getEntityEffect(entity, DEX_E);
     effect_t *entityWeak = getEntityEffect(entity, WEAK_E);
     effect_t *entitySlow = getEntityEffect(entity, SLOW_E);
-    if (cardEffect->value < 0)
+    if (cardEffect->id == DODGE_E && cardEffect->value > 0)
     {
-        if (cardEffect->id == DODGE_E)
-        {
-            cardEffect->value = ceil(((cardEffect->value + entityDex->value) / (entitySlow->value ? 2.0 : 1.0)));
-        }
-        else if (cardEffect->id == HP_E)
-        {
-            cardEffect->value = floor(((cardEffect->value + entityStr->value) * (entityWeak->value ? 0.75 : 1.0)));
-        }
+        cardEffect->value = ceil(((cardEffect->value + entityDex->value) / (entitySlow->value ? 2.0 : 1.0)));
+    }
+    else if (cardEffect->id == HP_E && cardEffect->value < 0)
+    {
+        cardEffect->value = floor(((cardEffect->value - entityStr->value) * (entityWeak->value ? 0.75 : 1.0)));
     }
 }
 
 void mergeEffect(entity_t *entity, effect_t *effect)
 {
-    fflush(stdout);
     if (effect->id == HP_E && effect->value < 0)
     {
         takeDamage(entity, effect->value);
@@ -260,20 +294,50 @@ card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de fre
 {
     card_t *res = copyCard(card);
     effect_t *cardEffect;
-    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
+    for (int launcherEffectID = 0; launcherEffectID < res->launcherEffectsSize; launcherEffectID++)
     {
-        cardEffect = card->launcherEffects[launcherEffectID];
+        cardEffect = res->launcherEffects[launcherEffectID];
         updateCardEffectWithEntityEffect(entity, cardEffect);
     }
-    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < res->receiverEffectsSize; receiverEffectID++)
     {
-        cardEffect = card->receiverEffects[receiverEffectID];
+        cardEffect = res->receiverEffects[receiverEffectID];
         updateCardEffectWithEntityEffect(entity, cardEffect);
     }
     return res;
 }
 
 //      SETTER
+
+void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength])
+{
+    // item_t **res = malloc(5 * sizeof(item_t *));
+    // int item_ID;
+    // for (item_ID = 0; item_ID < itemLength; item_ID++)
+    // {
+    //     res[item_ID] = importItemFromId(itemsId[item_ID]);
+    // };
+    // for (; item_ID < 5; item_ID++)
+    // {
+    //     res[item_ID] = importItemFromId(NONE_ITEM);
+    // };
+    // return res;
+    entity->items = createEmptyEntityItemList();
+    for (int item_ID = 0; item_ID < itemLength; item_ID++)
+    {
+        addItemtoEntityItemList(entity, itemsId[item_ID]);
+    };
+}
+
+void addItemtoEntityItemList(entity_t *entity, ITEM_ENCYCLOPEDIA_ID id)
+{
+    if (entity->items[id - 1]->description == NULL)
+    {
+        freeItem(entity->items[id - 1]);
+        entity->items[id - 1] = importItemFromId(id);
+        applyItemMaxEffect(entity, entity->items[id - 1]);
+    }
+}
 
 // TEST
 
@@ -311,14 +375,21 @@ void testEntity()
 {
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
-    // entity_t *testPeter = importCaracterFromId(PETER);
-    getEntityStat(testCar, DODGE)->current = 3;
+    entity_t *testPeter = getRandomEnemyPhase1();
+    entity_t *testPeter2 = getRandomEnemyPhase1();
+    entity_t *testPeter3 = getRandomEnemyPhase1(); // importEnemyPhase1FromId(KELIKO);
+    // getEntityStat(testCar, DODGE)->current = 3;
     displayEntity(testCar);
+    applyAllItemsEffect(testCar, testCar);
     takeDamage(testCar, -10);
     displayEntity(testCar);
-    // displayEntity(testPeter);
+    displayEntity(testPeter);
+    displayEntity(testPeter2);
+    displayEntity(testPeter3);
     freeEntity(testCar);
-    // freeEntity(testPeter);
+    freeEntity(testPeter);
+    freeEntity(testPeter2);
+    freeEntity(testPeter3);
     // entity_t *testCar2 = importCaracterFromId(PETER);
     // // entity_t *testEnemy = getRandomMiniBoss();
     // displayEntity(testCar2);
@@ -337,8 +408,8 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
         .stats = {
             {75, false},
             {999, true},
-            {3, true},
             {100, true},
+            {3, true},
         },
         .items = {
             LUNCH_BOX,
@@ -357,8 +428,8 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
         .stats = {
             {75, false},
             {999, true},
-            {3, true},
             {100, true},
+            {3, true},
         },
         .items = {
             LUNCH_BOX,

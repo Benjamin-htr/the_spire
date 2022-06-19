@@ -273,7 +273,7 @@ void drawEnnemy(entity_t *entity)
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
         Vector2 pos = (Vector2){posX, ennemyNamePos.y};
-        drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, true, -1);
+        drawEffect(entity->effects[effectIdx], pos, scaleFactor, true, -1);
         posX -= 16 * scaleFactor + gap;
     }
 }
@@ -342,7 +342,9 @@ void InitCombatScreen(void)
     cardInfo.bottom = 00;
 
     // Enemy example :
-    entity_t *enemy = importEnemyPhase1FromId(KELIKO);
+    // entity_t *enemy = importEnemyPhase1FromId(BLOUNI);
+    // entity_t *enemy = importMiniBossFromId(PYROX);
+    entity_t *enemy = importBOSSFromId(GARDIAN_PLUME);
 
     // We load the ennemy sprite :
     char *ennemySpritePath = "./asset/monsters/";
@@ -351,10 +353,10 @@ void InitCombatScreen(void)
     strcpy(spritePath, ennemySpritePath);
     strcat(spritePath, enemy->spriteName);
     printf("%s\n", spritePath);
-    constructSprite(&ennemySprite, spritePath, 4, 1);
+    constructSprite(&ennemySprite, spritePath, enemy->nbSpritePerLine, 1);
 
     // We start combat :
-    combat = startCombat(game->caracterData, game->caracterData);
+    combat = startCombat(game->caracterData, enemy);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
 
     displayEntityEffectArray(game->caracterData->effects);

@@ -51,6 +51,7 @@ typedef struct
     stat_t **stats;
     board_t *board;
     char *spriteName;
+    int nbSpritePerLine;
 } entity_t;
 
 typedef struct
@@ -62,6 +63,7 @@ typedef struct
     int diffCardSize;
     int stats[4][2];
     char *spriteName;
+    int nbSpritePerLine;
 } entity_import;
 
 typedef struct
@@ -73,6 +75,7 @@ typedef struct
     int cardDeck[4][2];
     int diffCardSize;
     char *spriteName;
+    int nbSpritePerLine;
 } enemy_import;
 
 // CONSTRUCTORS
@@ -83,7 +86,8 @@ entity_t *initEntity(
     int itemslength,
     int cards[][2],
     int diffCardSize,
-    char *spriteName);
+    char *spriteName,
+    int nbSpritePerLine);
 
 entity_t *importCaracter(entity_import entitySkel);
 entity_t *importCaracterFromId(CARACTER_ID id);

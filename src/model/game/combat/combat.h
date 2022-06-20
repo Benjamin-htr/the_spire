@@ -15,10 +15,12 @@ combat_t *startCombat(entity_t *caracter, entity_t *enemy);
 
 void playTurn(combat_t *combat, entity_t *entity);
 
-int getChoosenCardId(deck_t *hand);
-int chooseRandomCardId(deck_t *hand);
+// to remove when GUI in place
+int getChoosenCardId(board_t *board);
+int getChoosenRewardCardId(deck_t *deck);
+int chooseRandomCardId(board_t *board);
 
-card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(deck_t *));
+card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(board_t *));
 
 void playCards(combat_t *combat);
 

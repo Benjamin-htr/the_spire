@@ -31,7 +31,7 @@ int *playable_move(map *m);
 position_player player_position(map *ma);
 boolean check_map(map *m, int y);
 void map_print(map *m);
-void * teleporter(map *m);
+void *teleporter(map *m);
 
 // map *newTree(double value, map *left, map *right);
 // map *putToLeft(map *arbre, double value);

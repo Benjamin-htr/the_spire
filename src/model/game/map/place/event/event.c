@@ -115,19 +115,23 @@ void *do_nothing(entity_t *peter, ...)
 
 void *sanctuary_life_refill(entity_t *peter, ...)
 {
-
+    printf("sanctuary life refill\n");
+    refillStat(getEntityStat(peter,HP));
     // get fonction from hugo
     return NULL;
 }
 
 void *sanctuary_mana_refill(entity_t *peter, ...)
 {
+    printf("sanctuary mana refill\n");
+    refillStat(getEntityStat(peter,MANA));
     // get fonction from hugo
     return NULL;
 }
 
 void *transform_striketododge(entity_t *peter, ...)
 {
+    printf("transform striketododge\n");
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;
@@ -135,6 +139,7 @@ void *transform_striketododge(entity_t *peter, ...)
 
 void *transform_dodgetostrike(entity_t *peter, ...)
 {
+    printf("transform dodgetostrike\n");
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;
@@ -142,12 +147,14 @@ void *transform_dodgetostrike(entity_t *peter, ...)
 
 void *mana_max_refill(entity_t *peter, ...)
 {
+    printf("mana max refill\n");
     updateStat(getEntityStat(peter, MANA), 20, true);
     return NULL;
 }
 
 void *life_max_refill(entity_t *peter, ...)
 {
+    printf("life max refill\n");
     // get fonction from hugo
     updateStat(getEntityStat(peter, HP), 10, true);
     return NULL;
@@ -155,12 +162,14 @@ void *life_max_refill(entity_t *peter, ...)
 
 void *no_tp(entity_t *peter, ...)
 {
+    printf("no tp\n");
     updateStat(getEntityStat(peter, HP), -10, false);
     return NULL;
 }
 
 void *tp(entity_t *peter, ...)
 {
+    printf("tp\n");
     printf("%s\n", peter->name);
     return (int *) 1;
 }

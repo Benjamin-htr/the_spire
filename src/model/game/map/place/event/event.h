@@ -1,9 +1,7 @@
 #ifndef EVENT
 #define EVENT
 
-// #include "select.h"
 #include "../../../../misc/select/option/option.h"
-// #include "../../map.h"
 
 typedef struct
 {

@@ -11,7 +11,7 @@ typedef enum GameScreen
     MENU = 0,
     CREDITS,
     GAMEPLAY,
-    COMBAT,
+    COMBAT_SCREEN,
     ENDING
 } GameScreen;
 
@@ -62,5 +62,9 @@ bool GuiButton(Rectangle bounds, const char *text, int forcedState);
 void TransitionToScreen(int screen); // Request transition to next screen
 
 void drawInGameMenu();
+
+void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
+
+void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);
 
 #endif

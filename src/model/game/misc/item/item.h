@@ -17,41 +17,50 @@ typedef enum
 typedef struct
 {
     char *name;
-    effect_t *launcherEffects;
-    size_t launcherEffectsSize;
-    effect_t *receiverEffects;
-    size_t receiverEffectsSize;
+    effect_t **launcherEffects;
+    int launcherEffectsSize;
+    effect_t **receiverEffects;
+    int receiverEffectsSize;
     char *technic;
     char *description;
+    char *imageName;
 } item_t;
 
 typedef struct
 {
     char *name;
     int launcherEffects[6][2];
-    size_t launcherEffectsSize;
+    int launcherEffectsSize;
     int receiverEffects[6][2];
-    size_t receiverEffectsSize;
+    int receiverEffectsSize;
     char *technic;
     char *description;
+    char *imageName;
 } item_import;
 
 item_t *createItem(
     char *name,
-    int launcherEffects[6][2],
-    size_t launcherEffectsSize,
-    int receiverEffects[6][2],
-    size_t receiverEffectsSize,
+    int launcherEffectsSize,
+    int launcherEffects[launcherEffectsSize][2],
+    int receiverEffectsSize,
+    int receiverEffects[receiverEffectsSize][2],
     char *technic,
-    char *description);
+    char *description,
+    char *imageName);
 
 item_t *importItem(item_import itemImport);
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId);
-item_t *importItemFromIdArray(int itemsId[], int itemLength);
+item_t **importItemFromIdArray(int itemLength, int itemsId[itemLength]);
+item_t **createEmptyEntityItemList();
+
+// DECONSTRUCTOR
+void freeItem(item_t *item);
+void freeEntityItem(item_t **items);
 
 // DISPLAY FUNCTION
 
-void displayItem(item_t item);
+void displayItem(item_t *item);
+void displayEntityItems(item_t **items);
 
 // TEST FUNCTION
 

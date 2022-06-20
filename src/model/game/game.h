@@ -13,10 +13,12 @@ typedef struct
 // Global Variables Declaration (shared by several modules)
 //----------------------------------------------------------------------------------
 extern Game *game;
+extern boolean isLaunched;
 
 //----------------------------------------------------------------------------------
 // Functions declarations
 //----------------------------------------------------------------------------------
 void initGame();
+void freeGame();
 
 #endif

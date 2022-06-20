@@ -55,10 +55,10 @@ typedef struct
     int manaCost;
     int energyCost;
     boolean isAbyssal;
-    effect_t *launcherEffects;
-    size_t launcherEffectsSize;
-    effect_t *receiverEffects;
-    size_t receiverEffectsSize;
+    effect_t **launcherEffects;
+    int launcherEffectsSize;
+    effect_t **receiverEffects;
+    int receiverEffectsSize;
     char *technic;
     char *description;
 } card_t;
@@ -71,9 +71,9 @@ typedef struct
     int energyCost;
     boolean isAbyssal;
     int launcherEffects[6][2];
-    size_t launcherEffectsSize;
+    int launcherEffectsSize;
     int receiverEffects[6][2];
-    size_t receiverEffectsSize;
+    int receiverEffectsSize;
     char *technic;
     char *description;
 } card_import;
@@ -86,18 +86,25 @@ card_t *createCard(
     int energyCost,
     boolean isAbyssal,
     int launcherEffects[][2],
-    size_t launcherEffectsSize,
+    int launcherEffectsSize,
     int receiverEffects[][2],
-    size_t receiverEffectsSize,
+    int receiverEffectsSize,
     char *technic,
     char *description);
 
+// DECONSTRUCTOR
+void freeCard(card_t *card);
+
 card_t *importCard(card_import cardImport);
 card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId);
+card_t *copyCard(card_t *cardToCopy);
+
+// GETTER
+int getRandomPlayerCardId();
 
 // DISPLAY FUNCTION
 
-void displayCard(card_t card);
+void displayCard(card_t *card);
 
 // TEST FUNCTION
 

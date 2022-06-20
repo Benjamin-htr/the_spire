@@ -1,10 +1,9 @@
-#include "./../../../include/raylib.h"
 #include "gameplay.h"
 #include "./../utils/utils.h"
-#include "./../../model/game/game.h"
 #include "./../../model/game/map/map.h"
 
 #include <stdio.h>
+#include <string.h>
 
 static int finishScreen = 0;
 
@@ -12,6 +11,7 @@ static Texture2D arrowButtonBack = {0};
 static Texture2D arrow = {0};
 static Texture2D StatBar = {0};
 static Texture2D HeartIcon = {0};
+static Texture2D objectsTextures[5];
 
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
@@ -20,6 +20,12 @@ static Sprite roomSprite2Doors_bottom_blocked = {0};
 static Sprite roomSpriteEnd = {0};
 
 static int roomGapX = -200;
+
+// Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back)
+static int backInteractState = -1;
+static boolean modalClose = false;
+
+static event *eventExample = {0};
 
 // static int etage = 0;
 // static int room = 1;
@@ -95,8 +101,8 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 }
 void drawLifeBar()
 {
-    int HpMax = 75;
-    int HpActuel = 10;
+    int HpMax = getEntityStat(game->caracterData, HP)->max;
+    int HpActuel = getEntityStat(game->caracterData, HP)->current;
 
     float scaleBar = 4.0f;
     float scaleHeart = 3.0f;
@@ -118,6 +124,96 @@ void drawLifeBar()
     DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
 }
 
+void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor, int forcedState)
+{
+    int gap = 20;
+    DrawTextureEx(texture, position, 0, scaleFactor, WHITE);
+
+    int fontSize = 20;
+    Vector2 textSize = MeasureTextEx(font, TextFormat("%s", item->name), fontSize, 1);
+    Vector2 textPos = (Vector2){position.x - textSize.x - gap, position.y + (texture.height * scaleFactor / 2) - textSize.y / 2};
+    DrawTextEx(font, TextFormat("%s", item->name), textPos, fontSize, 1, LIGHTGRAY);
+
+    Rectangle bounds = (Rectangle){textPos.x, position.y, textSize.x + gap + texture.width * scaleFactor, texture.height * scaleFactor};
+
+    Vector2 mousePoint = GetMousePosition();
+    // Check if hover :
+    if (CheckCollisionPointRec(mousePoint, bounds) && forcedState < 0)
+    {
+
+        Rectangle hoverRect = (Rectangle){bounds.x - 300 - 20, bounds.y, 300, 140};
+        DrawRectangleRec(hoverRect, GetColor(0x242424ff));
+        DrawTextBoxed(font, TextFormat("%s :\n%s", item->technic, item->description), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 18, 1.0f, true, WHITE);
+    }
+}
+void drawItems()
+{
+    int padding = 10;
+    int fontSize = 25;
+    char *text = "Liste des objets :";
+    Vector2 textSize = MeasureTextEx(font, text, fontSize, 1.0f);
+    DrawTextEx(font, text, (Vector2){GetScreenWidth() - textSize.x - padding * 8, padding}, fontSize, 1, LIGHTGRAY);
+
+    float scaleFactor = 2.0f;
+    float posY = textSize.y + padding + 20;
+    int gap = 25;
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        Vector2 pos = (Vector2){GetScreenWidth() - objectsTextures[itemsIdx].width * scaleFactor - padding, posY};
+        drawItem(game->caracterData->items[itemsIdx], objectsTextures[itemsIdx], pos, scaleFactor, backInteractState);
+        posY += objectsTextures[itemsIdx].height * scaleFactor + gap;
+    }
+}
+void drawEventChoice(event *event)
+{
+    if (!modalClose)
+    {
+        backInteractState = 0;
+        // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+        float backgroundWidth = GetScreenWidth() * 0.7f;
+        float backgroundHeight = GetScreenHeight() * 0.7f;
+        Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+        DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+
+        float margin = 0.05f;
+        // Draw event description :
+        Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
+        DrawTextBoxed(font, TextFormat("%s", event->dialogue), boundsDesc, 22, 1.0f, true, WHITE);
+
+        // Event choices options :
+        float marginTopTextAction = 0.15f;
+        float actionTextWidth = backgroundWidth * 0.35f;
+        float actionTextHeight = backgroundHeight * 0.30f;
+        float posY = boundsDesc.y + boundsDesc.height + (backgroundHeight * marginTopTextAction);
+        float gapX = backgroundWidth - actionTextWidth * 2 - (backgroundWidth * margin * 2);
+        //  Draw event text choices :
+        Rectangle boundsAction1 = (Rectangle){backgroundRect.x + (margin * backgroundWidth), posY, actionTextWidth, actionTextHeight};
+        DrawTextBoxed(font, TextFormat("%s", event->actions[0].label), boundsAction1, 17, 1.0f, true, WHITE);
+
+        Rectangle boundsAction2 = (Rectangle){boundsAction1.x + boundsAction1.width + gapX, posY, actionTextWidth, actionTextHeight};
+        DrawTextBoxed(font, TextFormat("%s", event->actions[1].label), boundsAction2, 17, 1.0f, true, WHITE);
+
+        // Draw button choices :
+        float marginTopButton = 0.10f;
+        posY = posY + actionTextHeight + (backgroundHeight * marginTopButton);
+        float buttonHeight = 60;
+        float buttonWidth = backgroundWidth * 0.20f;
+
+        if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+        {
+            printf("Choix 1 \n");
+            modalClose = true;
+            backInteractState = -1;
+        }
+        if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+        {
+            printf("Choix 2 \n");
+            modalClose = true;
+            backInteractState = -1;
+        }
+    }
+}
+
 //----------------------------------------------------------------------------------
 // Screen functions :
 //----------------------------------------------------------------------------------
@@ -125,7 +221,12 @@ void InitGameplayScreen(void)
 {
     printf("Gameplay Screen Init\n");
 
-    initGame();
+    if (!isLaunched)
+    {
+        isLaunched = true;
+        printf("Game logic launched\n");
+        initGame();
+    }
 
     arrow = LoadTexture("./asset/UI_assets/arrow.png");
     arrowButtonBack = LoadTexture("./asset/UI_assets/button-arrow.png");
@@ -138,6 +239,19 @@ void InitGameplayScreen(void)
     constructSprite(&roomSprite2Doors_top_blocked, "./asset/map/room_2_doors_top_blocked.png", 3, 1);
     constructSprite(&roomSprite2Doors_bottom_blocked, "./asset/map/room_2_doors_bottom_blocked.png", 3, 1);
     constructSprite(&roomSpriteEnd, "./asset/map/room_end.png", 3, 1);
+
+    char *objectsTexturePath = "./asset/Objects/";
+    char *texturePath;
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        texturePath = (char *)malloc(1 + strlen(objectsTexturePath) + strlen(game->caracterData->items[itemsIdx]->imageName));
+        strcpy(texturePath, objectsTexturePath);
+        strcat(texturePath, game->caracterData->items[itemsIdx]->imageName);
+        objectsTextures[itemsIdx] = LoadTexture(texturePath);
+    }
+
+    eventExample = importEvent(EVENT_ENCYCLOPEDIA[1]);
+    // eventExample = get_random_event();
 }
 void UpdateGameplayScreen(void)
 {
@@ -177,7 +291,7 @@ void DrawGameplayScreen(void)
     if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "COMBAT", -1))
     {
         // TransitionToScreen(COMBAT);
-        ChangeToScreen(COMBAT);
+        ChangeToScreen(COMBAT_SCREEN);
     }
 
     // Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);
@@ -205,14 +319,14 @@ void DrawGameplayScreen(void)
     int arrowButtonWidth = 72;
     int padding = 4;
 
-    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))
+    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, backInteractState))
     {
         printf("ArrowButton RIGHT\n");
         move_player(game->mapData, room);
     }
     if (etage == 0)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, backInteractState))
         {
             printf("ArrowButton LEFT\n");
             move_player(game->mapData, room + 2);
@@ -220,7 +334,7 @@ void DrawGameplayScreen(void)
     }
     if (room != 0 && etage != 10)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, backInteractState))
         {
             printf("ArrowButton TOP\n");
             move_player(game->mapData, room - 1);
@@ -228,12 +342,15 @@ void DrawGameplayScreen(void)
     }
     if (room != 3 && etage != 10)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, -1))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, backInteractState))
         {
             printf("ArrowButton BOTTOM\n");
             move_player(game->mapData, room + 1);
         }
     }
+    drawItems();
+
+    drawEventChoice(eventExample);
 }
 void UnloadGameplayScreen(void)
 {
@@ -245,6 +362,11 @@ void UnloadGameplayScreen(void)
     UnloadTexture(roomSprite3Doors.texture);
     UnloadTexture(roomSpriteEnd.texture);
     UnloadTexture(StatBar);
+
+    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    {
+        UnloadTexture(objectsTextures[itemsIdx]);
+    }
 }
 int FinishGameplayScreen(void)
 {

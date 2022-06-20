@@ -2,6 +2,7 @@
 #include "../misc/stat/stat.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // CONSTRUCTORS
 entity_t *initEntity(
@@ -10,17 +11,30 @@ entity_t *initEntity(
     int items[],
     int itemslength,
     int cards[][2],
-    int diffCardSize)
+    int diffCardSize,
+    char *spriteName,
+    int nbSpritePerLine)
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
     entity_t *res = malloc(sizeof(entity_t));
     res->name = name;
     res->stats = initEntityStatFromArray(stats);
-    res->effects = initEffectBar();
+    res->effects = initEntityEffectArray();
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
-    res->items = importItemFromIdArray(items, itemslength);
+    importEntityItemFromIdArray(res, itemslength, items);
+    res->spriteName = spriteName;
+    res->nbSpritePerLine = nbSpritePerLine;
     return res;
+}
+
+void freeEntity(entity_t *entity)
+{
+    freeEntityStatArray(entity->stats);
+    freeEntityEffectArray(entity->effects);
+    freeDeckListAndCard(entity->cardDeck);
+    freeEntityItem(entity->items);
+    free(entity);
 }
 
 entity_t *importCaracter(entity_import entitySkel)
@@ -31,7 +45,9 @@ entity_t *importCaracter(entity_import entitySkel)
         entitySkel.items,
         entitySkel.itemslength,
         entitySkel.cardDeck,
-        entitySkel.diffCardSize);
+        entitySkel.diffCardSize,
+        entitySkel.spriteName,
+        entitySkel.nbSpritePerLine);
 }
 
 entity_t *importCaracterFromId(CARACTER_ID id)
@@ -57,7 +73,9 @@ entity_t *importEnemy(enemy_import enemySkel)
         enemySkel.items,
         enemySkel.itemslength,
         enemySkel.cardDeck,
-        enemySkel.diffCardSize);
+        enemySkel.diffCardSize,
+        enemySkel.spriteName,
+        enemySkel.nbSpritePerLine);
 }
 
 entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id)
@@ -100,22 +118,9 @@ entity_t *importBOSSFromId(BOSS_ID id)
 void displayEntity(entity_t *entity)
 {
     printf("NAME:\n_____\n%s\n", entity->name);
-    printf("STATS: \n______\n");
-    for (size_t stats_ID = 0; stats_ID < 4; stats_ID++)
-    {
-        displayStat(entity->stats[stats_ID]);
-    }
-    printf("EFFECTS: \n________\n");
-    for (size_t effects_ID = 0; effects_ID < 9; effects_ID++)
-    {
-        displayEffect(entity->effects[effects_ID]);
-    }
-    printf("ITEMS: \n______\n");
-
-    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
-    {
-        displayItem(entity->items[itemsIdx]);
-    }
+    displayEntityStatArray(entity->stats);
+    displayEntityEffectArray(entity->effects);
+    displayEntityItems(entity->items);
     printf("DECK: \n_____\n");
     displayDeck(entity->cardDeck);
 
@@ -124,38 +129,150 @@ void displayEntity(entity_t *entity)
 
 // METHODS
 
+void takeDamage(entity_t *entity, int value)
+{
+    stat_t *entityDodge = getEntityStat(entity, DODGE);
+    stat_t *entityHealth = getEntityStat(entity, HP);
+    if (-value >= entityDodge->current)
+    {
+        value += entityDodge->current;
+        entityDodge->current = 0;
+        updateStat(entityHealth, value, false);
+    }
+    else
+    {
+        updateStat(entityDodge, value, false);
+    }
+}
+
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 {
-    for (size_t launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
+    printf("la carte %s est joué\n", card->name);
+    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
         mergeEffect(launcher, card->launcherEffects[launcherEffectID]);
     }
-    for (size_t receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
     {
         mergeEffect(receiver, card->receiverEffects[receiverEffectID]);
     }
 }
 
-void applyAllItemsEffect(entity_t *entity)
+// dupplication de code pas ouf :/
+void applyAllItemsEffect(entity_t *launcher, entity_t *receiver)
 {
-    for (size_t itemsIdx = 0; itemsIdx < 5 && entity->items[itemsIdx].description != NULL; itemsIdx++)
+    for (int itemsIdx = 0; itemsIdx < 5 && launcher->items[itemsIdx]->description != NULL; itemsIdx++)
     {
-        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].launcherEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < launcher->items[itemsIdx]->launcherEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx].launcherEffects[itemEffectIdx]);
+            if (
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id < HP_MAX_E ||
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id > ENERGY_MAX_E)
+            {
+                mergeEffect(launcher, launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]);
+            }
         }
-        for (size_t itemEffectIdx = 0; itemEffectIdx < entity->items[itemsIdx].receiverEffectsSize; itemEffectIdx++)
+        for (int itemEffectIdx = 0; itemEffectIdx < launcher->items[itemsIdx]->receiverEffectsSize; itemEffectIdx++)
         {
-            mergeEffect(entity, entity->items[itemsIdx].receiverEffects[itemEffectIdx]);
+            if (
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id < HP_MAX_E ||
+                launcher->items[itemsIdx]->launcherEffects[itemEffectIdx]->id > ENERGY_MAX_E)
+            {
+                mergeEffect(receiver, launcher->items[itemsIdx]->receiverEffects[itemEffectIdx]);
+            }
+        }
+    }
+}
+
+void applyItemMaxEffect(entity_t *launcher, item_t *item)
+{
+    for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
+    {
+
+        if (
+            item->launcherEffects[itemEffectIdx]->id >= HP_MAX_E &&
+            item->launcherEffects[itemEffectIdx]->id <= ENERGY_MAX_E)
+        {
+            mergeEffect(launcher, item->launcherEffects[itemEffectIdx]);
+        }
+    }
+}
+
+void removeItemMaxEffect(entity_t *launcher, item_t *item)
+{
+    for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
+    {
+
+        if (
+            item->launcherEffects[itemEffectIdx]->id >= HP_MAX_E &&
+            item->launcherEffects[itemEffectIdx]->id <= ENERGY_MAX_E)
+        {
+            mergeEffect(launcher, item->launcherEffects[itemEffectIdx]);
         }
     }
 }
 
 void wipeAllEffect(entity_t *entity)
 {
-    for (size_t effectIdx = 0; effectIdx < 9; effectIdx++)
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
-        entity->effects[effectIdx].value = 0;
+        entity->effects[effectIdx]->value = 0;
+    }
+}
+
+void turnBeginEffectUpdate(entity_t *entity)
+{
+    effect_t *entityFIRE = getEntityEffect(entity, FIRE_E);
+    effect_t *entityWEAK = getEntityEffect(entity, WEAK_E);
+    effect_t *entitySLOW = getEntityEffect(entity, SLOW_E);
+    takeDamage(entity, -entityFIRE->value);
+    entityFIRE->value = floor(entityFIRE->value / 2.0);
+    if (entitySLOW->value > 0)
+    {
+        (entitySLOW->value)--;
+    }
+    if (entityWEAK->value > 0)
+    {
+        (entityWEAK->value)--;
+    }
+}
+
+void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect)
+{
+    effect_t *entityStr = getEntityEffect(entity, STR_E);
+    effect_t *entityDex = getEntityEffect(entity, DEX_E);
+    effect_t *entityWeak = getEntityEffect(entity, WEAK_E);
+    effect_t *entitySlow = getEntityEffect(entity, SLOW_E);
+    if (cardEffect->id == DODGE_E && cardEffect->value > 0)
+    {
+        cardEffect->value = ceil(((cardEffect->value + entityDex->value) / (entitySlow->value ? 2.0 : 1.0)));
+    }
+    else if (cardEffect->id == HP_E && cardEffect->value < 0)
+    {
+        cardEffect->value = floor(((cardEffect->value - entityStr->value) * (entityWeak->value ? 0.75 : 1.0)));
+    }
+}
+
+void mergeEffect(entity_t *entity, effect_t *effect)
+{
+    if (effect->id == HP_E && effect->value < 0)
+    {
+        takeDamage(entity, effect->value);
+    }
+    else if (effect->id < 4)
+    {
+        stat_t *currentStat = getEntityStat(entity, effect->id + 1);
+        updateStat(currentStat, effect->value, false);
+    }
+    else if (effect->id < 8)
+    {
+        stat_t *currentStat = getEntityStat(entity, effect->id - 3);
+        updateStat(currentStat, effect->value, true);
+    }
+    else
+    {
+        effect_t *currentEffect = getEntityEffect(entity, effect->id);
+        currentEffect->value += effect->value;
     }
 }
 
@@ -163,31 +280,66 @@ void wipeAllEffect(entity_t *entity)
 
 //      GETTER
 
-stat_t *getStat(entity_t *entity, stat_ID statId)
+stat_t *getEntityStat(entity_t *entity, stat_ID statId)
 {
-    return &entity->stats[statId - 1];
+    return entity->stats[statId - 1];
 }
 
-effect_t *getEffect(entity_t *entity, effect_ID id)
+effect_t *getEntityEffect(entity_t *entity, effect_ID id)
 {
     if (id < 3)
     {
         return NULL;
     }
-    return &entity->effects[id - 4];
+    return entity->effects[id - 8];
 }
-//      SETTER
-void mergeEffect(entity_t *entity, effect_t effect)
+
+card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de free la carte retourné une fois l'utilisation fini
 {
-    if (effect.id < 4)
+    card_t *res = copyCard(card);
+    effect_t *cardEffect;
+    for (int launcherEffectID = 0; launcherEffectID < res->launcherEffectsSize; launcherEffectID++)
     {
-        stat_t *currentStat = getStat(entity, effect.id + 1);
-        updateStat(currentStat, effect.value, CURR, PERCISTANT);
+        cardEffect = res->launcherEffects[launcherEffectID];
+        updateCardEffectWithEntityEffect(entity, cardEffect);
     }
-    else
+    for (int receiverEffectID = 0; receiverEffectID < res->receiverEffectsSize; receiverEffectID++)
     {
-        effect_t *currentEffect = getEffect(entity, effect.id);
-        currentEffect->value += effect.value;
+        cardEffect = res->receiverEffects[receiverEffectID];
+        updateCardEffectWithEntityEffect(entity, cardEffect);
+    }
+    return res;
+}
+
+//      SETTER
+
+void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength])
+{
+    // item_t **res = malloc(5 * sizeof(item_t *));
+    // int item_ID;
+    // for (item_ID = 0; item_ID < itemLength; item_ID++)
+    // {
+    //     res[item_ID] = importItemFromId(itemsId[item_ID]);
+    // };
+    // for (; item_ID < 5; item_ID++)
+    // {
+    //     res[item_ID] = importItemFromId(NONE_ITEM);
+    // };
+    // return res;
+    entity->items = createEmptyEntityItemList();
+    for (int item_ID = 0; item_ID < itemLength; item_ID++)
+    {
+        addItemtoEntityItemList(entity, itemsId[item_ID]);
+    };
+}
+
+void addItemtoEntityItemList(entity_t *entity, ITEM_ENCYCLOPEDIA_ID id)
+{
+    if (entity->items[id - 1]->description == NULL)
+    {
+        freeItem(entity->items[id - 1]);
+        entity->items[id - 1] = importItemFromId(id);
+        applyItemMaxEffect(entity, entity->items[id - 1]);
     }
 }
 
@@ -198,16 +350,16 @@ void testGetterSetter(entity_t *testCar)
     // GETTER TESTS
 
     printf("TEST GETTER/SETTER\n==================\n");
-    printf("TEST getStat\n____________");
-    stat_t *testStatGetter = getStat(testCar, DODGE);
-    displayStat(*testStatGetter);
+    printf("TEST getEntityStat\n____________");
+    stat_t *testStatGetter = getEntityStat(testCar, DODGE);
+    displayStat(testStatGetter);
 
-    printf("TEST getEffect\n______________");
-    effect_t *testEffectGetter = getEffect(testCar, FIRE_E);
-    displayEffect(*testEffectGetter);
+    printf("TEST getEntityEffect\n______________");
+    effect_t *testEffectGetter = getEntityEffect(testCar, FIRE_E);
+    displayEffect(testEffectGetter);
 
     effect_t *testEffect = initEffect(STR_E, 10);
-    mergeEffect(testCar, *testEffect);
+    mergeEffect(testCar, testEffect);
 }
 
 void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
@@ -225,9 +377,26 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
 
 void testEntity()
 {
+    printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
-    // entity_t *testEnemy = getRandomMiniBoss();
+    entity_t *testPeter = getRandomEnemyPhase1();
+    entity_t *testPeter2 = getRandomEnemyPhase1();
+    entity_t *testPeter3 = getRandomEnemyPhase1(); // importEnemyPhase1FromId(KELIKO);
+    // getEntityStat(testCar, DODGE)->current = 3;
     displayEntity(testCar);
+    applyAllItemsEffect(testCar, testCar);
+    takeDamage(testCar, -10);
+    displayEntity(testCar);
+    displayEntity(testPeter);
+    displayEntity(testPeter2);
+    displayEntity(testPeter3);
+    freeEntity(testCar);
+    freeEntity(testPeter);
+    freeEntity(testPeter2);
+    freeEntity(testPeter3);
+    // entity_t *testCar2 = importCaracterFromId(PETER);
+    // // entity_t *testEnemy = getRandomMiniBoss();
+    // displayEntity(testCar2);
     // applyAllItemsEffect(testCar);
     // displayEntity(testCar);
     // wipeAllEffect(testCar);
@@ -241,10 +410,10 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Peter",
         .stats = {
-            {75, true},
+            {75, false},
             {999, true},
-            {3, true},
             {100, true},
+            {3, true},
         },
         .items = {
             LUNCH_BOX,
@@ -256,14 +425,16 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
             {SPECTRUM, 1},
         },
         .diffCardSize = 3,
+        .spriteName = "",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Tester",
         .stats = {
-            {75, true},
+            {75, false},
             {999, true},
-            {3, true},
             {100, true},
+            {3, true},
         },
         .items = {
             LUNCH_BOX,
@@ -279,6 +450,8 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
             {SPECTRUM, 1},
         },
         .diffCardSize = 3,
+        .spriteName = "",
+        .nbSpritePerLine = 4,
     },
 };
 enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
@@ -292,6 +465,8 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 3,
+        .spriteName = "jawurm.png",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Blouni",
@@ -302,6 +477,8 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "blouni.png",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Keliko",
@@ -312,6 +489,8 @@ enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "keliko.png",
+        .nbSpritePerLine = 4,
     },
 };
 enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
@@ -324,6 +503,8 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "jawurm2.png",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Redoni",
@@ -334,6 +515,8 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "redoni.png",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Mangoustine",
@@ -343,6 +526,8 @@ enemy_import ENEMY_PHASE_2_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 1,
+        .spriteName = "mangoustine.png",
+        .nbSpritePerLine = 4,
     },
 };
 enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
@@ -356,6 +541,8 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 3,
+        .spriteName = "eldan.png",
+        .nbSpritePerLine = 4,
     },
     {
         .name = "Pyrox",
@@ -366,6 +553,8 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 2,
+        .spriteName = "pyrox.png",
+        .nbSpritePerLine = 4,
     },
 };
 enemy_import BOSS_ENCYCLOPEDIA[] = {
@@ -380,5 +569,7 @@ enemy_import BOSS_ENCYCLOPEDIA[] = {
         },
         .itemslength = 0,
         .diffCardSize = 4,
+        .spriteName = "feather_guardian.png",
+        .nbSpritePerLine = 14,
     },
 };

@@ -1,6 +1,7 @@
 #include "./../../../include/raylib.h"
 #include "menu.h"
 #include "./../utils/utils.h"
+#include "./../../model/game/game.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,6 +16,10 @@ static int titlePositionY = 0;
 
 void InitMenuScreen(void)
 {
+    if (isLaunched)
+    {
+        freeGame();
+    }
     printf("Menu Screen Init\n");
 
     constructSprite(&titleSprite, "./asset/Misc/title.png", 2, 5);

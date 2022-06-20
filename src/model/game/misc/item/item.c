@@ -3,35 +3,54 @@
 
 item_t *createItem(
     char *name,
-    int launcherEffects[6][2],
-    size_t launcherEffectsSize,
-    int receiverEffects[6][2],
-    size_t receiverEffectsSize,
+    int launcherEffectsSize,
+    int launcherEffects[launcherEffectsSize][2],
+    int receiverEffectsSize,
+    int receiverEffects[receiverEffectsSize][2],
     char *technic,
-    char *description)
+    char *description,
+    char *imageName)
 {
     item_t *res = malloc(sizeof(item_t));
     res->name = name;
-    res->launcherEffects = initEffectFromArray(launcherEffects, launcherEffectsSize);
+    res->launcherEffects = initEffectFromArray(launcherEffectsSize, launcherEffects);
     res->launcherEffectsSize = launcherEffectsSize;
-    res->receiverEffects = initEffectFromArray(receiverEffects, receiverEffectsSize);
+    res->receiverEffects = initEffectFromArray(receiverEffectsSize, receiverEffects);
     res->receiverEffectsSize = receiverEffectsSize;
     res->technic = technic;
     res->description = description;
+    res->imageName = imageName;
 
     return res;
+}
+
+void freeItem(item_t *item)
+{
+    freeEffectArray(item->launcherEffects, item->launcherEffectsSize);
+    freeEffectArray(item->receiverEffects, item->receiverEffectsSize);
+    free(item);
+}
+
+void freeEntityItem(item_t **items)
+{
+    for (int itemsIdx = 0; itemsIdx < 5; itemsIdx++)
+    {
+        freeItem(items[itemsIdx]);
+    }
+    free(items);
 }
 
 item_t *importItem(item_import itemImport)
 {
     return createItem(
         itemImport.name,
-        itemImport.launcherEffects,
         itemImport.launcherEffectsSize,
-        itemImport.receiverEffects,
+        itemImport.launcherEffects,
         itemImport.receiverEffectsSize,
+        itemImport.receiverEffects,
         itemImport.technic,
-        itemImport.description);
+        itemImport.description,
+        itemImport.imageName);
 }
 
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
@@ -39,34 +58,48 @@ item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
     return importItem(ITEM_ENCYCLOPEDIA[itemId]);
 }
 
-item_t *importItemFromIdArray(int itemsId[], int itemLength)
+item_t **createEmptyEntityItemList()
 {
-    item_t *res = calloc(5, sizeof(item_t *));
+    item_t **res = malloc(5 * sizeof(item_t *));
+    int item_ID;
+    for (item_ID = 0; item_ID < 5; item_ID++)
+    {
+        res[item_ID] = importItemFromId(NONE_ITEM);
+    };
+    return res;
+}
+
+item_t **importItemFromIdArray(int itemLength, int itemsId[itemLength])
+{
+    item_t **res = malloc(itemLength * sizeof(item_t *));
     int item_ID;
     for (item_ID = 0; item_ID < itemLength; item_ID++)
     {
-        res[item_ID] = *importItemFromId(itemsId[item_ID]);
-    };
-    for (; item_ID < 5; item_ID++)
-    {
-        res[item_ID] = *importItemFromId(NONE_ITEM);
+        res[itemsId[item_ID] - 1] = importItemFromId(itemsId[item_ID]);
     };
     return res;
 }
 
 // DISPLAY FUNCTION
 
-void displayItem(item_t item)
+void displayItem(item_t *item)
 {
-    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", item.name);
-    for (size_t launcherEffectID = 0; launcherEffectID < item.launcherEffectsSize; launcherEffectID++)
-    {
-        displayEffect(item.launcherEffects[launcherEffectID]);
-    }
+    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", item->name);
+    displayEffectArray(item->launcherEffects, item->launcherEffectsSize);
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (size_t receiverEffectID = 0; receiverEffectID < item.receiverEffectsSize; receiverEffectID++)
+    displayEffectArray(item->receiverEffects, item->receiverEffectsSize);
+}
+
+void displayEntityItems(item_t **items)
+{
+    printf("ITEMS: \n______\n");
+
+    for (int itemsIdx = 0; itemsIdx < 5; itemsIdx++)
     {
-        displayEffect(item.receiverEffects[receiverEffectID]);
+        if (items[itemsIdx]->description != NULL)
+        {
+            displayItem(items[itemsIdx]);
+        }
     }
 }
 
@@ -74,11 +107,11 @@ void displayItem(item_t item)
 
 void testItem()
 {
-    item_t *testItem = importItemFromIdArray((int[]){NONE_ITEM, WEAPON, ARMOR}, 3);
-    for (size_t i = 0; i < 5; i++)
-    {
-        displayItem(testItem[i]);
-    }
+
+    printf("\n==============================\n\tTEST DE ITEM\n==============================\n");
+    item_t **testItem = importItemFromIdArray(2, (int[]){WEAPON, ARMOR});
+    displayEntityItems(testItem);
+    freeEntityItem(testItem);
     // testItem = importItemFromId(WEAPON);
     // displayItem(*testItem);
     // testItem = importItemFromId(HELMET);
@@ -97,11 +130,13 @@ item_import ITEM_ENCYCLOPEDIA[] = {
     },
     {
         .name = "Casse-Croute",
-        .description = "Recupère un petit peut de vie a chaque debut de combat",
+        .description = "Recupère un petit peut de vie a chaque début de combat",
         .technic = "PV +6",
         .launcherEffects = {{HP_E, 6}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "casse-croute.png",
+
     },
     {
         .name = "Arme",
@@ -110,6 +145,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{STR_E, 4}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "weapon.png",
     },
     {
         .name = "Casque",
@@ -118,6 +154,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{DEX_E, 4}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "helmet.png",
     },
     // TODO: Refacto
     {
@@ -127,6 +164,7 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{HP_MAX_E, 20}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "armor.png",
     },
     // TODO: Refacto
     {
@@ -136,5 +174,6 @@ item_import ITEM_ENCYCLOPEDIA[] = {
         .launcherEffects = {{ENERGY_MAX_E, 1}},
         .launcherEffectsSize = 1,
         .receiverEffectsSize = 0,
+        .imageName = "boots.png",
     },
 };

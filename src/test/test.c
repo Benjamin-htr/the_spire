@@ -1,10 +1,5 @@
-#include "../model/game/entity/entity.h"
-#include "../model/game/misc/stat/stat.h"
-#include "../model/game/misc/effect/effect.h"
-#include "../model/game/misc/deck/card/card.h"
-#include "../model/game/misc/board/board.h"
+#include "../model/game/combat/combat.h"
 #include "../model/game/map/map.h"
-#include "../model/game/misc/item/item.h"
 #include <stdio.h>
 
 void testFunction()
@@ -12,7 +7,7 @@ void testFunction()
     // printf("\n==============================\n\tTEST DE STAT\n==============================\n");
     // testStat();
     // printf("\n==============================\n\tTEST DE PLACE\n==============================\n");
-    // testPlace(); 
+    // testPlace();
     printf("\n==============================\n\tTEST DE MAP\n==============================\n");
     testMap();
     // printf("\n==============================\n\tTEST DE CARD\n==============================\n");

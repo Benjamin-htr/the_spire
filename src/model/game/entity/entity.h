@@ -46,10 +46,12 @@ typedef struct
 {
     char *name;
     deck_t *cardDeck;
-    item_t *items;
-    effect_t *effects;
-    stat_t *stats;
+    item_t **items;
+    effect_t **effects;
+    stat_t **stats;
     board_t *board;
+    char *spriteName;
+    int nbSpritePerLine;
 } entity_t;
 
 typedef struct
@@ -60,6 +62,8 @@ typedef struct
     int cardDeck[4][2];
     int diffCardSize;
     int stats[4][2];
+    char *spriteName;
+    int nbSpritePerLine;
 } entity_import;
 
 typedef struct
@@ -70,6 +74,8 @@ typedef struct
     int itemslength;
     int cardDeck[4][2];
     int diffCardSize;
+    char *spriteName;
+    int nbSpritePerLine;
 } enemy_import;
 
 // CONSTRUCTORS
@@ -79,7 +85,9 @@ entity_t *initEntity(
     int items[],
     int itemslength,
     int cards[][2],
-    int diffCardSize);
+    int diffCardSize,
+    char *spriteName,
+    int nbSpritePerLine);
 
 entity_t *importCaracter(entity_import entitySkel);
 entity_t *importCaracterFromId(CARACTER_ID id);
@@ -92,22 +100,37 @@ entity_t *importMiniBossFromId(MINIBOSS_ID id);
 entity_t *getRandomMiniBoss();
 entity_t *importBOSSFromId(BOSS_ID id);
 
+// DEXCONSTRUTOR
+
+void freeEntity(entity_t *entity);
+
 // DISPLAY FUNCTION
 void displayEntity(entity_t *entity);
 
 // METHOD
 
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver);
+void applyAllItemsEffect(entity_t *launcher, entity_t *receiver);
+void applyItemMaxEffect(entity_t *launcher, item_t *item);
+void removeItemMaxEffect(entity_t *launcher, item_t *item);
+void addItemtoEntityItemList(entity_t *entity, ITEM_ENCYCLOPEDIA_ID id);
+void turnBeginEffectUpdate(entity_t *entity);
+void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect);
+void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength]);
+void takeDamage(entity_t *entity, int value);
 
 // GETTER / SETTER
-stat_t *getStat(entity_t *entity, stat_ID statId);
-effect_t *getEffect(entity_t *entity, effect_ID id);
+stat_t *getEntityStat(entity_t *entity, stat_ID statId);
+effect_t *getEntityEffect(entity_t *entity, effect_ID id);
+card_t *getTrueCardValue(entity_t *entity, card_t *card); // On oublie pas de free la carte retourné une fois l'utilisation fini
 
 //      SETTER
-void mergeEffect(entity_t *entity, effect_t effect);
+void mergeEffect(entity_t *entity, effect_t *effect);
 
 // TEST FUNCTION
 void testEntity();
+
+void freeEntity(entity_t *entity);
 
 extern entity_import CARATER_ENCYCLOPEDIA[];
 extern enemy_import ENEMY_PHASE_1_ENCYCLOPEDIA[];

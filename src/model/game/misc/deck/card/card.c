@@ -12,9 +12,9 @@ card_t *createCard(
     int energyCost,
     boolean isAbyssal,
     int launcherEffects[][2],
-    size_t launcherEffectsSize,
+    int launcherEffectsSize,
     int receiverEffects[][2],
-    size_t receiverEffectsSize,
+    int receiverEffectsSize,
     char *technic,
     char *description)
 {
@@ -24,13 +24,20 @@ card_t *createCard(
     res->manaCost = manaCost;
     res->energyCost = energyCost;
     res->isAbyssal = isAbyssal;
-    res->launcherEffects = initEffectFromArray(launcherEffects, launcherEffectsSize);
+    res->launcherEffects = initEffectFromArray(launcherEffectsSize, launcherEffects);
     res->launcherEffectsSize = launcherEffectsSize;
-    res->receiverEffects = initEffectFromArray(receiverEffects, receiverEffectsSize);
+    res->receiverEffects = initEffectFromArray(receiverEffectsSize, receiverEffects);
     res->receiverEffectsSize = receiverEffectsSize;
     res->technic = technic;
     res->description = description;
     return res;
+}
+
+void freeCard(card_t *card)
+{
+    freeEffectArray(card->launcherEffects, card->launcherEffectsSize);
+    freeEffectArray(card->receiverEffects, card->receiverEffectsSize);
+    free(card);
 }
 
 card_t *importCard(card_import cardImport)
@@ -54,19 +61,54 @@ card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId)
     return importCard(CARD_ENCYCLOPEDIA[cardId]);
 }
 
+int getRandomPlayerCardId()
+{
+    // On prend JAWURM_BACKSTAB parce que c'est la premiere carte non jouable par le joueur
+    return rand() % (JAWURM_BACKSTAB);
+}
+
+card_t *copyCard(card_t *cardToCopy)
+{
+    int launcherEffects[cardToCopy->launcherEffectsSize][2];
+    for (int launcherEffectID = 0; launcherEffectID < cardToCopy->launcherEffectsSize; launcherEffectID++)
+    {
+        launcherEffects[launcherEffectID][0] = cardToCopy->launcherEffects[launcherEffectID]->id;
+        launcherEffects[launcherEffectID][1] = cardToCopy->launcherEffects[launcherEffectID]->value;
+    }
+    int receiverEffects[cardToCopy->receiverEffectsSize][2];
+    for (int receiverEffectID = 0; receiverEffectID < cardToCopy->receiverEffectsSize; receiverEffectID++)
+    {
+        receiverEffects[receiverEffectID][0] = cardToCopy->receiverEffects[receiverEffectID]->id;
+        receiverEffects[receiverEffectID][1] = cardToCopy->receiverEffects[receiverEffectID]->value;
+    }
+    card_t *res = createCard(
+        cardToCopy->name,
+        cardToCopy->rarity,
+        cardToCopy->manaCost,
+        cardToCopy->energyCost,
+        cardToCopy->isAbyssal,
+        launcherEffects,
+        cardToCopy->launcherEffectsSize,
+        receiverEffects,
+        cardToCopy->receiverEffectsSize,
+        cardToCopy->technic,
+        cardToCopy->description);
+    return res;
+}
+
 // DISPLAY FUNCTION
 
-void displayCard(card_t card)
+void displayCard(card_t *card)
 {
-    printf("\nNAME:\n_____\n%s\n\nLAUNCHER EFFECT:\n________________\n", card.name);
-    for (size_t launcherEffectID = 0; launcherEffectID < card.launcherEffectsSize; launcherEffectID++)
+    printf("\nNAME:\n_____\n%s\nMANA: %d\n_____\nENERGY: %d\n_______\nLAUNCHER EFFECT:\n________________\n", card->name, card->manaCost, card->energyCost);
+    for (int launcherEffectID = 0; launcherEffectID < card->launcherEffectsSize; launcherEffectID++)
     {
-        displayEffect(card.launcherEffects[launcherEffectID]);
+        displayEffect(card->launcherEffects[launcherEffectID]);
     }
     printf("\nRECEIVER EFFECT:\n________________\n");
-    for (size_t receiverEffectID = 0; receiverEffectID < card.receiverEffectsSize; receiverEffectID++)
+    for (int receiverEffectID = 0; receiverEffectID < card->receiverEffectsSize; receiverEffectID++)
     {
-        displayEffect(card.receiverEffects[receiverEffectID]);
+        displayEffect(card->receiverEffects[receiverEffectID]);
     }
 }
 
@@ -74,20 +116,13 @@ void displayCard(card_t card)
 
 void testCard()
 {
-    // card_t *test = createCard(
-    //     "Strike",
-    //     BASIC,
-    //     0,
-    //     1,
-    //     false,
-    //     (int[][2]){{STR_E, 6}, {DODGE_E, 10}},
-    //     2,
-    //     (int[][2]){{HP_E, -6}},
-    //     1,
-    //     "Inflige 6 dégats",
-    //     "Attaque de base");
-    card_t *test = importCardFromId(ACCELERATION);
-    displayCard(*test);
+    printf("\n==============================\n\tTEST DE CARD\n==============================\n");
+    card_t *test = importCardFromId(getRandomPlayerCardId());
+    displayCard(test);
+    // card_t *testCopy = copyCard(test);
+    // displayCard(testCopy);
+    // freeCard(testCopy);
+    freeCard(test);
 }
 
 card_import CARD_ENCYCLOPEDIA[] = {
@@ -243,7 +278,7 @@ card_import CARD_ENCYCLOPEDIA[] = {
         .energyCost = 2,
         .manaCost = 20,
         .technic = "Donne différents bonus. Abyssal.",
-        .isAbyssal = false,
+        .isAbyssal = true,
         .launcherEffects = {{STR_E, 1}, {DEX_E, 1}, {DODGE_E, 5}},
         .launcherEffectsSize = 3,
         .receiverEffects = {{HP_E, -6}, {FIRE_E, 3}, {SLOW_E, 1}, {WEAK_E, 1}},

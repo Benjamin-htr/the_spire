@@ -91,13 +91,11 @@ event *get_sanctuary()
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
 
-
-void * do_nothing(){
+void *do_nothing()
+{
     printf("do nothing\n");
     return NULL;
 }
-
-
 
 event_import EVENT_ENCYCLOPEDIA[] = {
 

@@ -2,11 +2,20 @@
 #include "combat.h"
 #include "./../utils/utils.h"
 #include "./../../model/game/misc/deck/card/card.h"
+#include "./../../model/game/game.h"
+
 #include <stdio.h>
+#include <string.h>
 
 static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
 static Texture2D EnergyIcon = {0};
+
+static Texture2D strenghtEffect = {0};
+static Texture2D dexterityEffect = {0};
+static Texture2D fireEffect = {0};
+static Texture2D weaknessEffect = {0};
+static Texture2D slowingEffect = {0};
 
 static Texture2D BasicCardPatch = {0};
 static Texture2D CommonCardPatch = {0};
@@ -20,21 +29,26 @@ NPatchInfo cardInfo = {0};
 
 static Sprite ennemySprite = {0};
 
+combat_t *combat = {0};
+
+static int idxHoverCard = -1;
+
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
 static int finishScreen = 0;
 
+// Draw stats of the player :
 void drawStatBoard()
 {
-    int HpMax = 75;
-    int HpActuel = 70;
+    int HpMax = getEntityStat(game->caracterData, HP)->max;
+    int HpActuel = getEntityStat(game->caracterData, HP)->current;
 
-    int ManaMax = 100;
-    int ManaActuel = 50;
+    int ManaMax = getEntityStat(game->caracterData, MANA)->max;
+    int ManaActuel = getEntityStat(game->caracterData, MANA)->current;
 
     // int EnergyMax = 3;
-    int EnergyActuel = 3;
+    int EnergyActuel = getEntityStat(game->caracterData, ENERGY)->current;
 
     float scaleMain = 3.0f;
 
@@ -89,11 +103,26 @@ void drawStatBoard()
     {
         DrawTextureEx(EnergyIcon, (Vector2){EnergyPos.x + (EnergyIcon.width * i * scaleMain) + (gap * i), EnergyPos.y}, 0, scaleMain, WHITE);
     }
+
+    // Draw effects of character :
+    int marginBottom = 15;
+    gap = 18;
+
+    float scaleFactor = 3.0f;
+    float posX = GetScreenWidth() - (16 * scaleFactor) - padding;
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
+    {
+        Vector2 pos = (Vector2){posX, StatBoardPos.y - 16 * scaleFactor - marginBottom};
+        drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, false, -1);
+        posX -= 16 * scaleFactor + gap;
+    }
 }
 
-int GuiCard(Vector2 position, float scaleFactor, int forcedState)
+// Draw one card of the hand player :
+int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
 {
-    card_t *card = importCardFromId(OVERWORK);
+    idxHoverCard = -1;
+    // card_t *card = importCardFromId(ACCELERATION);
     int manaCost = card->manaCost;
     int energyCost = card->energyCost;
     char *title = card->name;
@@ -102,20 +131,16 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
                                                                  : card->rarity == RARE     ? RareCardPatch
                                                                                             : SpecialCardPatch;
 
-    int nbFrames = 2;
     float cardWidth = (float)cardInfo.source.width * scaleFactor;
     float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
     Rectangle bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
 
-    int state = (forcedState >= 0) ? forcedState : 0; // )NORMAL
+    int state = 0; // )NORMAL
     bool pressed = false;
-    // Vector2 textSize = MeasureTextEx(font, text, font.baseSize, 1);
-
-    int textPosAdd = 0;
-
     // Update control
     //--------------------------------------------------------------------
-    if ((state < 3) && (forcedState < 0))
+    if ((state < 3))
     {
         Vector2 mousePoint = GetMousePosition();
 
@@ -126,10 +151,16 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
                 state = 2;
-                textPosAdd = 10;
             }
             else
+            {
+                idxHoverCard = idx;
                 state = 1; // FOCUSED
+                scaleFactor += 0.8f;
+                cardWidth = (float)cardInfo.source.width * scaleFactor;
+                cardHeight = (float)cardInfo.source.height * scaleFactor;
+                position.y = GetScreenHeight() - cardHeight;
+            }
 
             if (IsGestureDetected(GESTURE_TAP))
             {
@@ -139,6 +170,7 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
         }
     }
 
+    bounds = (Rectangle){position.x, position.y, cardWidth, cardHeight};
     // Draw image card :
     Vector2 imageCardPos = (Vector2){position.x + cardWidth * (8 / 96.0f), position.y + cardHeight * (27 / 156.0f)};
     DrawTextureEx(ImageCardUnknown, imageCardPos, 0, scaleFactor, WHITE);
@@ -155,10 +187,16 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
     DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
 
+    // textBox calc :
+    Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
+
+    // Draw text description and technic:
+    float fontDesc = 0.058f * cardWidth;
+    DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
+
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};
     float scaleEnergyIcon = 0.65f * scaleFactor;
-    float energyIconWidth = (float)EnergyIcon.width * scaleEnergyIcon;
     float energyIconHeight = (float)EnergyIcon.height * scaleEnergyIcon;
     float gap = (float)((3.0f / 156.0f) * cardHeight);
     for (int i = 0; i < energyCost; i++)
@@ -169,6 +207,107 @@ int GuiCard(Vector2 position, float scaleFactor, int forcedState)
     return pressed;
 }
 
+// Draw all cards of the hand player :
+void drawHand(void)
+{
+    float scaleFactor = 1.5f;
+
+    float cardWidth = (float)cardInfo.source.width * scaleFactor;
+    float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
+    int i = 0;
+    float decal = 0.0f;
+    deck_t *myHand = combat->caracter->board->hand;
+    while (myHand != NULL && myHand->data != NULL)
+    {
+        card_t *myCard = myHand->data;
+        if (idxHoverCard != -1 && i > idxHoverCard)
+        {
+            decal += (cardInfo.source.width * (scaleFactor + 0.8f)) - cardWidth;
+        }
+        Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
+        if (GuiCardHand(myCard, position, scaleFactor, i))
+        {
+            displayCard(myCard);
+        }
+        myHand = myHand->next;
+        i++;
+    }
+}
+
+void drawEnnemy(entity_t *entity)
+{
+    float fontNameSize = 20;
+    float scaleEnnemy = 3.0f;
+
+    Vector2 ennemyNameSize = MeasureTextEx(font, TextFormat("%s", entity->name), fontNameSize, 1);
+    Vector2 ennemyNamePos = (Vector2){GetScreenWidth() / 2 - ennemyNameSize.x / 2, 15};
+    DrawTextEx(font, TextFormat("%s", entity->name), ennemyNamePos, fontNameSize, 1, WHITE);
+
+    const Vector2 ennemyPos = {ennemyNamePos.x + (ennemyNameSize.x / 2) - ennemySprite.frameRec.width * scaleEnnemy / 2, ennemyNamePos.y + ennemyNameSize.y + 3};
+    drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
+
+    int HpMax = getEntityStat(entity, HP)->max;
+    int HpActuel = getEntityStat(entity, HP)->current;
+
+    float scaleBar = 2.0f;
+
+    Vector2 StatBarPos = (Vector2){(ennemyPos.x + ennemySprite.frameRec.width * scaleEnnemy / 2) - (StatBar.width * scaleBar / 2), ennemyPos.y + ennemySprite.frameRec.height * scaleEnnemy + 10};
+
+    float HpBarWidth = (float)HpActuel / (float)HpMax * StatBar.width * scaleBar * 0.8f;
+    DrawRectangle(StatBarPos.x + StatBar.width * scaleBar / 10, StatBarPos.y + StatBar.height * scaleBar * 0.2f, HpBarWidth, StatBar.height * scaleBar * 0.6f, RED);
+
+    DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
+
+    int hpFontSize = 15;
+    Vector2 hpTextSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpFontSize, 1);
+    Vector2 hpTextPost = (Vector2){StatBarPos.x + StatBar.width * scaleBar + 10, StatBarPos.y + (StatBar.height * scaleBar / 2) - hpTextSize.y / 2};
+    DrawTextEx(font, TextFormat("%d/%d  hp", HpActuel, HpMax), hpTextPost, hpFontSize, 1, WHITE);
+
+    // Draw effects of character :
+    int marginRight = 50;
+    int gap = 18;
+
+    float scaleFactor = 3.0f;
+    float posX = ennemyPos.x - (16 * scaleFactor) - marginRight;
+    for (int effectIdx = 0; effectIdx < 5; effectIdx++)
+    {
+        Vector2 pos = (Vector2){posX, ennemyNamePos.y};
+        drawEffect(entity->effects[effectIdx], pos, scaleFactor, true, -1);
+        posX -= 16 * scaleFactor + gap;
+    }
+}
+void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState)
+{
+    Texture2D textureEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FORCE"))
+        textureEffect = strenghtEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "DEXTERITE"))
+        textureEffect = dexterityEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FEU"))
+        textureEffect = fireEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "FAIBLESSE"))
+        textureEffect = weaknessEffect;
+    if (TextIsEqual(EFFECT_NAME[effect->id], "LENTEUR"))
+        textureEffect = slowingEffect;
+
+    DrawTextureEx(textureEffect, position, 0, scaleFactor, WHITE);
+
+    Rectangle bounds = (Rectangle){position.x, position.y, textureEffect.width * scaleFactor, textureEffect.height * scaleFactor};
+
+    Vector2 mousePoint = GetMousePosition();
+    // Check if hover :
+    if (CheckCollisionPointRec(mousePoint, bounds) && forcedState < 0)
+    {
+        int rectWidth = 150;
+        int rectHeight = 100;
+        float posX = alignLeft ? bounds.x : (bounds.x + bounds.width) - rectWidth;
+        Rectangle hoverRect = (Rectangle){posX, bounds.y + bounds.height + 10, rectWidth, rectHeight};
+        DrawRectangleRec(hoverRect, GetColor(0x242424ff));
+        DrawTextBoxed(font, TextFormat("%s", "Test"), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
+    }
+}
+
 void InitCombatScreen(void)
 {
     finishScreen = 0;
@@ -177,6 +316,13 @@ void InitCombatScreen(void)
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+
+    // Effects texture loading :
+    strenghtEffect = LoadTexture("./asset/Misc/Effect/strength.png");
+    dexterityEffect = LoadTexture("./asset/Misc/Effect/dexterity.png");
+    fireEffect = LoadTexture("./asset/Misc/Effect/Fire.png");
+    weaknessEffect = LoadTexture("./asset/Misc/Effect/Weak.png");
+    slowingEffect = LoadTexture("./asset/Misc/Effect/Slow.png");
 
     // Cards textures loading :
     BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
@@ -195,7 +341,25 @@ void InitCombatScreen(void)
     cardInfo.right = 00;
     cardInfo.bottom = 00;
 
-    constructSprite(&ennemySprite, "./asset/monsters/jawurm.png", 4, 1);
+    // Enemy example :
+    // entity_t *enemy = importEnemyPhase1FromId(BLOUNI);
+    // entity_t *enemy = importMiniBossFromId(PYROX);
+    entity_t *enemy = importBOSSFromId(GARDIAN_PLUME);
+
+    // We load the ennemy sprite :
+    char *ennemySpritePath = "./asset/monsters/";
+    char *spritePath;
+    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(enemy->spriteName));
+    strcpy(spritePath, ennemySpritePath);
+    strcat(spritePath, enemy->spriteName);
+    printf("%s\n", spritePath);
+    constructSprite(&ennemySprite, spritePath, enemy->nbSpritePerLine, 1);
+
+    // We start combat :
+    combat = startCombat(game->caracterData, enemy);
+    drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+
+    displayEntityEffectArray(game->caracterData->effects);
 }
 void UpdateCombatScreen(void)
 {
@@ -208,30 +372,35 @@ void UpdateCombatScreen(void)
 }
 void DrawCombatScreen(void)
 {
-
     ClearBackground(GetColor(0x3f3f74ff));
-
-    float scaleEnnemy = 3.0f;
-    const Vector2 ennemyPos = {GetScreenWidth() / 2 - ennemySprite.frameRec.width * scaleEnnemy / 2, 20};
-    drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
 
     drawStatBoard();
 
     // POUR TEST COMBAT : (A RETIRER PLUS TARD)
     int buttonWidth = 150;
     int buttonHeight = 50;
-    if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "MAP", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth - 10, 10, buttonWidth, buttonHeight}, "MAP", -1))
     {
         finishScreen = 1;
     }
 
-    if (GuiCard((Vector2){50, 50}, 2.0f, -1))
-    {
-        printf("card click");
-    }
+    drawEnnemy(combat->enemy);
+    drawHand();
 }
 void UnloadCombatScreen(void)
 {
+    UnloadTexture(StatBar);
+    UnloadTexture(Statboard);
+    UnloadTexture(EnergyIcon);
+
+    UnloadTexture(BasicCardPatch);
+    UnloadTexture(CommonCardPatch);
+    UnloadTexture(AtypicCardPatch);
+    UnloadTexture(RareCardPatch);
+    UnloadTexture(SpecialCardPatch);
+
+    UnloadTexture(ImageCardUnknown);
+    UnloadTexture(ennemySprite.texture);
 }
 int FinishCombatScreen(void)
 {

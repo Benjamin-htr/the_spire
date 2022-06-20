@@ -1,7 +1,10 @@
 #ifndef OPTION
 #define OPTION
 
-typedef void *(*action_t)();
+#include "../../../game/entity/entity.h"
+#include "../../../game/combat/combat.h"
+
+typedef void *(*action_t)(entity_t *all_entity, ...);
 
 typedef struct
 {

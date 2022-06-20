@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "event.h"
 
 int NB_EVENT = 5;
@@ -66,7 +67,7 @@ void Test_EVENT()
         printf("dialogue = %s\n", po[i]->dialogue);
         printf("action 1 = %s\naction 2 = %s\n", po[i]->actions[0]->label, po[i]->actions[1]->label);
     }
-    po[0]->actions[0]->action();
+    // po[0]->actions[0]->action();
 }
 
 void show_event(event *ev)
@@ -91,11 +92,90 @@ event *get_sanctuary()
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
 
-void *do_nothing()
+
+void *launch_fight_miniboss(entity_t *peter, ...)
 {
-    printf("do nothing\n");
+    va_list args;
+    va_start(args, peter);
+    printf("launch fight miniboss\n");
+    entity_t *miniboss = va_arg(args, entity_t *);
+    displayEntity(miniboss);
+    displayEntity(peter);
+    startCombat(peter, miniboss);
+    va_end(args);
     return NULL;
 }
+
+void *do_nothing(entity_t *peter, ...)
+{
+    printf("do nothing\n");
+    printf("%s\n", peter->name);
+    return NULL;
+}
+
+void *sanctuary_life_refill(entity_t *peter, ...)
+{
+    printf("sanctuary life refill\n");
+    refillStat(getEntityStat(peter,HP));
+    // get fonction from hugo
+    return NULL;
+}
+
+void *sanctuary_mana_refill(entity_t *peter, ...)
+{
+    printf("sanctuary mana refill\n");
+    refillStat(getEntityStat(peter,MANA));
+    // get fonction from hugo
+    return NULL;
+}
+
+void *transform_striketododge(entity_t *peter, ...)
+{
+    printf("transform striketododge\n");
+    replaceCardWithOther(&(peter->cardDeck),STRIKE,DODGE_A);
+    // startCombat(peter, event->data);
+    // get fonction from hugo
+    return NULL;
+}
+
+void *transform_dodgetostrike(entity_t *peter, ...)
+{
+    printf("transform dodgetostrike\n");
+    replaceCardWithOther(&(peter->cardDeck),DODGE_A,STRIKE);
+    // startCombat(peter, event->data);
+    // get fonction from hugo
+    return NULL;
+}
+
+void *mana_max_refill(entity_t *peter, ...)
+{
+    printf("mana max refill\n");
+    updateStat(getEntityStat(peter, MANA), 20, true);
+    return NULL;
+}
+
+void *life_max_refill(entity_t *peter, ...)
+{
+    printf("life max refill\n");
+    // get fonction from hugo
+    updateStat(getEntityStat(peter, HP), 10, true);
+    return NULL;
+}
+
+void *no_tp(entity_t *peter, ...)
+{
+    printf("no tp\n");
+    updateStat(getEntityStat(peter, HP), -10, false);
+    return NULL;
+}
+
+void *tp(entity_t *peter, ...)
+{
+    printf("tp\n");
+    printf("%s\n", peter->name);
+    return (int *) 1;
+}
+
 
 event_import EVENT_ENCYCLOPEDIA[] = {
 
@@ -104,7 +184,7 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Lancer un combat contre un miniboss (gains normaux en cas de victoire)",
-                .action = &do_nothing,
+                .action = &launch_fight_miniboss,
             },
             {
                 .label = "Ne pas faire le combat et avancer normalement",
@@ -118,7 +198,7 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Dormir pour regagner la moitié de ses HP max",
-                .action = &do_nothing,
+                .action = &sanctuary_life_refill,
             },
             {
                 .label = "Méditer pour retirer une carte du deck principal (afin d'avoir de meilleurs chances de piocher les cartes plus fortes)",
@@ -132,11 +212,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Entrer dans le téléporteur et aller dans une pièce adjacente (possibilités égales d'avancer, revenir en arrière ou de rester au même niveau)",
-                .action = &do_nothing,
+                .action = &tp,
             },
             {
                 .label = "Dépenser 10 points de vie pour garantir d’aller à un endroit choisi",
-                .action = &do_nothing,
+                .action = &no_tp,
             },
         },
         .data = NULL,
@@ -146,11 +226,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Transforme tous les strikes en esquives",
-                .action = &do_nothing,
+                .action = &transform_striketododge,
             },
             {
                 .label = "Transforme tous les esquives en strikes",
-                .action = &do_nothing,
+                .action = &transform_dodgetostrike,
             },
         },
         .data = NULL,
@@ -160,11 +240,11 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Faire une potion de santé (hp max +10) ",
-                .action = &do_nothing,
+                .action = &life_max_refill,
             },
             {
                 .label = "Faire une potion de mana (mana max +2O)",
-                .action = &do_nothing,
+                .action = &mana_max_refill,
             },
         },
         .data = NULL,

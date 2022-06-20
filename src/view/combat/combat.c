@@ -358,7 +358,16 @@ void drawRewind()
                     i);
                 freeDeckListAndCard(rewardDeck);
                 rewardDeck = NULL;
-                finishScreen = 1;
+                //  Si le combat est fini et que je suis à l'étage du boss (donc boss vaincu)
+                position_player playerPos = player_position(game->mapData);
+                if (playerPos.x == 10)
+                {
+                    printf("boss finito pipo");
+                    // Je redirige vers l'écran de fin :
+                    TransitionToScreen(ENDING);
+                }
+                else
+                    finishScreen = 1;
             }
             tmpReward = tmpReward->next;
             i++;
@@ -477,6 +486,7 @@ void DrawCombatScreen(void)
 
     drawEnnemy(combat->enemy);
     drawHand();
+
     if (checkEndCombat(combat) && rewardDeck != NULL)
     {
         drawRewind();

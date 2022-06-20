@@ -44,9 +44,13 @@ void DrawEndingScreen(void)
     DrawTextureEx(background, (Vector2){0, 0}, 0, scaleBackground, WHITE);
 
     int fontSize = 50;
-
     float sizeQueue = 0.0f;
     Color color = GetColor(0x8a9696ff);
+
+    char *victoryText = "Vous avez gagné ! Bravo à vous !";
+    Vector2 victoryTextSize = MeasureTextEx(font, victoryText, fontSize, 2);
+    DrawTextEx(font, victoryText, (Vector2){GetScreenWidth() / 2 - victoryTextSize.x / 2, creditsScrollingPosY + sizeQueue}, fontSize, 2, WHITE);
+    sizeQueue += victoryTextSize.y;
     for (int i = 0; i < TAB_SIZE - 1; i += 2)
     {
         Vector2 sectionTitleSize = MeasureTextEx(font, creditsData[i], fontSize, 2);

@@ -25,14 +25,13 @@ position_player position_init(int x, int y);
 int map_get(map *map);
 map *map_init();
 void testMap();
-void map_event(map *m);
 void move_player(map *m, int y, boolean isTP);
 int *playable_move(map *m);
 position_player player_position(map *ma);
 boolean check_map(map *m, int y);
 void map_print(map *m);
-void * teleporter(map *m);
-
+void *teleporter(map *m);
+void go_event(map *m);
 // map *newTree(double value, map *left, map *right);
 // map *putToLeft(map *arbre, double value);
 // map *putToMiddle(map *arbre, double value);

@@ -33,6 +33,8 @@ combat_t *combat = {0};
 
 static int idxHoverCard = -1;
 
+static entity_t *ennemy = {0};
+
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
@@ -341,22 +343,25 @@ void InitCombatScreen(void)
     cardInfo.right = 00;
     cardInfo.bottom = 00;
 
-    // Enemy example :
-    // entity_t *enemy = importEnemyPhase1FromId(BLOUNI);
-    // entity_t *enemy = importMiniBossFromId(PYROX);
-    entity_t *enemy = importBOSSFromId(GARDIAN_PLUME);
+    // Enemy  :
+
+    entity_t *ennemy = importEnemyPhase1FromId(BLOUNI);
+    // entity_t *ennemy = importMiniBossFromId(PYROX);
+    // entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
+    // position_player playerPos = player_position(game->mapData);
+    // ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
 
     // We load the ennemy sprite :
     char *ennemySpritePath = "./asset/monsters/";
     char *spritePath;
-    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(enemy->spriteName));
+    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(ennemy->spriteName));
     strcpy(spritePath, ennemySpritePath);
-    strcat(spritePath, enemy->spriteName);
+    strcat(spritePath, ennemy->spriteName);
     printf("%s\n", spritePath);
-    constructSprite(&ennemySprite, spritePath, enemy->nbSpritePerLine, 1);
+    constructSprite(&ennemySprite, spritePath, ennemy->nbSpritePerLine, 1);
 
     // We start combat :
-    combat = startCombat(game->caracterData, enemy);
+    combat = startCombat(game->caracterData, ennemy);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
 
     displayEntityEffectArray(game->caracterData->effects);

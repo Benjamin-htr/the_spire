@@ -12,6 +12,7 @@ static Texture2D arrow = {0};
 static Texture2D StatBar = {0};
 static Texture2D HeartIcon = {0};
 static Texture2D objectsTextures[5];
+static Sprite eventSprite = {0};
 
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
@@ -25,7 +26,10 @@ static int roomGapX = -200;
 static int backInteractState = -1;
 static boolean modalClose = false;
 
-static event *eventExample = {0};
+// 0 : combat; 1 : event; 2 : sanctuary; 3 : miniboss
+static int currentEvent = {0};
+static event *eventData = {0};
+static entity_t *ennemyData = {0};
 
 // static int etage = 0;
 // static int room = 1;
@@ -212,6 +216,64 @@ void drawEventChoice(event *event)
         }
     }
 }
+void drawEvent()
+{
+    // if is combat :
+    // if (currentEvent == 0)
+    //{
+    //    // drawEventChoice(eventData);
+    //}
+    // if is event :
+    if (currentEvent == 1)
+    {
+        drawEventChoice(eventData);
+    }
+    // if is sanctuary :
+    if (currentEvent == 2)
+    {
+        drawEventChoice(eventData);
+    }
+    // if is miniboss :
+    if (currentEvent == 3)
+    {
+        drawEventChoice(eventData);
+    }
+}
+void reinitAfterMove()
+{
+    currentEvent = map_get(game->mapData);
+    position_player playerPos = player_position(game->mapData);
+    // if is combat :
+    if (currentEvent == 0)
+    {
+        modalClose = false;
+        ennemyData = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+        TransitionToScreen(COMBAT_SCREEN);
+        // constructSprite(&eventSprite, "./asset/map/room_3_doors.png", 3, 1);
+    }
+    // if is event :
+    if (currentEvent == 1)
+    {
+        modalClose = false;
+        eventData = game->mapData->places[playerPos.x][playerPos.y].eventData;
+        // constructSprite(&eventSprite, "./asset/map/room_3_doors.png", 3, 1);
+    }
+    // if is sanctuary :
+    if (currentEvent == 2)
+    {
+        modalClose = false;
+        eventData = game->mapData->places[playerPos.x][playerPos.y].eventData;
+        // constructSprite(&eventSprite, "./asset/map/room_3_doors.png", 3, 1);
+    }
+    // if is miniboss :
+    if (currentEvent == 3)
+    {
+        modalClose = false;
+        eventData = game->mapData->places[playerPos.x][playerPos.y].eventData;
+        ennemyData = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+        // constructSprite(&eventSprite, "./asset/map/room_3_doors.png", 3, 1);
+    }
+}
 
 //----------------------------------------------------------------------------------
 // Screen functions :
@@ -248,10 +310,8 @@ void InitGameplayScreen(void)
         strcat(texturePath, game->caracterData->items[itemsIdx]->imageName);
         objectsTextures[itemsIdx] = LoadTexture(texturePath);
     }
-
-    eventExample = importEvent(EVENT_ENCYCLOPEDIA[1]);
-    // eventExample = get_random_event();
 }
+
 void UpdateGameplayScreen(void)
 {
     if (IsKeyPressed(KEY_ESCAPE))
@@ -322,6 +382,7 @@ void DrawGameplayScreen(void)
     {
         printf("ArrowButton RIGHT\n");
         move_player(game->mapData, room, false);
+        reinitAfterMove();
     }
     if (etage == 0)
     {
@@ -329,6 +390,7 @@ void DrawGameplayScreen(void)
         {
             printf("ArrowButton LEFT\n");
             move_player(game->mapData, room + 2, false);
+            reinitAfterMove();
         }
     }
     if (room != 0 && etage != 10)
@@ -337,6 +399,7 @@ void DrawGameplayScreen(void)
         {
             printf("ArrowButton TOP\n");
             move_player(game->mapData, room - 1, false);
+            reinitAfterMove();
         }
     }
     if (room != 3 && etage != 10)
@@ -345,12 +408,13 @@ void DrawGameplayScreen(void)
         {
             printf("ArrowButton BOTTOM\n");
             move_player(game->mapData, room + 1, false);
+            reinitAfterMove();
         }
     }
     drawItems();
-
-    drawEventChoice(eventExample);
+    drawEvent();
 }
+
 void UnloadGameplayScreen(void)
 {
     UnloadTexture(arrow);

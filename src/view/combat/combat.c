@@ -121,7 +121,7 @@ void drawStatBoard()
 }
 
 // Draw one card of the hand player :
-int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
+int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean isHand)
 {
     idxHoverCard = -1;
     // card_t *card = importCardFromId(ACCELERATION);
@@ -156,12 +156,15 @@ int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
             }
             else
             {
-                idxHoverCard = idx;
                 state = 1; // FOCUSED
-                scaleFactor += 0.8f;
-                cardWidth = (float)cardInfo.source.width * scaleFactor;
-                cardHeight = (float)cardInfo.source.height * scaleFactor;
-                position.y = GetScreenHeight() - cardHeight;
+                if (isHand)
+                {
+                    idxHoverCard = idx;
+                    scaleFactor += 0.8f;
+                    cardWidth = (float)cardInfo.source.width * scaleFactor;
+                    cardHeight = (float)cardInfo.source.height * scaleFactor;
+                    position.y = GetScreenHeight() - cardHeight;
+                }
             }
 
             if (IsGestureDetected(GESTURE_TAP))
@@ -228,7 +231,7 @@ void drawHand(void)
             decal += (cardInfo.source.width * (scaleFactor + 0.8f)) - cardWidth;
         }
         Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
-        if (GuiCardHand(myCard, position, scaleFactor, i))
+        if (GuiCard(myCard, position, scaleFactor, i, true))
         {
             displayCard(myCard);
         }
@@ -240,7 +243,7 @@ void drawHand(void)
 void drawEnnemy(entity_t *entity)
 {
     float fontNameSize = 20;
-    float scaleEnnemy = 3.0f;
+    float scaleEnnemy = 6.0f;
 
     Vector2 ennemyNameSize = MeasureTextEx(font, TextFormat("%s", entity->name), fontNameSize, 1);
     Vector2 ennemyNamePos = (Vector2){GetScreenWidth() / 2 - ennemyNameSize.x / 2, 15};
@@ -309,6 +312,10 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
         DrawTextBoxed(font, TextFormat("%s", "Test"), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
     }
 }
+void drawRewind()
+{
+    // float scaleFactor = 3.0f;
+}
 
 void InitCombatScreen(void)
 {
@@ -345,9 +352,9 @@ void InitCombatScreen(void)
 
     // Enemy  :
 
-    entity_t *ennemy = importEnemyPhase1FromId(BLOUNI);
+    // entity_t *ennemy = importEnemyPhase1FromId(BLOUNI);
     // entity_t *ennemy = importMiniBossFromId(PYROX);
-    // entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
+    entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
     // position_player playerPos = player_position(game->mapData);
     // ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
 

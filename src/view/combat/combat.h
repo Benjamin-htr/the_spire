@@ -10,8 +10,9 @@
 extern char *EFFECT_NAME[13];
 
 void drawStatBoard();
+void drawRewind();
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState);
-int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int forcedState);
+int GuiCard(card_t *card, Vector2 position, float scaleFactor, int forcedState, boolean isHand);
 void InitCombatScreen(void);
 void UpdateCombatScreen(void);
 void DrawCombatScreen(void);

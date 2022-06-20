@@ -20,28 +20,6 @@ void printtamere(char *chaine)
     fflush(stdout);
 }
 
-void go_event(map *m)
-{
-    switch (map_get(m))
-    {
-    case 0:
-        printf("You are in a combat\n");
-        break;
-    case 1:
-        printf("You are in an event\n");
-        break;
-    case 2:
-        printf("You are in a sanctuaire\n");
-        break;
-    case 3:
-        printf("You are in a miniboss\n");
-        break;
-
-    default:
-        break;
-    }
-}
-
 position_player player_position(map *ma)
 {
     return ma->position_player;
@@ -69,6 +47,28 @@ int *playable_move(map *m)
 
     default:
         return (int[]){-1};
+        break;
+    }
+}
+
+void go_event(map *m)
+{
+    switch (map_get(m))
+    {
+    case 0:
+        printf("You are in a combat\n");
+        break;
+    case 1:
+        printf("You are in an event\n");
+        break;
+    case 2:
+        printf("You are in a sanctuaire\n");
+        break;
+    case 3:
+        printf("You are in a miniboss\n");
+        break;
+
+    default:
         break;
     }
 }
@@ -149,7 +149,7 @@ void set_event(map *m)
                     {
                         m->places[i][j].isWhat = 3;
                         m->places[i][j].eventData = get_mini_boss();
-                        //  get random boss from hugo
+                        m->places[i][j].eventData->data = getRandomMiniBoss();
                         boss--;
                     }
                     random++;
@@ -190,7 +190,7 @@ map *map_init()
             }
             else
             {
-                m->places[i][j] = place_init(0, NULL, NULL);
+                m->places[i][j] = place_init(0, NULL, i > 5 ? getRandomEnemyPhase2() : getRandomEnemyPhase1());
             }
         }
     }
@@ -242,7 +242,7 @@ void move_player(map *m, int y, boolean isTP)
             m->position_player = position_init(m->position_player.x + 1, y);
         }
         printf("position %d , %d \n", m->position_player.x, m->position_player.y);
-        go_event(m);
+        // go_event(m);
     }
     else
     {
@@ -258,16 +258,15 @@ void map_print(map *m)
         for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
         {
             printf("%d", m->places[i][j].isWhat);
-            fflush(stdout);
         }
         printf("\n");
     }
 }
 
-void map_event(map *m)
-{
-    go_event(m);
-}
+// void map_event(map *m)
+// {
+//     go_event(m);
+// }
 
 // returns the event of the given tile
 int map_get(map *map)

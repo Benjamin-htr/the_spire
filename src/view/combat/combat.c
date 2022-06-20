@@ -340,12 +340,10 @@ void drawRewind()
         float scaleFactor = 2.3f;
 
         float cardWidth = (float)cardInfo.source.width * scaleFactor;
-        float cardHeight = (float)cardInfo.source.height * scaleFactor;
         int gap = 80;
         float cardsTotalWidth = cardWidth * 3 + gap * 2;
 
         int i = 0;
-        float decal = 0.0f;
         deck_t *tmpReward = rewardDeck;
         while (tmpReward != NULL && tmpReward->data != NULL)
         {

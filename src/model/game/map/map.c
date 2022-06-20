@@ -1,8 +1,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include "./place/event/event.h"
-#include "./place/place.h"
 #include "map.h"
 
 int MAP_HEIGHT = 11;
@@ -20,6 +18,28 @@ void printtamere(char *chaine)
 {
     printf("---------------------------------\n TA MERE %s\n---------------------------------\n", chaine);
     fflush(stdout);
+}
+
+void go_event(map *m)
+{
+    switch (map_get(m))
+    {
+    case 0:
+        printf("You are in a combat\n");
+        break;
+    case 1:
+        printf("You are in an event\n");
+        break;
+    case 2:
+        printf("You are in a sanctuaire\n");
+        break;
+    case 3:
+        printf("You are in a miniboss\n");
+        break;
+
+    default:
+        break;
+    }
 }
 
 position_player player_position(map *ma)
@@ -53,6 +73,29 @@ int *playable_move(map *m)
     }
 }
 
+void *teleporter(map *m)
+{
+    printf("teleporter\n");
+    int random = rand() % 6;
+    boolean isTP = false;
+    int *move = playable_move(m);
+    int lenght = 3;
+    if (m->position_player.y == 3 || m->position_player.y == 0)
+    {
+        lenght = 2;
+    }
+    printf("lenght = %d\n", lenght);
+    if (m->position_player.x != 0 && m->position_player.x != MAP_WIDTH - 1)
+    {
+        if (random < 3)
+        {
+            isTP = true;
+        }
+        move_player(m, move[random % lenght], isTP);
+    }
+    return NULL;
+}
+
 boolean *event_place()
 {
     boolean *array = malloc(sizeof(boolean) * MAP_HEIGHT - 2);
@@ -60,7 +103,7 @@ boolean *event_place()
     {
         array[i] = false;
     }
-    int random = rand();
+    int random = (rand() % (MAP_HEIGHT - 3));
     boolean flag = false;
     array[4] = true;
     int j = 0;
@@ -68,19 +111,15 @@ boolean *event_place()
     {
         do
         {
-            if (array[(random % (MAP_HEIGHT - 3))] == false)
+            if (array[random] == false)
             {
-                array[(random % (MAP_HEIGHT - 3))] = true;
+                array[random] = true;
                 flag = true;
                 j++;
             }
-            random = rand();
+            random = (rand() % (MAP_HEIGHT - 3));
         } while (!flag);
         flag = false;
-    }
-    for (int i = 0; i < MAP_HEIGHT - 2; i++)
-    {
-        printf("boolean = %d\n", array[i]);
     }
 
     return array;
@@ -91,7 +130,7 @@ void set_event(map *m)
     boolean *where = event_place();
     int sanctuary = 2;
     int boss = 3;
-    int random = rand();
+    int random = 0;
     for (int i = 1; i < MAP_HEIGHT - 1; i++)
     {
         for (int j = 0; j < MAP_WIDTH; j++)
@@ -100,26 +139,20 @@ void set_event(map *m)
             {
                 if (where[i - 1] == true)
                 {
-                    printf("random = %d\n", (random % 2));
                     if ((random % 2) && sanctuary != 0)
                     {
                         m->places[i][j].isWhat = 2;
+                        m->places[i][j].eventData = get_sanctuary();
                         sanctuary--;
                     }
                     else if (!(random % 2) && boss != 0)
                     {
                         m->places[i][j].isWhat = 3;
+                        m->places[i][j].eventData = get_mini_boss();
+                        //  get random boss from hugo
                         boss--;
                     }
-                    random = rand();
-                    if (!(random % 2) && sanctuary != 0)
-                    {
-                        random = random + 1;
-                    }
-                    if ((random % 2) && boss != 0)
-                    {
-                        random = random + 1;
-                    }
+                    random++;
                 }
             }
         }
@@ -144,16 +177,16 @@ map *map_init()
         {
             m->places[i] = calloc(MAP_WIDTH, sizeof(place));
         }
-        random = (int)(rand() % MAP_WIDTH); // 0, 1, 2, 3
+        random = (rand() % MAP_WIDTH); // 0, 1, 2, 3
         for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
         {
             if (i == 5)
             {
-                m->places[i][j] = place_init(2, NULL, NULL);
+                m->places[i][j] = place_init(2, get_sanctuary(), NULL);
             }
             else if (random == j)
             {
-                m->places[i][j] = place_init(1, NULL, NULL);
+                m->places[i][j] = place_init(1, get_random_event(), NULL);
             }
             else
             {
@@ -196,12 +229,20 @@ boolean check_map(map *m, int y)
     return false;
 }
 
-void move_player(map *m, int y)
+void move_player(map *m, int y, boolean isTP)
 {
     if (check_map(m, y))
     {
-        m->position_player = position_init(m->position_player.x + 1, y);
+        if (isTP)
+        {
+            m->position_player = position_init(m->position_player.x - 1, y);
+        }
+        else
+        {
+            m->position_player = position_init(m->position_player.x + 1, y);
+        }
         printf("position %d , %d \n", m->position_player.x, m->position_player.y);
+        go_event(m);
     }
     else
     {
@@ -217,31 +258,50 @@ void map_print(map *m)
         for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
         {
             printf("%d", m->places[i][j].isWhat);
+            fflush(stdout);
         }
         printf("\n");
     }
 }
 
-// returns the event of the given tile
-place map_get(map *map, int x, int y)
+void map_event(map *m)
 {
-    return map->places[x][y];
+    go_event(m);
+}
+
+// returns the event of the given tile
+int map_get(map *map)
+{
+    return map->places[map->position_player.x][map->position_player.y].isWhat;
 }
 
 void testMap()
 {
+    Test_EVENT();
     map *m = map_init();
     map_print(m);
     printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
-    move_player(m, 3);
-    move_player(m, 5);
-    move_player(m, 0);
-    move_player(m, 1);
-    move_player(m, 0);
-    move_player(m, 3);
-    move_player(m, 0);
-    move_player(m, 1);
-    move_player(m, 2);
-    move_player(m, 3);
+    // move_player(m, 3, false);
+    // move_player(m, 5, false);
+    move_player(m, 0, false);
+    printf("\n\n");
+    // move_player(m, 1, false);
+    printf("position %d , %d \n", m->position_player.x, m->position_player.y);
     printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
+    printf("\n\n");
+
+    teleporter(m);
+    printf("\n\n");
+
+    printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
+    printf("position %d , %d \n", m->position_player.x, m->position_player.y);
+    printf("\n\n");
+
+    // move_player(m, 0, false);
+    // move_player(m, 3, false);
+    // move_player(m, 0, false);
+    // move_player(m, 1, false);
+    // move_player(m, 2, false);
+    // move_player(m, 3, false);
+    // printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
 }

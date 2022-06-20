@@ -258,7 +258,6 @@ void map_print(map *m)
         for (j = 0; j < ((i == 0 || i == MAP_HEIGHT - 1) ? 1 : MAP_WIDTH); j++)
         {
             printf("%d", m->places[i][j].isWhat);
-            fflush(stdout);
         }
         printf("\n");
     }

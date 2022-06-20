@@ -8,6 +8,13 @@
 
 typedef enum
 {
+    COMMON_ENEMY,
+    MINIBOSS,
+    BOSS,
+} ENEMY_TYPE;
+
+typedef enum
+{
     PETER,
     TEST_CAR,
     CARACTER_ID_SIZE,
@@ -33,6 +40,7 @@ typedef enum
 {
     ELDAN,
     PYROX,
+    JAWURM_MINI_BOSS,
     MINIBOSS_ID_SIZE,
 } MINIBOSS_ID;
 
@@ -50,6 +58,7 @@ typedef struct
     effect_t **effects;
     stat_t **stats;
     board_t *board;
+    ENEMY_TYPE enemyType;
     char *spriteName;
     int nbSpritePerLine;
 } entity_t;
@@ -87,11 +96,12 @@ entity_t *initEntity(
     int cards[][2],
     int diffCardSize,
     char *spriteName,
-    int nbSpritePerLine);
+    int nbSpritePerLine,
+    ENEMY_TYPE enemyType);
 
 entity_t *importCaracter(entity_import entitySkel);
 entity_t *importCaracterFromId(CARACTER_ID id);
-entity_t *importEnemy(enemy_import enemySkel);
+entity_t *importEnemy(enemy_import enemySkel, ENEMY_TYPE enemyType);
 entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id);
 entity_t *getRandomEnemyPhase1();
 entity_t *importEnemyPhase2FromId(ENEMY_PHASE_2_ID id);
@@ -123,6 +133,7 @@ void takeDamage(entity_t *entity, int value);
 stat_t *getEntityStat(entity_t *entity, stat_ID statId);
 effect_t *getEntityEffect(entity_t *entity, effect_ID id);
 card_t *getTrueCardValue(entity_t *entity, card_t *card); // On oublie pas de free la carte retourné une fois l'utilisation fini
+int getRandomUniqueItemId(entity_t *entity);
 
 //      SETTER
 void mergeEffect(entity_t *entity, effect_t *effect);

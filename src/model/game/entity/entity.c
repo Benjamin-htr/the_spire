@@ -13,12 +13,14 @@ entity_t *initEntity(
     int cards[][2],
     int diffCardSize,
     char *spriteName,
-    int nbSpritePerLine)
+    int nbSpritePerLine,
+    ENEMY_TYPE enemyType)
 // for cards param first int is the card id 2nd one is the number of card
 // for diffCardSize param is just the size of the array
 {
     entity_t *res = malloc(sizeof(entity_t));
     res->name = name;
+    res->enemyType = enemyType;
     res->stats = initEntityStatFromArray(stats);
     res->effects = initEntityEffectArray();
     res->cardDeck = createDeckFromArray(cards, diffCardSize);
@@ -47,7 +49,8 @@ entity_t *importCaracter(entity_import entitySkel)
         entitySkel.cardDeck,
         entitySkel.diffCardSize,
         entitySkel.spriteName,
-        entitySkel.nbSpritePerLine);
+        entitySkel.nbSpritePerLine,
+        BOSS);
 }
 
 entity_t *importCaracterFromId(CARACTER_ID id)
@@ -55,7 +58,7 @@ entity_t *importCaracterFromId(CARACTER_ID id)
     return importCaracter(CARATER_ENCYCLOPEDIA[id]);
 }
 
-entity_t *importEnemy(enemy_import enemySkel)
+entity_t *importEnemy(enemy_import enemySkel, ENEMY_TYPE enemyType)
 {
     int hp =
         enemySkel.hpRange[0] + (rand() %
@@ -75,12 +78,13 @@ entity_t *importEnemy(enemy_import enemySkel)
         enemySkel.cardDeck,
         enemySkel.diffCardSize,
         enemySkel.spriteName,
-        enemySkel.nbSpritePerLine);
+        enemySkel.nbSpritePerLine,
+        enemyType);
 }
 
 entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id)
 {
-    return importEnemy(ENEMY_PHASE_1_ENCYCLOPEDIA[id]);
+    return importEnemy(ENEMY_PHASE_1_ENCYCLOPEDIA[id], COMMON_ENEMY);
 }
 
 entity_t *getRandomEnemyPhase1()
@@ -90,7 +94,7 @@ entity_t *getRandomEnemyPhase1()
 
 entity_t *importEnemyPhase2FromId(ENEMY_PHASE_2_ID id)
 {
-    return importEnemy(ENEMY_PHASE_2_ENCYCLOPEDIA[id]);
+    return importEnemy(ENEMY_PHASE_2_ENCYCLOPEDIA[id], COMMON_ENEMY);
 }
 
 entity_t *getRandomEnemyPhase2()
@@ -100,7 +104,7 @@ entity_t *getRandomEnemyPhase2()
 
 entity_t *importMiniBossFromId(MINIBOSS_ID id)
 {
-    return importEnemy(MINIBOSS_ENCYCLOPEDIA[id]);
+    return importEnemy(MINIBOSS_ENCYCLOPEDIA[id], MINIBOSS);
 }
 
 entity_t *getRandomMiniBoss()
@@ -110,7 +114,7 @@ entity_t *getRandomMiniBoss()
 
 entity_t *importBOSSFromId(BOSS_ID id)
 {
-    return importEnemy(BOSS_ENCYCLOPEDIA[id]);
+    return importEnemy(BOSS_ENCYCLOPEDIA[id], BOSS);
 }
 
 // DISPLAY FUNCTION
@@ -311,6 +315,16 @@ card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de fre
     return res;
 }
 
+int getRandomUniqueItemId(entity_t *entity)
+{
+    int itemId;
+    do
+    {
+        itemId = (rand() % (SHOES));
+    } while (entity->items[itemId]->description != NULL);
+    return itemId + 1;
+}
+
 //      SETTER
 
 void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength])
@@ -431,7 +445,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Tester",
         .stats = {
-            {75, false},
+            {10000, false},
             {999, true},
             {100, true},
             {3, true},
@@ -555,6 +569,18 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         .diffCardSize = 2,
         .spriteName = "pyrox.png",
         .nbSpritePerLine = 4,
+    },
+    {
+        .name = "TEST MINI BOSS",
+        .hpRange = {40, 44},
+        .cardDeck = {
+            {JAWURM_BACKSTAB, 1},
+            {JAWURM_FIST, 1},
+            {JAWURM_CROUCH, 1},
+        },
+        .itemslength = 0,
+        .diffCardSize = 3,
+        .spriteName = "jawurm.png",
     },
 };
 enemy_import BOSS_ENCYCLOPEDIA[] = {

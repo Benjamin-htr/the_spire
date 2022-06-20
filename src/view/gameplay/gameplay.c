@@ -174,7 +174,6 @@ void drawEventChoice(event *event)
         float backgroundHeight = GetScreenHeight() * 0.7f;
         Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
         DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
-
         float margin = 0.05f;
         // Draw event description :
         Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
@@ -188,10 +187,10 @@ void drawEventChoice(event *event)
         float gapX = backgroundWidth - actionTextWidth * 2 - (backgroundWidth * margin * 2);
         //  Draw event text choices :
         Rectangle boundsAction1 = (Rectangle){backgroundRect.x + (margin * backgroundWidth), posY, actionTextWidth, actionTextHeight};
-        DrawTextBoxed(font, TextFormat("%s", event->actions[0].label), boundsAction1, 17, 1.0f, true, WHITE);
+        DrawTextBoxed(font, TextFormat("%s", event->actions[0]->label), boundsAction1, 17, 1.0f, true, WHITE);
 
         Rectangle boundsAction2 = (Rectangle){boundsAction1.x + boundsAction1.width + gapX, posY, actionTextWidth, actionTextHeight};
-        DrawTextBoxed(font, TextFormat("%s", event->actions[1].label), boundsAction2, 17, 1.0f, true, WHITE);
+        DrawTextBoxed(font, TextFormat("%s", event->actions[1]->label), boundsAction2, 17, 1.0f, true, WHITE);
 
         // Draw button choices :
         float marginTopButton = 0.10f;
@@ -322,14 +321,14 @@ void DrawGameplayScreen(void)
     if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, backInteractState))
     {
         printf("ArrowButton RIGHT\n");
-        move_player(game->mapData, room);
+        move_player(game->mapData, room, false);
     }
     if (etage == 0)
     {
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, backInteractState))
         {
             printf("ArrowButton LEFT\n");
-            move_player(game->mapData, room + 2);
+            move_player(game->mapData, room + 2, false);
         }
     }
     if (room != 0 && etage != 10)
@@ -337,7 +336,7 @@ void DrawGameplayScreen(void)
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, backInteractState))
         {
             printf("ArrowButton TOP\n");
-            move_player(game->mapData, room - 1);
+            move_player(game->mapData, room - 1, false);
         }
     }
     if (room != 3 && etage != 10)
@@ -345,7 +344,7 @@ void DrawGameplayScreen(void)
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, backInteractState))
         {
             printf("ArrowButton BOTTOM\n");
-            move_player(game->mapData, room + 1);
+            move_player(game->mapData, room + 1, false);
         }
     }
     drawItems();

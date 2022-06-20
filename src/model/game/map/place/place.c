@@ -1,12 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "./event/event.h"
-
 #include "place.h"
-
-
-
 
 place place_init(int isWhat, event *eventData, entity_t *enemyData)
 {
@@ -17,11 +12,13 @@ place place_init(int isWhat, event *eventData, entity_t *enemyData)
     return p;
 }
 
-place test(){
+place test()
+{
     return place_init(0, NULL, NULL);
 }
 
-void testPlace(){
+void testPlace()
+{
     place p = test();
     printf("%d\n", p.isWhat);
 }

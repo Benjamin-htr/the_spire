@@ -92,55 +92,61 @@ event *get_sanctuary()
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
 
-void *do_nothing()
-{
-    printf("do nothing\n");
-    return NULL;
-}
+
 void *launch_fight_miniboss(entity_t *peter, ...)
 {
     va_list args;
     va_start(args, peter);
     printf("launch fight miniboss\n");
     entity_t *miniboss = va_arg(args, entity_t *);
+    displayEntity(miniboss);
+    displayEntity(peter);
     startCombat(peter, miniboss);
     va_end(args);
     return NULL;
 }
 
-void *sanctuary_life_refill(entity_t *peter, entity_t *no)
+void *do_nothing(entity_t *peter, ...)
+{
+    printf("do nothing\n");
+    printf("%s\n", peter->name);
+    return NULL;
+}
+
+void *sanctuary_life_refill(entity_t *peter, ...)
+{
+
+    // get fonction from hugo
+    return NULL;
+}
+
+void *sanctuary_mana_refill(entity_t *peter, ...)
 {
     // get fonction from hugo
     return NULL;
 }
 
-void *sanctuary_mana_refill(entity_t *peter, entity_t *no)
-{
-    // get fonction from hugo
-    return NULL;
-}
-
-void *transform_striketododge(entity_t *peter, entity_t *no)
+void *transform_striketododge(entity_t *peter, ...)
 {
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;
 }
 
-void *transform_dodgetostrike(entity_t *peter, entity_t *no)
+void *transform_dodgetostrike(entity_t *peter, ...)
 {
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;
 }
 
-void *mana_max_refill(entity_t *peter, entity_t *no)
+void *mana_max_refill(entity_t *peter, ...)
 {
     updateStat(getEntityStat(peter, MANA), 20, true);
     return NULL;
 }
 
-void *life_max_refill(entity_t *peter, entity_t *no)
+void *life_max_refill(entity_t *peter, ...)
 {
     // get fonction from hugo
     updateStat(getEntityStat(peter, HP), 10, true);
@@ -152,6 +158,13 @@ void *no_tp(entity_t *peter, ...)
     updateStat(getEntityStat(peter, HP), -10, false);
     return NULL;
 }
+
+void *tp(entity_t *peter, ...)
+{
+    printf("%s\n", peter->name);
+    return (int *) 1;
+}
+
 
 event_import EVENT_ENCYCLOPEDIA[] = {
 
@@ -188,7 +201,7 @@ event_import EVENT_ENCYCLOPEDIA[] = {
         .actions = {
             {
                 .label = "Entrer dans le téléporteur et aller dans une pièce adjacente (possibilités égales d'avancer, revenir en arrière ou de rester au même niveau)",
-                .action = &do_nothing,
+                .action = &tp,
             },
             {
                 .label = "Dépenser 10 points de vie pour garantir d’aller à un endroit choisi",

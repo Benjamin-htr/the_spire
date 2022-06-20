@@ -84,7 +84,6 @@ void *teleporter(map *m)
     {
         lenght = 2;
     }
-    printf("lenght = %d\n", lenght);
     if (m->position_player.x != 0 && m->position_player.x != MAP_WIDTH - 1)
     {
         if (random < 3)
@@ -259,15 +258,11 @@ void map_print(map *m)
         {
             printf("%d", m->places[i][j].isWhat);
             fflush(stdout);
+
         }
         printf("\n");
     }
 }
-
-// void map_event(map *m)
-// {
-//     go_event(m);
-// }
 
 // returns the event of the given tile
 int map_get(map *map)
@@ -296,6 +291,8 @@ void testMap()
     printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
     printf("position %d , %d \n", m->position_player.x, m->position_player.y);
     printf("\n\n");
+
+
 
     // move_player(m, 0, false);
     // move_player(m, 3, false);

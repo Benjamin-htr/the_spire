@@ -72,6 +72,11 @@ void refillStat(stat_t *stat)
     stat->current = stat->max;
 }
 
+void refillHalfStat(stat_t *stat)
+{
+    updateStat(stat, stat->max / 2, false);
+}
+
 // DISPLAY FUNCTION
 
 void displayStat(stat_t *stat)

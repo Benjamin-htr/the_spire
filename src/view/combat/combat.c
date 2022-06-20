@@ -33,6 +33,12 @@ combat_t *combat = {0};
 
 static int idxHoverCard = -1;
 
+static entity_t *ennemy = {0};
+
+// Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back).
+static int backInteractState = -1;
+static boolean modalClose = false;
+
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
@@ -119,7 +125,7 @@ void drawStatBoard()
 }
 
 // Draw one card of the hand player :
-int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
+int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean isHand)
 {
     idxHoverCard = -1;
     // card_t *card = importCardFromId(ACCELERATION);
@@ -154,12 +160,15 @@ int GuiCardHand(card_t *card, Vector2 position, float scaleFactor, int idx)
             }
             else
             {
-                idxHoverCard = idx;
                 state = 1; // FOCUSED
-                scaleFactor += 0.8f;
-                cardWidth = (float)cardInfo.source.width * scaleFactor;
-                cardHeight = (float)cardInfo.source.height * scaleFactor;
-                position.y = GetScreenHeight() - cardHeight;
+                if (isHand)
+                {
+                    idxHoverCard = idx;
+                    scaleFactor += 0.8f;
+                    cardWidth = (float)cardInfo.source.width * scaleFactor;
+                    cardHeight = (float)cardInfo.source.height * scaleFactor;
+                    position.y = GetScreenHeight() - cardHeight;
+                }
             }
 
             if (IsGestureDetected(GESTURE_TAP))
@@ -226,7 +235,7 @@ void drawHand(void)
             decal += (cardInfo.source.width * (scaleFactor + 0.8f)) - cardWidth;
         }
         Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
-        if (GuiCardHand(myCard, position, scaleFactor, i))
+        if (GuiCard(myCard, position, scaleFactor, i, true))
         {
             displayCard(myCard);
         }
@@ -238,7 +247,7 @@ void drawHand(void)
 void drawEnnemy(entity_t *entity)
 {
     float fontNameSize = 20;
-    float scaleEnnemy = 3.0f;
+    float scaleEnnemy = 6.0f;
 
     Vector2 ennemyNameSize = MeasureTextEx(font, TextFormat("%s", entity->name), fontNameSize, 1);
     Vector2 ennemyNamePos = (Vector2){GetScreenWidth() / 2 - ennemyNameSize.x / 2, 15};
@@ -307,6 +316,22 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
         DrawTextBoxed(font, TextFormat("%s", "Test"), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
     }
 }
+void drawRewind()
+{
+    if (!modalClose)
+    {
+        backInteractState = 0;
+        // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+        float backgroundWidth = GetScreenWidth() * 0.7f;
+        float backgroundHeight = GetScreenHeight() * 0.7f;
+        Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+        DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+        float margin = 0.05f;
+        // Draw event description :
+        Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
+        DrawTextBoxed(font, TextFormat("%s", "Vous avez gagné le combat ! Choisissez une carte à ajouter dans votre deck :"), boundsDesc, 22, 1.0f, true, WHITE);
+    }
+}
 
 void InitCombatScreen(void)
 {
@@ -341,23 +366,40 @@ void InitCombatScreen(void)
     cardInfo.right = 00;
     cardInfo.bottom = 00;
 
-    // Enemy example :
-    // entity_t *enemy = importEnemyPhase1FromId(BLOUNI);
-    // entity_t *enemy = importMiniBossFromId(PYROX);
-    entity_t *enemy = importBOSSFromId(GARDIAN_PLUME);
+    // Enemy  :
+
+    // entity_t *ennemy = importEnemyPhase1FromId(BLOUNI);
+    // entity_t *ennemy = importMiniBossFromId(PYROX);
+    // entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
+    // entity_t *ennemy = importEnemyPhase2FromId(MANGOUSTINE);
+    position_player playerPos = player_position(game->mapData);
+    ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+    if (ennemy == NULL)
+    {
+        printf("Error : no enemy found\n");
+        fflush(stdout);
+        // exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("Enemy found : %s\n", ennemy->name);
+        fflush(stdout);
+    }
 
     // We load the ennemy sprite :
     char *ennemySpritePath = "./asset/monsters/";
     char *spritePath;
-    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(enemy->spriteName));
+    spritePath = malloc(1 + strlen(ennemySpritePath) + strlen(ennemy->spriteName));
     strcpy(spritePath, ennemySpritePath);
-    strcat(spritePath, enemy->spriteName);
+    strcat(spritePath, ennemy->spriteName);
     printf("%s\n", spritePath);
-    constructSprite(&ennemySprite, spritePath, enemy->nbSpritePerLine, 1);
+    constructSprite(&ennemySprite, spritePath, ennemy->nbSpritePerLine, 1);
 
     // We start combat :
-    combat = startCombat(game->caracterData, enemy);
+    combat = startCombat(game->caracterData, ennemy);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+
+    free(spritePath);
 
     displayEntityEffectArray(game->caracterData->effects);
 }
@@ -386,12 +428,19 @@ void DrawCombatScreen(void)
 
     drawEnnemy(combat->enemy);
     drawHand();
+    drawRewind();
 }
 void UnloadCombatScreen(void)
 {
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
     UnloadTexture(EnergyIcon);
+
+    UnloadTexture(strenghtEffect);
+    UnloadTexture(dexterityEffect);
+    UnloadTexture(fireEffect);
+    UnloadTexture(weaknessEffect);
+    UnloadTexture(slowingEffect);
 
     UnloadTexture(BasicCardPatch);
     UnloadTexture(CommonCardPatch);
@@ -401,6 +450,8 @@ void UnloadCombatScreen(void)
 
     UnloadTexture(ImageCardUnknown);
     UnloadTexture(ennemySprite.texture);
+
+    freeCombat(combat);
 }
 int FinishCombatScreen(void)
 {

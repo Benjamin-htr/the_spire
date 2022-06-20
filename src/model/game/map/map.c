@@ -192,6 +192,10 @@ map *map_init()
                 m->places[i][j] = place_init(0, NULL, i > 5 ? getRandomEnemyPhase2() : getRandomEnemyPhase1());
             }
         }
+        if (i == MAP_HEIGHT - 1)
+        {
+            m->places[i][0] = place_init(0, NULL, importBOSSFromId(GARDIAN_PLUME));
+        }
     }
     set_event(m);
     return m;
@@ -274,23 +278,24 @@ void testMap()
 {
     Test_EVENT();
     map *m = map_init();
-    map_print(m);
-    printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
-    // move_player(m, 3, false);
-    // move_player(m, 5, false);
-    move_player(m, 0, false);
-    printf("\n\n");
-    // move_player(m, 1, false);
-    printf("position %d , %d \n", m->position_player.x, m->position_player.y);
-    printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
-    printf("\n\n");
+    // map_print(m);
+    displayEntity(m->places[MAP_HEIGHT - 1][0].enemyData);
+    // printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
+    // // move_player(m, 3, false);
+    // // move_player(m, 5, false);
+    // move_player(m, 0, false);
+    // printf("\n\n");
+    // // move_player(m, 1, false);
+    // printf("position %d , %d \n", m->position_player.x, m->position_player.y);
+    // printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
+    // printf("\n\n");
 
-    teleporter(m);
-    printf("\n\n");
+    // teleporter(m);
+    // printf("\n\n");
 
-    printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
-    printf("position %d , %d \n", m->position_player.x, m->position_player.y);
-    printf("\n\n");
+    // printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
+    // printf("position %d , %d \n", m->position_player.x, m->position_player.y);
+    // printf("\n\n");
 
 
 

@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "time.h"
+int tmpChooseItem() { return 0; } // TOREMOVE
+int (*chooseItemReward)(item_t *) = &tmpChooseItem;
+int (*chooseCardReward)(deck_t *) = &getChoosenRewardCardId;
+int (*chooseCardFromHand)(board_t *) = &getChoosenCardId;
+int (*displayCombatStat)(combat_t *); // a voir pour les parametres passés
 
 combat_t *startCombat(entity_t *caracter, entity_t *enemy)
 {
@@ -53,7 +58,7 @@ void playCards(combat_t *combat)
         boardToCheck = combat->caracter->board;
         while (getDeckSize(boardToCheck->hand) > 0)
         {
-            card = pickCardFromHand(combat->caracter, getChoosenCardId);
+            card = pickCardFromHand(combat->caracter, chooseCardFromHand);
             if (card == NULL)
             {
                 // On passe si l'id de la carte choisi == -1
@@ -73,27 +78,31 @@ void playCards(combat_t *combat)
     moveCardsFromHand(boardToCheck); // on déplace les cartes restantes de la main vers défausse/abysse
 }
 
-int getChoosenCardId(deck_t *hand)
+int getChoosenCardId(board_t *board)
 { // pour l'instant on prend juste une random blc
-    return (rand() % (getDeckSize(hand) + 1)) - 1;
+    return (rand() % (getDeckSize(board->hand) + 1)) - 1;
 }
-int chooseRandomCardId(deck_t *hand)
+int getChoosenRewardCardId(deck_t *deck)
 { // pour l'instant on prend juste une random blc
-    return rand() % (getDeckSize(hand));
+    return (rand() % (getDeckSize(deck) + 1)) - 1;
+}
+int chooseRandomCardId(board_t *board)
+{ // pour l'instant on prend juste une random blc
+    return rand() % (getDeckSize(board->hand));
 }
 
 // int getChoosenCardIdGUI(deck_t* hand){
 
 // }
 
-card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(deck_t *))
+card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(board_t *))
 {
     deck_t *deckPicked;
     stat_t *caracterMana = getEntityStat(caracter, MANA);
     stat_t *caracterEnergy = getEntityStat(caracter, ENERGY);
     do
     {
-        deckPicked = getElementFromDeckAtIndex(cardChoosingFunc(caracter->board->hand), caracter->board->hand);
+        deckPicked = getElementFromDeckAtIndex(cardChoosingFunc(caracter->board), caracter->board->hand);
         if (deckPicked == NULL)
         {
             return NULL;
@@ -171,14 +180,35 @@ void startFight(combat_t *combat)
         tranferOneCardBetweenDeck(
             &rewardDeck,
             &(combat->caracter->cardDeck),
-            getChoosenCardId(rewardDeck));
+            chooseCardReward(rewardDeck));
         displayDeck(combat->caracter->cardDeck);
         freeDeckListAndCard(rewardDeck);
+        if (combat->enemy->enemyType != COMMON_ENEMY)
+        {
+            int rewardItemId;
+            item_t *rewardItem;
+            if (combat->enemy->enemyType == MINIBOSS)
+            {
+                rewardItemId = getRandomUniqueItemId(combat->caracter);
+                rewardItem = importItemFromId(rewardItemId);
+                displayItem(rewardItem);
+                if (chooseItemReward(rewardItem) != -1)
+                {
+                    addItemtoEntityItemList(combat->caracter, rewardItemId);
+                }
+                freeItem(rewardItem);
+            }
+            // else
+            // {
+            //     rewardItem = importItemFromId()
+            // }
+        }
     }
     else
     {
         // LE JOUEUR PERD
         printf("PETER PERD");
     }
+    displayEntity(combat->caracter);
     freeCombat(combat);
 }

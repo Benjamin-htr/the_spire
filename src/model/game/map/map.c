@@ -203,7 +203,7 @@ map *map_init()
 
 boolean check_map(map *m, int y)
 {
-    if (m->position_player.x == 0 && y <= MAP_WIDTH - 1 && y >= 0)
+    if ((m->position_player.x == 0 || m->position_player.x == (MAP_HEIGHT - 1))  && y <= MAP_WIDTH - 1 && y >= 0)
     {
         return true;
     }

@@ -132,6 +132,7 @@ void *sanctuary_mana_refill(entity_t *peter, ...)
 void *transform_striketododge(entity_t *peter, ...)
 {
     printf("transform striketododge\n");
+    replaceCardWithOther(&(peter->cardDeck),STRIKE,DODGE_A);
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;
@@ -140,6 +141,7 @@ void *transform_striketododge(entity_t *peter, ...)
 void *transform_dodgetostrike(entity_t *peter, ...)
 {
     printf("transform dodgetostrike\n");
+    replaceCardWithOther(&(peter->cardDeck),DODGE_A,STRIKE);
     // startCombat(peter, event->data);
     // get fonction from hugo
     return NULL;

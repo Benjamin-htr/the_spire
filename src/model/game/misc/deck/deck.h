@@ -24,6 +24,7 @@ card_t *removeCardatIndex(deck_t **deck, int cardIdx);
 card_t *draw(deck_t *deck);
 void shuffleDeck(deck_t **deck);
 void swapElements(deck_t *myDeck, int n, int m);
+void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENCYCLOPEDIA_ID cardID_2);
 
 // GETTER
 deck_t *getElementFromDeckAtIndex(int idx, deck_t *myDeck);

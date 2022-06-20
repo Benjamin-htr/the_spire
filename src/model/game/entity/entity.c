@@ -393,21 +393,16 @@ void testEntity()
 {
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");
     entity_t *testCar = importCaracterFromId(TEST_CAR);
-    entity_t *testPeter = getRandomEnemyPhase1();
-    entity_t *testPeter2 = getRandomEnemyPhase1();
-    entity_t *testPeter3 = getRandomEnemyPhase1(); // importEnemyPhase1FromId(KELIKO);
+    // entity_t *testPeter = getRandomEnemyPhase1();
     // getEntityStat(testCar, DODGE)->current = 3;
     displayEntity(testCar);
-    applyAllItemsEffect(testCar, testCar);
-    takeDamage(testCar, -10);
+    // replaceCardWithOther(&testCar->cardDeck, STRIKE, SPECTRUM);
+    // applyAllItemsEffect(testCar, testCar);
+    // takeDamage(testCar, -10);
     displayEntity(testCar);
-    displayEntity(testPeter);
-    displayEntity(testPeter2);
-    displayEntity(testPeter3);
+    // displayEntity(testPeter);
     freeEntity(testCar);
-    freeEntity(testPeter);
-    freeEntity(testPeter2);
-    freeEntity(testPeter3);
+    // freeEntity(testPeter);
     // entity_t *testCar2 = importCaracterFromId(PETER);
     // // entity_t *testEnemy = getRandomMiniBoss();
     // displayEntity(testCar2);

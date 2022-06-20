@@ -177,6 +177,26 @@ card_t *removeCard(deck_t **deck, char *cardName)
     return NULL;
 }
 
+void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENCYCLOPEDIA_ID cardID_2)
+{
+    char *card_1_name = CARD_ENCYCLOPEDIA[cardID_1].name;
+    deck_t *readingHead = *deck;
+    card_t *toFree;
+    int idx = 0;
+    while (readingHead != NULL && readingHead->data != NULL)
+    {
+        if (readingHead->data->name == card_1_name)
+        {
+
+            toFree = readingHead->data;
+            readingHead->data = importCardFromId(cardID_2);
+            freeCard(toFree);
+        }
+        readingHead = readingHead->next;
+        idx++;
+    }
+}
+
 card_t *draw(deck_t *deck)
 {
     card_t *res = deck->data;

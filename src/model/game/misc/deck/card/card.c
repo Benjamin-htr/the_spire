@@ -1,5 +1,4 @@
 #include "card.h"
-#include "../../../entity/entity.h"
 #include <stdlib.h>
 #include <stdio.h>
 

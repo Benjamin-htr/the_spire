@@ -29,4 +29,7 @@ void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay);
 void testCombat();
 
 void startFight(combat_t *combat);
+
+void freeCombat(combat_t *combat);
+
 #endif

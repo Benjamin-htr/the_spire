@@ -35,6 +35,10 @@ static int idxHoverCard = -1;
 
 static entity_t *ennemy = {0};
 
+// Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back).
+static int backInteractState = -1;
+static boolean modalClose = false;
+
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
@@ -314,7 +318,19 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
 }
 void drawRewind()
 {
-    // float scaleFactor = 3.0f;
+    if (!modalClose)
+    {
+        backInteractState = 0;
+        // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+        float backgroundWidth = GetScreenWidth() * 0.7f;
+        float backgroundHeight = GetScreenHeight() * 0.7f;
+        Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+        DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+        float margin = 0.05f;
+        // Draw event description :
+        Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
+        DrawTextBoxed(font, TextFormat("%s", "Vous avez gagné le combat ! Choisissez une carte à ajouter dans votre deck :"), boundsDesc, 22, 1.0f, true, WHITE);
+    }
 }
 
 void InitCombatScreen(void)
@@ -354,14 +370,26 @@ void InitCombatScreen(void)
 
     // entity_t *ennemy = importEnemyPhase1FromId(BLOUNI);
     // entity_t *ennemy = importMiniBossFromId(PYROX);
-    entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
-    // position_player playerPos = player_position(game->mapData);
-    // ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+    // entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
+    // entity_t *ennemy = importEnemyPhase2FromId(MANGOUSTINE);
+    position_player playerPos = player_position(game->mapData);
+    ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+    if (ennemy == NULL)
+    {
+        printf("Error : no enemy found\n");
+        fflush(stdout);
+        // exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("Enemy found : %s\n", ennemy->name);
+        fflush(stdout);
+    }
 
     // We load the ennemy sprite :
     char *ennemySpritePath = "./asset/monsters/";
     char *spritePath;
-    spritePath = (char *)malloc(1 + strlen(ennemySpritePath) + strlen(ennemy->spriteName));
+    spritePath = malloc(1 + strlen(ennemySpritePath) + strlen(ennemy->spriteName));
     strcpy(spritePath, ennemySpritePath);
     strcat(spritePath, ennemy->spriteName);
     printf("%s\n", spritePath);
@@ -370,6 +398,8 @@ void InitCombatScreen(void)
     // We start combat :
     combat = startCombat(game->caracterData, ennemy);
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+
+    free(spritePath);
 
     displayEntityEffectArray(game->caracterData->effects);
 }
@@ -398,12 +428,19 @@ void DrawCombatScreen(void)
 
     drawEnnemy(combat->enemy);
     drawHand();
+    drawRewind();
 }
 void UnloadCombatScreen(void)
 {
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
     UnloadTexture(EnergyIcon);
+
+    UnloadTexture(strenghtEffect);
+    UnloadTexture(dexterityEffect);
+    UnloadTexture(fireEffect);
+    UnloadTexture(weaknessEffect);
+    UnloadTexture(slowingEffect);
 
     UnloadTexture(BasicCardPatch);
     UnloadTexture(CommonCardPatch);
@@ -413,6 +450,8 @@ void UnloadCombatScreen(void)
 
     UnloadTexture(ImageCardUnknown);
     UnloadTexture(ennemySprite.texture);
+
+    freeCombat(combat);
 }
 int FinishCombatScreen(void)
 {

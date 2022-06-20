@@ -247,7 +247,9 @@ void reinitAfterMove()
     if (currentEvent == 0)
     {
         modalClose = false;
+        printf("before ennemyData recup in gameplay \n");
         ennemyData = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+        printf("after ennemyData recup in gameplay \n");
         TransitionToScreen(COMBAT_SCREEN);
         // constructSprite(&eventSprite, "./asset/map/room_3_doors.png", 3, 1);
     }
@@ -309,6 +311,7 @@ void InitGameplayScreen(void)
         strcpy(texturePath, objectsTexturePath);
         strcat(texturePath, game->caracterData->items[itemsIdx]->imageName);
         objectsTextures[itemsIdx] = LoadTexture(texturePath);
+        free(texturePath);
     }
 }
 

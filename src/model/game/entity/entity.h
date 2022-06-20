@@ -128,6 +128,7 @@ void turnBeginEffectUpdate(entity_t *entity);
 void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect);
 void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength]);
 void takeDamage(entity_t *entity, int value);
+void wipeAllEffect(entity_t *entity);
 
 // GETTER / SETTER
 stat_t *getEntityStat(entity_t *entity, stat_ID statId);

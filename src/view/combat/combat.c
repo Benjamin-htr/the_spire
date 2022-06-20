@@ -35,6 +35,8 @@ static int idxHoverCard = -1;
 
 static entity_t *ennemy = {0};
 
+static deck_t *rewardDeck = NULL;
+
 // Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back).
 static int backInteractState = -1;
 static boolean modalClose = false;
@@ -118,9 +120,12 @@ void drawStatBoard()
     float posX = GetScreenWidth() - (16 * scaleFactor) - padding;
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
-        Vector2 pos = (Vector2){posX, StatBoardPos.y - 16 * scaleFactor - marginBottom};
-        drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, false, -1);
-        posX -= 16 * scaleFactor + gap;
+        if (game->caracterData->effects[effectIdx]->value > 0)
+        {
+            Vector2 pos = (Vector2){posX, StatBoardPos.y - 16 * scaleFactor - marginBottom};
+            drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, false, -1);
+            posX -= 16 * scaleFactor + gap;
+        }
     }
 }
 
@@ -202,7 +207,6 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
     // Draw text description and technic:
     float fontDesc = 0.058f * cardWidth;
     DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
-
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};
     float scaleEnergyIcon = 0.65f * scaleFactor;
@@ -217,7 +221,7 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
 }
 
 // Draw all cards of the hand player :
-void drawHand(void)
+void drawHand()
 {
     float scaleFactor = 1.5f;
 
@@ -237,7 +241,7 @@ void drawHand(void)
         Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
         if (GuiCard(myCard, position, scaleFactor, i, true))
         {
-            displayCard(myCard);
+            playOneCard(combat->caracter, combat->enemy, myCard);
         }
         myHand = myHand->next;
         i++;
@@ -281,9 +285,12 @@ void drawEnnemy(entity_t *entity)
     float posX = ennemyPos.x - (16 * scaleFactor) - marginRight;
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
-        Vector2 pos = (Vector2){posX, ennemyNamePos.y};
-        drawEffect(entity->effects[effectIdx], pos, scaleFactor, true, -1);
-        posX -= 16 * scaleFactor + gap;
+        if (entity->effects[effectIdx]->value > 0)
+        {
+            Vector2 pos = (Vector2){posX, ennemyNamePos.y};
+            drawEffect(entity->effects[effectIdx], pos, scaleFactor, true, -1);
+            posX -= 16 * scaleFactor + gap;
+        }
     }
 }
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState)
@@ -313,7 +320,7 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
         float posX = alignLeft ? bounds.x : (bounds.x + bounds.width) - rectWidth;
         Rectangle hoverRect = (Rectangle){posX, bounds.y + bounds.height + 10, rectWidth, rectHeight};
         DrawRectangleRec(hoverRect, GetColor(0x242424ff));
-        DrawTextBoxed(font, TextFormat("%s", "Test"), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
+        DrawTextBoxed(font, TextFormat("%d", effect->value), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
     }
 }
 void drawRewind()
@@ -330,6 +337,32 @@ void drawRewind()
         // Draw event description :
         Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
         DrawTextBoxed(font, TextFormat("%s", "Vous avez gagné le combat ! Choisissez une carte à ajouter dans votre deck :"), boundsDesc, 22, 1.0f, true, WHITE);
+        float scaleFactor = 1.5f;
+
+        float cardWidth = (float)cardInfo.source.width * scaleFactor;
+        float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
+        int i = 0;
+        float decal = 0.0f;
+        deck_t *tmpReward = rewardDeck;
+        while (tmpReward != NULL && tmpReward->data != NULL)
+        {
+            card_t *myCard = tmpReward->data;
+            // grossir la carte si hover
+            Vector2 position = (Vector2){(float)GetScreenWidth() / 2 - (i * cardWidth) + decal, (float)(GetScreenHeight() / 2 - cardHeight * 0.60f)};
+            if (GuiCard(myCard, position, scaleFactor, i, true))
+            {
+                tranferOneCardBetweenDeck(
+                    &rewardDeck,
+                    &(combat->caracter->cardDeck),
+                    i);
+                freeDeckListAndCard(rewardDeck);
+                rewardDeck = NULL;
+                finishScreen = 1;
+            }
+            tmpReward = tmpReward->next;
+            i++;
+        }
     }
 }
 
@@ -397,17 +430,23 @@ void InitCombatScreen(void)
 
     // We start combat :
     combat = startCombat(game->caracterData, ennemy);
-    drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+    startFight(combat);
 
     free(spritePath);
 
     displayEntityEffectArray(game->caracterData->effects);
 }
+
 void UpdateCombatScreen(void)
 {
     if (IsKeyPressed(KEY_ESCAPE))
     {
         showInGameMenu = !showInGameMenu;
+    }
+    if (checkEndCombat(combat) && rewardDeck == NULL)
+    {
+        rewardDeck = createRewardDeck();
+        printf("plop");
     }
 
     updateSprite(&ennemySprite);
@@ -425,10 +464,24 @@ void DrawCombatScreen(void)
     {
         finishScreen = 1;
     }
+    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth * 2 - 10, 10, buttonWidth, buttonHeight}, "END TURN", -1))
+    {
+        moveCardsFromHand(combat->caracter->board);
+        playTurn(combat->enemy);
+        if (!checkEndCombat(combat))
+        {
+            playEnemyCards(combat);
+            playTurn(combat->caracter);
+        }
+    }
 
     drawEnnemy(combat->enemy);
     drawHand();
-    drawRewind();
+    if (checkEndCombat(combat) && rewardDeck != NULL)
+    {
+        drawRewind();
+    }
+    // drawRewind();
 }
 void UnloadCombatScreen(void)
 {

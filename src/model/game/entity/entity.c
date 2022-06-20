@@ -420,7 +420,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
         .stats = {
             {75, false},
             {999, true},
-            {100, true},
+            {100, false},
             {3, true},
         },
         .items = {
@@ -441,7 +441,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
         .stats = {
             {10000, false},
             {999, true},
-            {100, true},
+            {100, false},
             {3, true},
         },
         .items = {

@@ -168,6 +168,7 @@ void drawItems()
         posY += objectsTextures[itemsIdx].height * scaleFactor + gap;
     }
 }
+
 void drawEventChoice(event *event)
 {
     if (!modalClose)
@@ -328,13 +329,13 @@ void UpdateGameplayScreen(void)
 
     if (etage == 0)
         updateSprite(&roomSpriteStart);
-    else if (etage > 0 && etage < 10 && !(room == 3 || room == 0))
+    else if (etage > 0 && etage < 9 && !(room == 3 || room == 0))
         updateSprite(&roomSprite3Doors);
-    else if (etage > 0 && etage < 10 && room == 0)
+    else if (etage > 0 && etage < 9 && room == 0)
         updateSprite(&roomSprite2Doors_top_blocked);
-    else if (etage > 0 && etage < 10 && room == 3)
+    else if (etage > 0 && etage < 9 && room == 3)
         updateSprite(&roomSprite2Doors_bottom_blocked);
-    else if (etage == 10)
+    else if (etage == 9)
         updateSprite(&roomSpriteEnd);
 }
 void DrawGameplayScreen(void)
@@ -369,13 +370,13 @@ void DrawGameplayScreen(void)
 
     if (etage == 0)
         drawSprite(&roomSpriteStart, position, 0.0f, scaleFactor, WHITE);
-    else if (etage > 0 && etage < 10 && !(room == 3 || room == 0))
+    else if (etage > 0 && etage < 9 && !(room == 3 || room == 0))
         drawSprite(&roomSprite3Doors, position, 0.0f, scaleFactor, WHITE);
-    else if (etage > 0 && etage < 10 && room == 0)
+    else if (etage > 0 && etage < 9 && room == 0)
         drawSprite(&roomSprite2Doors_top_blocked, position, 0.0f, scaleFactor, WHITE);
-    else if (etage > 0 && etage < 10 && room == 3)
+    else if (etage > 0 && etage < 9 && room == 3)
         drawSprite(&roomSprite2Doors_bottom_blocked, position, 0.0f, scaleFactor, WHITE);
-    else if (etage == 10)
+    else if (etage == 9)
         drawSprite(&roomSpriteEnd, position, 0.0f, scaleFactor, WHITE);
 
     int arrowButtonWidth = 72;
@@ -396,7 +397,7 @@ void DrawGameplayScreen(void)
             reinitAfterMove();
         }
     }
-    if (room != 0 && etage != 10)
+    if (room != 0 && etage != 9)
     {
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, backInteractState))
         {
@@ -405,7 +406,7 @@ void DrawGameplayScreen(void)
             reinitAfterMove();
         }
     }
-    if (room != 3 && etage != 10)
+    if (room != 3 && etage != 9)
     {
         if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, backInteractState))
         {

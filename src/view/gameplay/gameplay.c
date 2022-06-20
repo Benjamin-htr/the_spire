@@ -385,7 +385,15 @@ void DrawGameplayScreen(void)
     if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, backInteractState))
     {
         printf("ArrowButton RIGHT\n");
-        move_player(game->mapData, room, false);
+        if (etage == 9)
+        {
+            move_player(game->mapData, 0, false);
+        }
+        else
+        {
+            move_player(game->mapData, room, false);
+        }
+
         reinitAfterMove();
     }
     if (etage == 0)

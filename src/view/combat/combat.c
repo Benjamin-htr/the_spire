@@ -329,18 +329,20 @@ void drawRewind()
     {
         backInteractState = 0;
         // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
-        float backgroundWidth = GetScreenWidth() * 0.7f;
-        float backgroundHeight = GetScreenHeight() * 0.7f;
+        float backgroundWidth = GetScreenWidth() * 0.8f;
+        float backgroundHeight = GetScreenHeight() * 0.8f;
         Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
         DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
         float margin = 0.05f;
         // Draw event description :
         Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
         DrawTextBoxed(font, TextFormat("%s", "Vous avez gagné le combat ! Choisissez une carte à ajouter dans votre deck :"), boundsDesc, 22, 1.0f, true, WHITE);
-        float scaleFactor = 1.5f;
+        float scaleFactor = 2.3f;
 
         float cardWidth = (float)cardInfo.source.width * scaleFactor;
         float cardHeight = (float)cardInfo.source.height * scaleFactor;
+        int gap = 80;
+        float cardsTotalWidth = cardWidth * 3 + gap * 2;
 
         int i = 0;
         float decal = 0.0f;
@@ -349,8 +351,8 @@ void drawRewind()
         {
             card_t *myCard = tmpReward->data;
             // grossir la carte si hover
-            Vector2 position = (Vector2){(float)GetScreenWidth() / 2 - (i * cardWidth) + decal, (float)(GetScreenHeight() / 2 - cardHeight * 0.60f)};
-            if (GuiCard(myCard, position, scaleFactor, i, true))
+            Vector2 position = (Vector2){(float)(GetScreenWidth() / 2 - cardsTotalWidth / 2) + (i * cardWidth) + gap * i, boundsDesc.y + boundsDesc.height + 10};
+            if (GuiCard(myCard, position, scaleFactor, i, false))
             {
                 tranferOneCardBetweenDeck(
                     &rewardDeck,

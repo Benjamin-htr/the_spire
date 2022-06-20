@@ -9,7 +9,7 @@ void initGame()
 {
     game = malloc(sizeof(Game));
     game->mapData = map_init();
-    game->caracterData = importCaracterFromId(PETER);
+    game->caracterData = importCaracterFromId(TEST_CAR);
     map_print(game->mapData);
 }
 

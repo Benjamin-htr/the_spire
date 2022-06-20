@@ -6,7 +6,6 @@ int tmpChooseItem() { return 0; } // TOREMOVE
 int (*chooseItemReward)(item_t *) = &tmpChooseItem;
 int (*chooseCardReward)(deck_t *) = &getChoosenRewardCardId;
 int (*chooseCardFromHand)(board_t *) = &getChoosenCardId;
-int (*displayCombatStat)(combat_t *); // a voir pour les parametres passés
 
 combat_t *startCombat(entity_t *caracter, entity_t *enemy)
 {
@@ -23,6 +22,7 @@ void freeCombat(combat_t *combat)
 {
     freeBoard(combat->caracter->board);
     freeBoard(combat->enemy->board);
+    wipeAllEffect(combat->caracter);
     free(combat);
 }
 
@@ -49,32 +49,32 @@ void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay)
     }
 }
 
-void playCards(combat_t *combat)
+void playEnemyCards(combat_t *combat)
 {
     board_t *boardToCheck;
     card_t *card;
-    if (combat->caracterTurn == 1)
-    {
-        boardToCheck = combat->caracter->board;
-        while (getDeckSize(boardToCheck->hand) > 0)
-        {
-            card = pickCardFromHand(combat->caracter, chooseCardFromHand);
-            if (card == NULL)
-            {
-                // On passe si l'id de la carte choisi == -1
-                printf("\nJE PASSE MON TOUR");
-                break;
-            }
-            playOneCard(combat->caracter, combat->enemy, card);
-        }
-    }
-    else
-    {
-        boardToCheck = combat->enemy->board;
-        card = pickCardFromHand(combat->enemy, chooseRandomCardId); // CA VIENT SUREMENT DE LA
-        playOneCard(combat->enemy, combat->caracter, card);         // CA VIENT DE LA
-    }
-    printf("\n\t\tJ'ai fini de jouer\n");
+    // if (combat->caracterTurn == 1)
+    // {
+    //     boardToCheck = combat->caracter->board;
+    //     while (getDeckSize(boardToCheck->hand) > 0)
+    //     {
+    //         card = pickCardFromHand(combat->caracter, chooseCardFromHand);
+    //         if (card == NULL)
+    //         {
+    //             // On passe si l'id de la carte choisi == -1
+    //             printf("\nJE PASSE MON TOUR");
+    //             break;
+    //         }
+    //         playOneCard(combat->caracter, combat->enemy, card);
+    //     }
+    // }
+    // else
+    // {
+    boardToCheck = combat->enemy->board;
+    card = pickCardFromHand(combat->enemy, chooseRandomCardId); // CA VIENT SUREMENT DE LA
+    playOneCard(combat->enemy, combat->caracter, card);         // CA VIENT DE LA
+    // }
+    // printf("\n\t\tJ'ai fini de jouer\n");
     moveCardsFromHand(boardToCheck); // on déplace les cartes restantes de la main vers défausse/abysse
 }
 
@@ -124,7 +124,7 @@ void testCombat()
     freeEntity(enemy);
 }
 
-void playTurn(combat_t *combat, entity_t *entity)
+void playTurn(entity_t *entity)
 {
     stat_t *entityHealth = getEntityStat(entity, HP);
     // on applique l'effet de feu et diminue la valeur des effets le necessitant
@@ -139,7 +139,15 @@ void playTurn(combat_t *combat, entity_t *entity)
     // On pioche au debut du tour
     drawCardsFromDeckWithRefillFromDiscard(entity->board);
     // On joue des cartes
-    playCards(combat);
+    // playCards(combat);
+}
+
+boolean checkEndCombat(combat_t *combat)
+{
+
+    stat_t *caracterHealth = getEntityStat(combat->caracter, HP);
+    stat_t *enemyHealth = getEntityStat(combat->enemy, HP);
+    return (caracterHealth->current <= 0 || enemyHealth->current <= 0);
 }
 
 void startFight(combat_t *combat)
@@ -151,64 +159,65 @@ void startFight(combat_t *combat)
     int demiturn = 0;
     applyAllItemsEffect(combat->caracter, combat->enemy);
     applyAllItemsEffect(combat->enemy, combat->caracter);
-    while (caracterHealth->current > 0 && enemyHealth->current > 0)
-    {
-        if (!(demiturn % 2))
-        {
-            printf("\n\t==========================\n*****************TOUR N°%d****************\n\t==========================\n", demiturn / 2);
-        }
-        printf("\n***DEBUT DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
-        playTurn(combat, ((combat->caracterTurn) ? (combat->caracter) : (combat->enemy)));
-        printf("\n***FIN DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
-        printf("%s:\n", combat->caracter->name);
-        displayStat(caracterHealth);
-        displayStat(caracterDodge);
-        displayEntityEffectArray(combat->caracter->effects);
-        printf("%s:\n", combat->enemy->name);
-        displayStat(enemyHealth);
-        displayStat(enemyDodge);
-        displayEntityEffectArray(combat->enemy->effects);
-        combat->caracterTurn = !combat->caracterTurn;
-        demiturn++;
-    }
-    if (caracterHealth->current > 0 && enemyHealth->current <= 0)
-    {
-        // LE JOUEUR GAGNE
-        printf("PETER GAGNE!");
-        deck_t *rewardDeck = createRewardDeck();
-        displayDeck(rewardDeck);
-        tranferOneCardBetweenDeck(
-            &rewardDeck,
-            &(combat->caracter->cardDeck),
-            chooseCardReward(rewardDeck));
-        displayDeck(combat->caracter->cardDeck);
-        freeDeckListAndCard(rewardDeck);
-        if (combat->enemy->enemyType != COMMON_ENEMY)
-        {
-            int rewardItemId;
-            item_t *rewardItem;
-            if (combat->enemy->enemyType == MINIBOSS)
-            {
-                rewardItemId = getRandomUniqueItemId(combat->caracter);
-                rewardItem = importItemFromId(rewardItemId);
-                displayItem(rewardItem);
-                if (chooseItemReward(rewardItem) != -1)
-                {
-                    addItemtoEntityItemList(combat->caracter, rewardItemId);
-                }
-                freeItem(rewardItem);
-            }
-            // else
-            // {
-            //     rewardItem = importItemFromId()
-            // }
-        }
-    }
-    else
-    {
-        // LE JOUEUR PERD
-        printf("PETER PERD");
-    }
-    displayEntity(combat->caracter);
-    freeCombat(combat);
+    refillStat(getEntityStat(combat->caracter, ENERGY));
+    drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
+    // while (caracterHealth->current > 0 && enemyHealth->current > 0)
+    // {
+    //     if (!(demiturn % 2))
+    //     {
+    //         printf("\n\t==========================\n*****************TOUR N°%d****************\n\t==========================\n", demiturn / 2);
+    //     }
+    //     printf("\n***DEBUT DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
+    //     playTurn(combat, ((combat->caracterTurn) ? (combat->caracter) : (combat->enemy)));
+    //     printf("\n***FIN DU TOUR DE %s***\n", (demiturn % 2) ? combat->enemy->name : combat->caracter->name);
+    //     printf("%s:\n", combat->caracter->name);
+    //     displayStat(caracterHealth);
+    //     displayStat(caracterDodge);
+    //     displayEntityEffectArray(combat->caracter->effects);
+    //     printf("%s:\n", combat->enemy->name);
+    //     displayStat(enemyHealth);
+    //     displayStat(enemyDodge);
+    //     displayEntityEffectArray(combat->enemy->effects);
+    //     combat->caracterTurn = !combat->caracterTurn;
+    //     demiturn++;
+    // }
+    // if (caracterHealth->current > 0 && enemyHealth->current <= 0)
+    // {
+    //     // LE JOUEUR GAGNE
+    //     printf("PETER GAGNE!");
+    //     deck_t *rewardDeck = createRewardDeck();
+    //     displayDeck(rewardDeck);
+    //     tranferOneCardBetweenDeck(
+    //         &rewardDeck,
+    //         &(combat->caracter->cardDeck),
+    //         chooseCardReward(rewardDeck));
+    //     displayDeck(combat->caracter->cardDeck);
+    //     freeDeckListAndCard(rewardDeck);
+    //     if (combat->enemy->enemyType != COMMON_ENEMY)
+    //     {
+    //         int rewardItemId;
+    //         item_t *rewardItem;
+    //         if (combat->enemy->enemyType == MINIBOSS)
+    //         {
+    //             rewardItemId = getRandomUniqueItemId(combat->caracter);
+    //             rewardItem = importItemFromId(rewardItemId);
+    //             displayItem(rewardItem);
+    //             if (chooseItemReward(rewardItem) != -1)
+    //             {
+    //                 addItemtoEntityItemList(combat->caracter, rewardItemId);
+    //             }
+    //             freeItem(rewardItem);
+    //         }
+    //         // else
+    //         // {
+    //         //     rewardItem = importItemFromId()
+    //         // }
+    //     }
+    // }
+    // else
+    // {
+    //     // LE JOUEUR PERD
+    //     printf("PETER PERD");
+    // }
+    // freeCombat(combat);
 }

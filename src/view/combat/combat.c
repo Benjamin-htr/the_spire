@@ -211,7 +211,7 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
 
     // Draw title :
     Vector2 titlePos = (Vector2){position.x + cardWidth * (33 / 96.0f), position.y + cardHeight * (13 / 156.0f)};
-    DrawTextEx(font, TextFormat("%s", title), titlePos, 0.08333 * cardWidth, 1, GetColor(0xdfdfbeff));
+    DrawTextEx(font, TextFormat("%s", title), titlePos, ((cardWidth) / strlen(title) > cardWidth * 0.08333f) ? cardWidth * 0.08333f : (cardWidth) / strlen(title), 1, GetColor(0xdfdfbeff));
 
     // textBox calc :
     Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
@@ -332,7 +332,7 @@ void drawEnnemy(entity_t *entity)
     float posX = ennemyPos.x - (16 * scaleFactor) - marginRight;
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
-        if (entity->effects[effectIdx]->value > 0)
+        if (entity->effects[effectIdx]->value != 0)
         {
             Vector2 pos = (Vector2){posX, ennemyNamePos.y};
             drawEffect(entity->effects[effectIdx], pos, scaleFactor, true, -1);
@@ -714,7 +714,9 @@ void UnloadCombatScreen(void)
     UnloadTexture(ennemySprite.texture);
 
     unloadTextureCard();
-
+    card_t *cardToFree = ennemyCard;
+    ennemyCard = NULL;
+    freeCard(cardToFree);
     freeCombat(combat);
 }
 int FinishCombatScreen(void)

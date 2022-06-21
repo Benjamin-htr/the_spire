@@ -90,7 +90,7 @@ void drawStatBoard()
 
     //-----------------------------------------------------------
     // DODGE :
-    Vector2 textDodgePos = (Vector2){HealthBarPos.x - 55 + textLeftargin, HealthBarPos.y + 5 + ((StatBar.height * scaleMain) / 4)};
+    Vector2 textDodgePos = (Vector2){HealthBarPos.x - 52 + textLeftargin, HealthBarPos.y + 2 + ((StatBar.height * scaleMain) / 4)};
     DrawTextEx(font, TextFormat("%d", DodgeActuel), textDodgePos, fontSize + 10, 1, WHITE);
     //-----------------------------------------------------------
     // Mana :
@@ -317,8 +317,9 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
         textureEffect = weaknessEffect;
     if (TextIsEqual(EFFECT_NAME[effect->id], "LENTEUR"))
         textureEffect = slowingEffect;
-
+    Vector2 positionText = (Vector2){position.x + 30, position.y + 40};
     DrawTextureEx(textureEffect, position, 0, scaleFactor, WHITE);
+    DrawTextEx(font, TextFormat("%d", effect->value), positionText, 25, 1, WHITE);
 
     Rectangle bounds = (Rectangle){position.x, position.y, textureEffect.width * scaleFactor, textureEffect.height * scaleFactor};
 
@@ -326,12 +327,12 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
     // Check if hover :
     if (CheckCollisionPointRec(mousePoint, bounds) && forcedState < 0)
     {
-        int rectWidth = 150;
-        int rectHeight = 100;
+        int rectWidth = 200;
+        int rectHeight = 120;
         float posX = alignLeft ? bounds.x : (bounds.x + bounds.width) - rectWidth;
         Rectangle hoverRect = (Rectangle){posX, bounds.y + bounds.height + 10, rectWidth, rectHeight};
         DrawRectangleRec(hoverRect, GetColor(0x242424ff));
-        DrawTextBoxed(font, TextFormat("%d", effect->value), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
+        DrawTextBoxed(font, TextFormat(EFFECT_TEXT[effect->id - 8], EFFECT_NAME[effect->id], effect->value), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
     }
 }
 void drawRewind()

@@ -19,6 +19,13 @@ char *const EFFECT_NAME[13] = {
     "FAIBLESSE",
     "LENTEUR",
 };
+char *const EFFECT_TEXT[5] = {
+    "%s\nVous faites %d point(s) de dégats de plus a chaque attaque",
+    "%s\nVous gagnz %d point(s) d'esquive de plus",
+    "%s\nVous prenez %d point(s) de dégats à chaque début du tour (Valeur divisé par 2 à chaque tour)",
+    "%s\nVous infligez 25%% de dégats de moins pendant %d tour(s)",
+    "%s\nVous gagnez moitié moins d'esquive pendant %d tour(s)",
+};
 
 // CONSTRUCTORS
 

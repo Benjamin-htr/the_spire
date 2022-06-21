@@ -564,18 +564,6 @@ enemy_import MINIBOSS_ENCYCLOPEDIA[] = {
         .spriteName = "pyrox.png",
         .nbSpritePerLine = 4,
     },
-    {
-        .name = "TEST MINI BOSS",
-        .hpRange = {40, 44},
-        .cardDeck = {
-            {JAWURM_BACKSTAB, 1},
-            {JAWURM_FIST, 1},
-            {JAWURM_CROUCH, 1},
-        },
-        .itemslength = 0,
-        .diffCardSize = 3,
-        .spriteName = "jawurm.png",
-    },
 };
 enemy_import BOSS_ENCYCLOPEDIA[] = {
     {

@@ -8,6 +8,7 @@
 
 // Tableau contenant les noms des effets :
 extern char *EFFECT_NAME[13];
+extern char *EFFECT_TEXT[5];
 
 void drawStatBoard();
 void drawRewind();

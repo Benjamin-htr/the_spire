@@ -27,7 +27,7 @@ void moveOneCardFromHandByIdx(board_t *board, int idx);
 
 void moveOneCardFromHand(board_t *board, card_t *cardToRemove);
 
-void moveCardsFromHand(board_t *myBoard); // move all cards from hand to abyss/discard
+void moveCardsFromHand(board_t *myBoard, boolean goToAbyss); // move all cards from hand to abyss/discard
 
 deck_t *getRandomCardFromHand(board_t *board);
 

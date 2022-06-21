@@ -512,7 +512,7 @@ void DrawCombatScreen(void)
     }
     if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth * 2 - 10, 10, buttonWidth, buttonHeight}, "END TURN", -1))
     {
-        moveCardsFromHand(combat->caracter->board);
+        moveCardsFromHand(combat->caracter->board, false);
         playTurn(combat->enemy);
         if (!checkEndCombat(combat))
         {

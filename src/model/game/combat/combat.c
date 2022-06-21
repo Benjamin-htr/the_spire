@@ -75,7 +75,7 @@ void playEnemyCards(combat_t *combat)
     playOneCard(combat->enemy, combat->caracter, card);         // CA VIENT DE LA
     // }
     // printf("\n\t\tJ'ai fini de jouer\n");
-    moveCardsFromHand(boardToCheck); // on déplace les cartes restantes de la main vers défausse/abysse
+    moveCardsFromHand(boardToCheck, false); // on déplace les cartes restantes de la main vers défausse/abysse
 }
 
 int getChoosenCardId(board_t *board)

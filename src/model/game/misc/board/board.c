@@ -64,7 +64,7 @@ void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard)
     }
 }
 
-void moveCardsFromHand(board_t *myBoard)
+void moveCardsFromHand(board_t *myBoard, boolean goToAbyss)
 { // move all cards from hand to abyss/discard
     deck_t *hand = myBoard->hand;
     if (myBoard->abyss == NULL)
@@ -79,7 +79,7 @@ void moveCardsFromHand(board_t *myBoard)
     {
         // Pourquoi ne pas appeler moveOneCardFromHand tu dupplique ton code
         card_t *cardToRemove = removeFirstCard(&(hand));
-        if (cardToRemove->isAbyssal)
+        if (cardToRemove->isAbyssal && goToAbyss)
         {
             addCard(myBoard->abyss, cardToRemove);
         }
@@ -171,7 +171,7 @@ void testBoard()
     displayDeck(gameBoard->cardDeck);
     printf("\n Voici la main, qui doit contenir 5 cartes \n");
     displayDeck(gameBoard->hand);
-    moveCardsFromHand(gameBoard);
+    moveCardsFromHand(gameBoard, true);
     printf("\n La main après avoir jouée : ");
     displayDeck(gameBoard->hand);
     printf("\n La discard après après avoir vidé toute la main : \n");
@@ -183,7 +183,7 @@ void testBoard()
     printf("On a rajouté des cartes à la main \n");
     displayDeck(gameBoard->hand);
     printf("Retirons ces cartes pour les mettre dans la défausse ou l'abysse \n");
-    moveCardsFromHand(gameBoard);
+    moveCardsFromHand(gameBoard, true);
     printf("Voici la main après avoir retiré les cartes \n");
     displayDeck(gameBoard->hand);
     printf("Voici l'abysse (il doit y avoir uniquement PULVERIZE) : \n");

@@ -283,7 +283,7 @@ void testMap()
     Test_EVENT();
     map *m = map_init();
     // map_print(m);
-    displayEntity(m->places[MAP_HEIGHT - 1][0].enemyData);
+    // displayEntity(m->places[MAP_HEIGHT - 1][0].enemyData);
     // printf("playable move : %d, %d\n", playable_move(m)[0], playable_move(m)[1]);
     // // move_player(m, 3, false);
     // // move_player(m, 5, false);

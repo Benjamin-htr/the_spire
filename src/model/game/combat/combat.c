@@ -134,6 +134,7 @@ void playTurn(entity_t *entity)
     {
         return;
     }
+    getEntityStat(entity, DODGE)->current = 0;
     // On recharge l'energy pour le debut du tour
     refillStat(getEntityStat(entity, ENERGY));
     // On pioche au debut du tour
@@ -159,6 +160,8 @@ void startFight(combat_t *combat)
     int demiturn = 0;
     applyAllItemsEffect(combat->caracter, combat->enemy);
     applyAllItemsEffect(combat->enemy, combat->caracter);
+    refillStat(getEntityStat(combat->caracter, MANA));
+    refillStat(getEntityStat(combat->caracter, MANA));
     refillStat(getEntityStat(combat->caracter, ENERGY));
     drawCardsFromDeckWithRefillFromDiscard(combat->caracter->board);
     // while (caracterHealth->current > 0 && enemyHealth->current > 0)

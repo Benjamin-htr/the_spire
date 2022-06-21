@@ -206,12 +206,23 @@ void drawEventChoice(event *event)
         if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
         {
             printf("Choix 1 \n");
+            fflush(stdout);
+            int res = event->actions[0]->action(game->caracterData);
             modalClose = true;
             backInteractState = -1;
+            if (res == 3) // COMBAT MINI BOSS
+            {
+                TransitionToScreen(COMBAT_SCREEN);
+            }
+            if (res == 4) // TP
+            {
+                teleporter(game->mapData);
+            }
         }
         if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
         {
             printf("Choix 2 \n");
+            event->actions[1]->action(game->caracterData); //, event->data);
             modalClose = true;
             backInteractState = -1;
         }

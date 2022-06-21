@@ -54,6 +54,7 @@ void drawStatBoard()
 
     int ManaMax = getEntityStat(game->caracterData, MANA)->max;
     int ManaActuel = getEntityStat(game->caracterData, MANA)->current;
+    int DodgeActuel = getEntityStat(game->caracterData, DODGE)->current;
 
     // int EnergyMax = 3;
     int EnergyActuel = getEntityStat(game->caracterData, ENERGY)->current;
@@ -86,6 +87,10 @@ void drawStatBoard()
     // We draw the healthBar container :
     DrawTextureEx(StatBar, HealthBarPos, 0, scaleMain, WHITE);
 
+    //-----------------------------------------------------------
+    // DODGE :
+    Vector2 textDodgePos = (Vector2){HealthBarPos.x - 55 + textLeftargin, HealthBarPos.y + 5 + ((StatBar.height * scaleMain) / 4)};
+    DrawTextEx(font, TextFormat("%d", DodgeActuel), textDodgePos, fontSize + 10, 1, WHITE);
     //-----------------------------------------------------------
     // Mana :
     // We calculate the ManaBar container position :
@@ -358,6 +363,10 @@ void drawRewind()
                     i);
                 freeDeckListAndCard(rewardDeck);
                 rewardDeck = NULL;
+                if (combat->enemy->enemyType == MINIBOSS)
+                {
+                    addItemtoEntityItemList(combat->caracter, getRandomUniqueItemId(combat->caracter));
+                }
                 //  Si le combat est fini et que je suis à l'étage du boss (donc boss vaincu)
                 position_player playerPos = player_position(game->mapData);
                 if (playerPos.x == 10)
@@ -379,6 +388,7 @@ void InitCombatScreen(void)
 {
     finishScreen = 0;
     printf("Combat Screen Init\n");
+    fflush(stdout);
 
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
@@ -415,7 +425,21 @@ void InitCombatScreen(void)
     // entity_t *ennemy = importBOSSFromId(GARDIAN_PLUME);
     // entity_t *ennemy = importEnemyPhase2FromId(MANGOUSTINE);
     position_player playerPos = player_position(game->mapData);
-    ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+    printf("\nSU");
+    fflush(stdout);
+    if (game->mapData->places[playerPos.x][playerPos.y].isWhat == 3)
+    {
+        printf("\nSI");
+        fflush(stdout);
+        ennemy = game->mapData->places[playerPos.x][playerPos.y].eventData->data;
+    }
+    else
+    {
+        ennemy = game->mapData->places[playerPos.x][playerPos.y].enemyData;
+    }
+
+    printf("\nSA");
+    fflush(stdout);
     if (ennemy == NULL)
     {
         printf("Error : no enemy found\n");

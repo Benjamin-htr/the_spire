@@ -92,90 +92,81 @@ event *get_sanctuary()
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
 
-
-void *launch_fight_miniboss(entity_t *peter, ...)
+int launch_fight_miniboss(entity_t *peter)
 {
-    va_list args;
-    va_start(args, peter);
     printf("launch fight miniboss\n");
-    entity_t *miniboss = va_arg(args, entity_t *);
-    displayEntity(miniboss);
-    displayEntity(peter);
-    startCombat(peter, miniboss);
-    va_end(args);
-    return NULL;
+    return 3;
 }
 
-void *do_nothing(entity_t *peter, ...)
+int do_nothing(entity_t *peter)
 {
     printf("do nothing\n");
     printf("%s\n", peter->name);
-    return NULL;
+    return -1;
 }
 
-void *sanctuary_life_refill(entity_t *peter, ...)
+int sanctuary_life_refill(entity_t *peter)
 {
     printf("sanctuary life refill\n");
-    refillStat(getEntityStat(peter,HP));
+    refillHalfStat(getEntityStat(peter, HP));
     // get fonction from hugo
-    return NULL;
+    return -1;
 }
 
-void *sanctuary_mana_refill(entity_t *peter, ...)
+int sanctuary_mana_refill(entity_t *peter)
 {
     printf("sanctuary mana refill\n");
-    refillStat(getEntityStat(peter,MANA));
+    refillHalfStat(getEntityStat(peter, MANA));
     // get fonction from hugo
-    return NULL;
+    return -1;
 }
 
-void *transform_striketododge(entity_t *peter, ...)
+int transform_striketododge(entity_t *peter)
 {
     printf("transform striketododge\n");
-    replaceCardWithOther(&(peter->cardDeck),STRIKE,DODGE_A);
+    replaceCardWithOther(&(peter->cardDeck), STRIKE, DODGE_A);
     // startCombat(peter, event->data);
     // get fonction from hugo
-    return NULL;
+    return -1;
 }
 
-void *transform_dodgetostrike(entity_t *peter, ...)
+int transform_dodgetostrike(entity_t *peter)
 {
     printf("transform dodgetostrike\n");
-    replaceCardWithOther(&(peter->cardDeck),DODGE_A,STRIKE);
+    replaceCardWithOther(&(peter->cardDeck), DODGE_A, STRIKE);
     // startCombat(peter, event->data);
     // get fonction from hugo
-    return NULL;
+    return -1;
 }
 
-void *mana_max_refill(entity_t *peter, ...)
+int mana_max_refill(entity_t *peter)
 {
     printf("mana max refill\n");
     updateStat(getEntityStat(peter, MANA), 20, true);
-    return NULL;
+    return -1;
 }
 
-void *life_max_refill(entity_t *peter, ...)
+int life_max_refill(entity_t *peter)
 {
     printf("life max refill\n");
     // get fonction from hugo
     updateStat(getEntityStat(peter, HP), 10, true);
-    return NULL;
+    return -1;
 }
 
-void *no_tp(entity_t *peter, ...)
+int no_tp(entity_t *peter)
 {
     printf("no tp\n");
     updateStat(getEntityStat(peter, HP), -10, false);
-    return NULL;
+    return -1;
 }
 
-void *tp(entity_t *peter, ...)
+int tp(entity_t *peter)
 {
     printf("tp\n");
     printf("%s\n", peter->name);
-    return (int *) 1;
+    return 4;
 }
-
 
 event_import EVENT_ENCYCLOPEDIA[] = {
 

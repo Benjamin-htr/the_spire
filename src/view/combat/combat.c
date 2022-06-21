@@ -485,8 +485,14 @@ void UpdateCombatScreen(void)
     }
     if (checkEndCombat(combat) && rewardDeck == NULL)
     {
-        rewardDeck = createRewardDeck();
-        printf("plop");
+        if (checkVictory(combat))
+        {
+            rewardDeck = createRewardDeck();
+        }
+        else
+        {
+            TransitionToScreen(MENU);
+        }
     }
 
     updateSprite(&ennemySprite);

@@ -151,13 +151,15 @@ boolean checkEndCombat(combat_t *combat)
     return (caracterHealth->current <= 0 || enemyHealth->current <= 0);
 }
 
-void startFight(combat_t *combat)
+boolean checkVictory(combat_t *combat)
 {
     stat_t *caracterHealth = getEntityStat(combat->caracter, HP);
     stat_t *enemyHealth = getEntityStat(combat->enemy, HP);
-    stat_t *caracterDodge = getEntityStat(combat->caracter, DODGE);
-    stat_t *enemyDodge = getEntityStat(combat->enemy, DODGE);
-    int demiturn = 0;
+    return (caracterHealth->current > 0 && enemyHealth->current <= 0);
+}
+
+void startFight(combat_t *combat)
+{
     applyAllItemsEffect(combat->caracter, combat->enemy);
     applyAllItemsEffect(combat->enemy, combat->caracter);
     refillStat(getEntityStat(combat->caracter, MANA));

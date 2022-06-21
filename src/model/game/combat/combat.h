@@ -22,7 +22,7 @@ boolean checkVictory(combat_t *combat);
 
 card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(board_t *));
 
-void playEnemyCards(combat_t *combat);
+card_t *playEnemyCards(combat_t *combat);
 void playTurn(entity_t *entity);
 
 void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay);

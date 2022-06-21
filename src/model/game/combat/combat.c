@@ -49,7 +49,7 @@ void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay)
     }
 }
 
-void playEnemyCards(combat_t *combat)
+card_t *playEnemyCards(combat_t *combat)
 {
     board_t *boardToCheck;
     card_t *card;
@@ -76,6 +76,7 @@ void playEnemyCards(combat_t *combat)
     // }
     // printf("\n\t\tJ'ai fini de jouer\n");
     moveCardsFromHand(boardToCheck, false); // on déplace les cartes restantes de la main vers défausse/abysse
+    return card;
 }
 
 int getChoosenCardId(board_t *board)

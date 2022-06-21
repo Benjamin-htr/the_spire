@@ -19,6 +19,9 @@ static Texture2D dexterityEffect = {0};
 static Texture2D fireEffect = {0};
 static Texture2D weaknessEffect = {0};
 static Texture2D slowingEffect = {0};
+static Texture2D HPEffect = {0};
+static Texture2D DodgeEffect = {0};
+static Texture2D ManaEffect = {0};
 
 static Texture2D BasicCardPatch = {0};
 static Texture2D CommonCardPatch = {0};
@@ -37,6 +40,7 @@ combat_t *combat = {0};
 static int idxHoverCard = -1;
 
 static entity_t *ennemy = {0};
+static card_t *ennemyCard;
 
 static deck_t *rewardDeck = NULL;
 
@@ -125,12 +129,12 @@ void drawStatBoard()
     gap = 18;
 
     float scaleFactor = 3.0f;
-    float posX = GetScreenWidth() - (16 * scaleFactor) - padding;
+    float posX = GetScreenWidth() - (30 * scaleFactor) - padding;
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
     {
         if (game->caracterData->effects[effectIdx]->value > 0)
         {
-            Vector2 pos = (Vector2){posX, StatBoardPos.y - 16 * scaleFactor - marginBottom};
+            Vector2 pos = (Vector2){posX, StatBoardPos.y - 25 * scaleFactor - marginBottom};
             drawEffect(game->caracterData->effects[effectIdx], pos, scaleFactor, false, -1);
             posX -= 16 * scaleFactor + gap;
         }
@@ -211,10 +215,25 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
 
     // textBox calc :
     Rectangle textBox = (Rectangle){position.x + cardWidth * (10 / 96.0f), position.y + cardHeight * (94 / 156.0f), cardWidth * (76 / 96.0f), cardHeight * (51 / 156.0f)};
-
+    Vector2 effectPos;
+    float scaleEffectBar = 0.6f * scaleFactor;
+    for (int laucherEffectId = 0; laucherEffectId < card->launcherEffectsSize; laucherEffectId++)
+    {
+        effectPos = (Vector2){
+            textBox.x + (((10 + fireEffect.width) * scaleEffectBar) * laucherEffectId),
+            textBox.y};
+        drawEffect(card->launcherEffects[laucherEffectId], effectPos, scaleEffectBar, true, 0);
+    }
+    for (int receiverEffectId = 0; receiverEffectId < card->receiverEffectsSize; receiverEffectId++)
+    {
+        effectPos = (Vector2){
+            textBox.x + (((10 + fireEffect.width) * scaleEffectBar) * receiverEffectId),
+            textBox.y + (card->launcherEffectsSize != 0 ? (10 + fireEffect.height) * scaleEffectBar : 0)};
+        drawEffect(card->receiverEffects[receiverEffectId], effectPos, scaleEffectBar, true, 0);
+    }
     // Draw text description and technic:
     float fontDesc = 0.058f * cardWidth;
-    DrawTextBoxed(font, TextFormat("%s\n\n(%s)", card->description, card->technic), (Rectangle){textBox.x + 1, textBox.y + 1, textBox.width - 1, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
+    DrawTextBoxed(font, TextFormat("%s", card->description), (Rectangle){textBox.x + 5, textBox.y + 2 + ((10 + fireEffect.height) * scaleEffectBar) * ((card->receiverEffectsSize != 0 && card->launcherEffectsSize != 0) ? 2 : 1), textBox.width - 10, textBox.height - 1}, fontDesc, 0.8f, true, WHITE);
     // Draw mana cost :
     Vector2 energyCostPost = (Vector2){position.x + cardWidth * (79 / 96.0f), position.y + cardHeight * (39 / 156.0f)};
     float scaleEnergyIcon = 0.65f * scaleFactor;
@@ -253,6 +272,21 @@ void drawHand()
         }
         myHand = myHand->next;
         i++;
+    }
+}
+
+void drawEnnemyCard()
+{
+    if (ennemyCard != NULL)
+    {
+        float scaleFactor = 1.8f;
+        float cardWidth = (float)cardInfo.source.width * scaleFactor;
+        float cardHeight = (float)cardInfo.source.height * scaleFactor;
+
+        Vector2 position = (Vector2){(float)(GetScreenWidth() - cardWidth - 20), (float)(((GetScreenHeight() - cardHeight) / 4) + 10)};
+        Vector2 positionText = (Vector2){position.x, position.y - 40};
+        GuiCard(ennemyCard, position, scaleFactor, 0, false, true);
+        DrawTextEx(font, TextFormat("Dernier carte joué\n par %s:", combat->enemy->name), positionText, 15, 1, WHITE);
     }
 }
 
@@ -305,23 +339,31 @@ void drawEnnemy(entity_t *entity)
             posX -= 16 * scaleFactor + gap;
         }
     }
+    drawEnnemyCard();
 }
+
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState)
 {
     Texture2D textureEffect;
-    if (TextIsEqual(EFFECT_NAME[effect->id], "FORCE"))
+    if (effect->id == STR_E)
         textureEffect = strenghtEffect;
-    if (TextIsEqual(EFFECT_NAME[effect->id], "DEXTERITE"))
+    if (effect->id == DEX_E)
         textureEffect = dexterityEffect;
-    if (TextIsEqual(EFFECT_NAME[effect->id], "FEU"))
+    if (effect->id == FIRE_E)
         textureEffect = fireEffect;
-    if (TextIsEqual(EFFECT_NAME[effect->id], "FAIBLESSE"))
+    if (effect->id == WEAK_E)
         textureEffect = weaknessEffect;
-    if (TextIsEqual(EFFECT_NAME[effect->id], "LENTEUR"))
+    if (effect->id == SLOW_E)
         textureEffect = slowingEffect;
-    Vector2 positionText = (Vector2){position.x + 30, position.y + 40};
+    if (effect->id == HP_E)
+        textureEffect = HPEffect;
+    if (effect->id == DODGE_E)
+        textureEffect = DodgeEffect;
+    if (effect->id == MANA_E)
+        textureEffect = ManaEffect;
+    Vector2 positionText = (Vector2){position.x + textureEffect.width * scaleFactor, position.y + textureEffect.height * scaleFactor};
     DrawTextureEx(textureEffect, position, 0, scaleFactor, WHITE);
-    DrawTextEx(font, TextFormat("%d", effect->value), positionText, 25, 1, WHITE);
+    DrawTextEx(font, TextFormat("%d", effect->value), positionText, 10 * scaleFactor, 1, WHITE);
 
     Rectangle bounds = (Rectangle){position.x, position.y, textureEffect.width * scaleFactor, textureEffect.height * scaleFactor};
 
@@ -463,6 +505,9 @@ void InitCombatScreen(void)
     fireEffect = LoadTexture("./asset/Misc/Effect/Fire.png");
     weaknessEffect = LoadTexture("./asset/Misc/Effect/Weak.png");
     slowingEffect = LoadTexture("./asset/Misc/Effect/Slow.png");
+    HPEffect = LoadTexture("./asset/Board/Bar/unit/heart.png");
+    DodgeEffect = LoadTexture("./asset/Misc/Effect/Dodge.png");
+    ManaEffect = LoadTexture("./asset/Board/Bar/unit/mana.png");
 
     // Cards textures loading :
     BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
@@ -570,7 +615,13 @@ void DrawCombatScreen(void)
         playTurn(combat->enemy);
         if (!checkEndCombat(combat))
         {
-            playEnemyCards(combat);
+
+            card_t *toFree = ennemyCard;
+            ennemyCard = getTrueCardValue(combat->enemy, playEnemyCards(combat));
+            if (toFree)
+            {
+                freeCard(toFree);
+            }
             playTurn(combat->caracter);
         }
     }
@@ -602,6 +653,9 @@ void UnloadCombatScreen(void)
     UnloadTexture(fireEffect);
     UnloadTexture(weaknessEffect);
     UnloadTexture(slowingEffect);
+    UnloadTexture(HPEffect);
+    UnloadTexture(DodgeEffect);
+    UnloadTexture(ManaEffect);
 
     UnloadTexture(BasicCardPatch);
     UnloadTexture(CommonCardPatch);

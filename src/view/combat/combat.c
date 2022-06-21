@@ -10,6 +10,7 @@
 static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
 static Texture2D EnergyIcon = {0};
+static Texture2D DodgeIcon = {0};
 
 static Texture2D strenghtEffect = {0};
 static Texture2D dexterityEffect = {0};
@@ -267,6 +268,7 @@ void drawEnnemy(entity_t *entity)
 
     int HpMax = getEntityStat(entity, HP)->max;
     int HpActuel = getEntityStat(entity, HP)->current;
+    int DodgeActuel = getEntityStat(entity, DODGE)->current;
 
     float scaleBar = 2.0f;
 
@@ -277,6 +279,10 @@ void drawEnnemy(entity_t *entity)
 
     DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
 
+    Vector2 DodgePos = (Vector2){StatBarPos.x - 40, StatBarPos.y - 5};
+    Vector2 DodgeTextPos = (Vector2){StatBarPos.x - 30, StatBarPos.y};
+    DrawTextureEx(DodgeIcon, DodgePos, 0, 4.0, WHITE);
+    DrawTextEx(font, TextFormat("%d", DodgeActuel), DodgeTextPos, 25, 1, WHITE);
     int hpFontSize = 15;
     Vector2 hpTextSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), hpFontSize, 1);
     Vector2 hpTextPost = (Vector2){StatBarPos.x + StatBar.width * scaleBar + 10, StatBarPos.y + (StatBar.height * scaleBar / 2) - hpTextSize.y / 2};
@@ -393,6 +399,7 @@ void InitCombatScreen(void)
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+    DodgeIcon = LoadTexture("./asset/Board/Bar/unit/shield.png");
 
     // Effects texture loading :
     strenghtEffect = LoadTexture("./asset/Misc/Effect/strength.png");
@@ -522,6 +529,7 @@ void UnloadCombatScreen(void)
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
     UnloadTexture(EnergyIcon);
+    UnloadTexture(DodgeIcon);
 
     UnloadTexture(strenghtEffect);
     UnloadTexture(dexterityEffect);

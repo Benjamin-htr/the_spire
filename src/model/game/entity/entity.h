@@ -40,7 +40,6 @@ typedef enum
 {
     ELDAN,
     PYROX,
-    JAWURM_MINI_BOSS,
     MINIBOSS_ID_SIZE,
 } MINIBOSS_ID;
 

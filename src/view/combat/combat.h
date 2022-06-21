@@ -13,7 +13,7 @@ extern char *EFFECT_TEXT[5];
 void drawStatBoard();
 void drawRewind();
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState);
-int GuiCard(card_t *card, Vector2 position, float scaleFactor, int forcedState, boolean isHand);
+int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean isHand, int forcedState);
 void InitCombatScreen(void);
 void UpdateCombatScreen(void);
 void DrawCombatScreen(void);

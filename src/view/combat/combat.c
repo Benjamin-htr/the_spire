@@ -138,7 +138,7 @@ void drawStatBoard()
 }
 
 // Draw one card of the hand player :
-int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean isHand)
+int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean isHand, int forcedState)
 {
     idxHoverCard = -1;
     // card_t *card = importCardFromId(ACCELERATION);
@@ -159,7 +159,7 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
     bool pressed = false;
     // Update control
     //--------------------------------------------------------------------
-    if ((state < 3))
+    if ((state < 3) && forcedState < 0)
     {
         Vector2 mousePoint = GetMousePosition();
 
@@ -247,7 +247,7 @@ void drawHand()
             decal += (cardInfo.source.width * (scaleFactor + 0.8f)) - cardWidth;
         }
         Vector2 position = (Vector2){(float)(i * cardWidth) + decal, (float)(GetScreenHeight() - cardHeight * 0.60f)};
-        if (GuiCard(myCard, position, scaleFactor, i, true))
+        if (GuiCard(myCard, position, scaleFactor, i, true, backInteractState))
         {
             playOneCard(combat->caracter, combat->enemy, myCard);
         }
@@ -364,7 +364,7 @@ void drawRewind()
             card_t *myCard = tmpReward->data;
             // grossir la carte si hover
             Vector2 position = (Vector2){(float)(GetScreenWidth() / 2 - cardsTotalWidth / 2) + (i * cardWidth) + gap * i, boundsDesc.y + boundsDesc.height + 10};
-            if (GuiCard(myCard, position, scaleFactor, i, false))
+            if (GuiCard(myCard, position, scaleFactor, i, false, -1))
             {
                 tranferOneCardBetweenDeck(
                     &rewardDeck,
@@ -372,6 +372,8 @@ void drawRewind()
                     i);
                 freeDeckListAndCard(rewardDeck);
                 rewardDeck = NULL;
+                // On réactive l'interaction avec les autres éléments
+                backInteractState = -1;
                 if (combat->enemy->enemyType == MINIBOSS)
                 {
                     addItemtoEntityItemList(combat->caracter, getRandomUniqueItemId(combat->caracter));
@@ -392,9 +394,58 @@ void drawRewind()
         }
     }
 }
+void drawLoose()
+{
+    if (!modalClose)
+    {
+        backInteractState = 0;
+        // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+        float backgroundWidth = GetScreenWidth() * 0.7f;
+        float backgroundHeight = GetScreenHeight() * 0.7f;
+        Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+        DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+        float margin = 0.05f;
+        // Draw event description :
+        Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
+        DrawTextBoxed(font, TextFormat("%s", "C'est vraiment pas de chance (ou mal joué) ! Dans tous les cas vous avez perdu ..."), boundsDesc, 22, 1.0f, true, WHITE);
+
+        // Event choices options :
+        float marginTopTextAction = 0.15f;
+        float actionTextWidth = backgroundWidth * 0.35f;
+        float actionTextHeight = backgroundHeight * 0.30f;
+        float posY = boundsDesc.y + boundsDesc.height + (backgroundHeight * marginTopTextAction);
+        float gapX = backgroundWidth - actionTextWidth * 2 - (backgroundWidth * margin * 2);
+        //  Draw event text choices :
+        Rectangle boundsAction1 = (Rectangle){backgroundRect.x + (margin * backgroundWidth), posY, actionTextWidth, actionTextHeight};
+        DrawTextBoxed(font, TextFormat("%s", "Souhaitez vous retourner vers le menu et retenter votre chanche ?"), boundsAction1, 17, 1.0f, true, WHITE);
+
+        Rectangle boundsAction2 = (Rectangle){boundsAction1.x + boundsAction1.width + gapX, posY, actionTextWidth, actionTextHeight};
+        DrawTextBoxed(font, TextFormat("%s", "Ou souhaitez-vous abandonner dans toute votre plus grande lâcheté ?"), boundsAction2, 17, 1.0f, true, WHITE);
+
+        // Draw button choices :
+        float marginTopButton = 0.10f;
+        posY = posY + actionTextHeight + (backgroundHeight * marginTopButton);
+        float buttonHeight = 60;
+        float buttonWidth = backgroundWidth * 0.20f;
+
+        if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "MENU", -1))
+        {
+            TransitionToScreen(MENU);
+            backInteractState = -1;
+        }
+        if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "QUITTER", -1))
+        {
+            shouldClose = true;
+            showInGameMenu = false;
+            backInteractState = -1;
+        }
+    }
+}
 
 void InitCombatScreen(void)
 {
+    backInteractState = -1;
+
     finishScreen = 0;
     printf("Combat Screen Init\n");
     fflush(stdout);
@@ -494,10 +545,6 @@ void UpdateCombatScreen(void)
         {
             rewardDeck = createRewardDeck();
         }
-        else
-        {
-            TransitionToScreen(MENU);
-        }
     }
 
     updateSprite(&ennemySprite);
@@ -517,7 +564,7 @@ void DrawCombatScreen(void)
     {
         finishScreen = 1;
     }
-    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth * 2 - 10, 10, buttonWidth, buttonHeight}, "END TURN", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth * 2 - 10, 10, buttonWidth, buttonHeight}, "END TURN", backInteractState))
     {
         moveCardsFromHand(combat->caracter->board, false);
         playTurn(combat->enemy);
@@ -535,6 +582,11 @@ void DrawCombatScreen(void)
     {
         drawRewind();
     }
+    if (checkEndCombat(combat) && (!checkVictory(combat)))
+    {
+        drawLoose();
+    }
+
     // drawRewind();
 }
 void UnloadCombatScreen(void)

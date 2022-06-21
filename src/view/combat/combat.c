@@ -716,6 +716,7 @@ void UnloadCombatScreen(void)
     unloadTextureCard();
     card_t *cardToFree = ennemyCard;
     ennemyCard = NULL;
+    getEntityStat(combat->caracter, DODGE)->current = 0;
     freeCard(cardToFree);
     freeCombat(combat);
 }

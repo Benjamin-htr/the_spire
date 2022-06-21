@@ -27,6 +27,7 @@ event *get_random_event();
 int do_nothing(entity_t *peter);
 int launch_fight_miniboss(entity_t *peter);
 int sanctuary_life_refill(entity_t *peter);
+int sanctuary_show_deck();
 int sanctuary_mana_refill(entity_t *peter);
 int transform_striketododge(entity_t *peter);
 int transform_dodgetostrike(entity_t *peter);

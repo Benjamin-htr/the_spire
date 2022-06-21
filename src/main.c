@@ -83,6 +83,7 @@ int main(void)
         InitAudioDevice();
 
         font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 24, 0, 250);
+
         background = LoadTexture("./asset/Misc/background.png");
 
         music = LoadMusicStream("./asset/Misc/Audio/Music/Video-Game-Music-Dar-Golan-200bp.mp3");

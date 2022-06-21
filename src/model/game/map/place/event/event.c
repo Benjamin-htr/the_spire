@@ -94,6 +94,7 @@ event *get_sanctuary()
 
 int launch_fight_miniboss(entity_t *peter)
 {
+    displayEntity(peter);
     printf("launch fight miniboss\n");
     return 3;
 }
@@ -111,6 +112,11 @@ int sanctuary_life_refill(entity_t *peter)
     refillHalfStat(getEntityStat(peter, HP));
     // get fonction from hugo
     return -1;
+}
+int sanctuary_show_deck()
+{
+    printf("show deck sanctuary\n");
+    return 2;
 }
 
 int sanctuary_mana_refill(entity_t *peter)
@@ -193,7 +199,7 @@ event_import EVENT_ENCYCLOPEDIA[] = {
             },
             {
                 .label = "Méditer pour retirer une carte du deck principal (afin d'avoir de meilleurs chances de piocher les cartes plus fortes)",
-                .action = &do_nothing,
+                .action = &sanctuary_show_deck,
             },
         },
         .data = NULL,

@@ -1,4 +1,5 @@
 #include "gameplay.h"
+#include "./../combat/combat.h"
 #include "./../utils/utils.h"
 #include "./../../model/game/map/map.h"
 
@@ -12,7 +13,7 @@ static Texture2D arrow = {0};
 static Texture2D StatBar = {0};
 static Texture2D HeartIcon = {0};
 static Texture2D objectsTextures[5];
-static Sprite eventSprite = {0};
+// static Sprite eventSprite = {0};
 
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
@@ -31,8 +32,18 @@ static int currentEvent = {0};
 static event *eventData = {0};
 static entity_t *ennemyData = {0};
 
-// static int etage = 0;
-// static int room = 1;
+static boolean showDeckModal = false;
+
+//---------------------------------------------------------
+// Use for deck print carroussel :
+//--------------------------------------------
+// Tableau contenant le premier élément de chaque page :
+static deck_t **firsPageElements = {0};
+// Indice de la page courante :
+static int currentPage = 0;
+// index
+// static int idxCard = 0;
+static int blockCarroussel = 0;
 
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
@@ -222,12 +233,110 @@ void drawEventChoice(event *event)
         if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
         {
             printf("Choix 2 \n");
-            event->actions[1]->action(game->caracterData); //, event->data);
+            int res = event->actions[1]->action(game->caracterData); //, event->data);
             modalClose = true;
             backInteractState = -1;
+            if (res == 2) // SHOW DECK SANCTUARY
+            {
+                initCaroussel();
+                showDeckModal = true;
+            }
         }
     }
 }
+void drawCarrousselPage(deck_t **firsPageElements, char *title)
+{
+    // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
+    float backgroundWidth = GetScreenWidth() * 0.75f;
+    float backgroundHeight = GetScreenHeight() * 0.87f;
+    Rectangle backgroundRect = (Rectangle){GetScreenWidth() / 2 - backgroundWidth / 2, GetScreenHeight() / 2 - backgroundHeight / 2, backgroundWidth, backgroundHeight};
+    DrawRectangleRec(backgroundRect, GetColor(0x242424ff));
+    // Draw little text deck :
+    int fontSize = 18;
+
+    Vector2 textSize = MeasureTextEx(font, title, fontSize, 1.0f);
+    Vector2 textPos = (Vector2){backgroundRect.x + backgroundRect.width / 2 - textSize.x / 2, backgroundRect.y + 10};
+    DrawTextEx(font, title, textPos, fontSize, 1, LIGHTGRAY);
+    // printf("currentPage : %d \n", currentPage);
+    int perPage = 6;
+    deck_t *myDeck = firsPageElements[currentPage];
+    int deckSize = getDeckSize(myDeck);
+    if (myDeck == NULL || myDeck->data == NULL)
+    {
+        printf("Little problem \n");
+        return;
+    }
+    // visuals options :
+    float scaleFactor = 1.7f;
+    float cardWidth = (float)cardInfo.source.width * scaleFactor;
+    float cardHeight = (float)cardInfo.source.height * scaleFactor;
+    int gap = 25;
+    float cardsTotalWidth = cardWidth * 3 + gap * 2;
+
+    int posY = textPos.y + textSize.y + 15;
+
+    // for logic :
+    int idxCard = currentPage * perPage;
+    int i = 0;
+    while (myDeck != NULL && myDeck->data != NULL && i < perPage)
+    {
+        card_t *myCard = myDeck->data;
+        if (i > 2)
+        {
+            posY = textPos.y + textSize.y + 15 + cardHeight;
+        }
+        // printf("Element %d %s: \n", i, myCard->name);
+        Vector2 position = (Vector2){(float)(GetScreenWidth() / 2 - cardsTotalWidth / 2) + ((i % 3) * cardWidth) + gap * (i % 3), posY};
+        if (GuiCard(myCard, position, scaleFactor, i, false, blockCarroussel))
+        {
+            card_t *suppCard = removeCard(&game->caracterData->cardDeck, myCard->name);
+            freeCard(suppCard);
+            showDeckModal = false;
+            backInteractState = -1;
+            unloadTextureCard();
+            free(firsPageElements);
+        }
+
+        myDeck = myDeck->next;
+        i++;
+        idxCard++;
+    }
+    blockCarroussel = -1;
+    int arrowButtonWidth = 72;
+    // printf("i : %d \n", idxCard);
+    if (idxCard < deckSize - 1)
+    {
+        // flèche vers droite :
+        if (ArrowButton((Rectangle){backgroundRect.x + backgroundRect.width - 20 - arrowButtonWidth, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))
+        {
+            printf("i : %d \n", i);
+            currentPage += 1;
+            printf("currentPage : %d \n", currentPage);
+        }
+    }
+    if (idxCard > perPage)
+    {
+        // flèche vers gauche :
+        if (ArrowButton((Rectangle){backgroundRect.x + 20, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1))
+        {
+            // printf("ArrowButton LEFT\n");
+            currentPage -= 1;
+            printf("i : %d \n", i);
+            printf("currentPage : %d \n", currentPage);
+            printf("gauche");
+        }
+    }
+}
+void drawDeck()
+{
+    if (showDeckModal)
+    {
+        backInteractState = 0;
+        char *text = "Choisissez une carte à supprimer de votre deck";
+        drawCarrousselPage(firsPageElements, text);
+    }
+}
+
 void drawEvent()
 {
     // if is combat :
@@ -250,6 +359,43 @@ void drawEvent()
     {
         drawEventChoice(eventData);
     }
+}
+void initCaroussel()
+{
+    blockCarroussel = 0;
+    currentPage = 0;
+    deck_t *myDeck = game->caracterData->cardDeck;
+    int deckSize = getDeckSize(myDeck);
+    int elementPerPage = 6;
+    int numberOfPage = (deckSize / elementPerPage) + 1;
+    firsPageElements = malloc(sizeof(deck_t *) * numberOfPage);
+
+    printf("Init caroussel \n");
+
+    int i = 0;
+    int idxElementAd = 0;
+    if (myDeck == NULL || myDeck->data == NULL)
+    {
+        printf("The deck is empty \n");
+        return;
+    }
+    while (myDeck != NULL && myDeck->data != NULL)
+    {
+        if ((i % elementPerPage) == 0)
+        {
+            firsPageElements[idxElementAd] = myDeck;
+
+            // card_t *myCard = firsPageElements[idxElementAd]->data;
+            //  printf("Element %d %s: \n", i, myCard->name);
+            idxElementAd += 1;
+        }
+
+        myDeck = myDeck->next;
+        i++;
+    }
+    loadTextureCard();
+    printf(" deck size : %d    |    %d\n", deckSize, numberOfPage);
+    // drawCarrousselPage(0, firsPageElements);
 }
 void reinitAfterMove()
 {
@@ -360,13 +506,13 @@ void DrawGameplayScreen(void)
     drawLifeBar();
 
     // POUR TEST COMBAT : (A RETIRER PLUS TARD)
-    int buttonWidth = 150;
-    int buttonHeight = 50;
+    /*To test :
     if (GuiButton((Rectangle){10, GetScreenHeight() - buttonHeight - 10, buttonWidth, buttonHeight}, "COMBAT", -1))
     {
         // TransitionToScreen(COMBAT);
         ChangeToScreen(COMBAT_SCREEN);
     }
+    */
 
     // Vector2 textSize = MeasureTextEx(font, TextFormat("ETAGE %d", etage), 20, 1);
     DrawTextEx(font, TextFormat("ETAGE %d", etage), (Vector2){10, 10}, 20, 1, LIGHTGRAY);
@@ -436,6 +582,7 @@ void DrawGameplayScreen(void)
     }
     drawItems();
     drawEvent();
+    drawDeck();
 }
 
 void UnloadGameplayScreen(void)

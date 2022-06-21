@@ -4,6 +4,10 @@
 #include "./../../../include/raylib.h"
 #include "./../../model/game/game.h"
 
+void drawCarrousselPage(deck_t **firsPageElements, char *title);
+
+void initCaroussel();
+
 // Draw button with arrow in the middle
 bool ArrowButton(Rectangle bounds, float rotation, int forcedState);
 

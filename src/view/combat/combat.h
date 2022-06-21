@@ -9,6 +9,7 @@
 // Tableau contenant les noms des effets :
 extern char *EFFECT_NAME[13];
 extern char *EFFECT_TEXT[5];
+extern NPatchInfo cardInfo;
 
 void drawStatBoard();
 void drawRewind();
@@ -19,5 +20,7 @@ void UpdateCombatScreen(void);
 void DrawCombatScreen(void);
 void UnloadCombatScreen(void);
 int FinishCombatScreen(void);
+void loadTextureCard();
+void unloadTextureCard();
 
 #endif

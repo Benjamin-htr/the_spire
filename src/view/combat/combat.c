@@ -484,20 +484,15 @@ void drawLoose()
     }
 }
 
-void InitCombatScreen(void)
+void loadTextureCard()
 {
-    backInteractState = -1;
+    cardInfo.source = (Rectangle){0, 0, 96, 156},
+    cardInfo.left = 00;
+    cardInfo.top = 00;
+    cardInfo.right = 00;
+    cardInfo.bottom = 00;
 
-    finishScreen = 0;
-    printf("Combat Screen Init\n");
-    fflush(stdout);
-
-    CombatBG = LoadTexture("./asset/Misc/bgCombat.png");
-
-    StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
-    Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
-    DodgeIcon = LoadTexture("./asset/Board/Bar/unit/shield.png");
 
     // Effects texture loading :
     strenghtEffect = LoadTexture("./asset/Misc/Effect/strength.png");
@@ -516,15 +511,67 @@ void InitCombatScreen(void)
     RareCardPatch = LoadTexture("./asset/Board/card-rare.png");
     SpecialCardPatch = LoadTexture("./asset/Board/card-special.png");
 
-    // Image card unknown loading (for card that doesn't have specific image) :
     ImageCardUnknown = LoadTexture("./asset/Board/image-card/image-card-unknown.png");
+}
+void unloadTextureCard()
+{
+    UnloadTexture(EnergyIcon);
+
+    UnloadTexture(strenghtEffect);
+    UnloadTexture(dexterityEffect);
+    UnloadTexture(fireEffect);
+    UnloadTexture(weaknessEffect);
+    UnloadTexture(slowingEffect);
+    UnloadTexture(HPEffect);
+    UnloadTexture(DodgeEffect);
+    UnloadTexture(ManaEffect);
+
+    UnloadTexture(BasicCardPatch);
+    UnloadTexture(CommonCardPatch);
+    UnloadTexture(AtypicCardPatch);
+    UnloadTexture(RareCardPatch);
+    UnloadTexture(SpecialCardPatch);
+
+    UnloadTexture(ImageCardUnknown);
+}
+void InitCombatScreen(void)
+{
+    backInteractState = -1;
+
+    finishScreen = 0;
+    printf("Combat Screen Init\n");
+    fflush(stdout);
+
+    CombatBG = LoadTexture("./asset/Misc/bgCombat.png");
+
+    StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
+    Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
+    // EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
+    DodgeIcon = LoadTexture("./asset/Board/Bar/unit/shield.png");
+
+    // Effects texture loading :
+    // strenghtEffect = LoadTexture("./asset/Misc/Effect/strength.png");
+    // dexterityEffect = LoadTexture("./asset/Misc/Effect/dexterity.png");
+    // fireEffect = LoadTexture("./asset/Misc/Effect/Fire.png");
+    // weaknessEffect = LoadTexture("./asset/Misc/Effect/Weak.png");
+    // slowingEffect = LoadTexture("./asset/Misc/Effect/Slow.png");
+    // HPEffect = LoadTexture("./asset/Board/Bar/unit/heart.png");
+    // DodgeEffect = LoadTexture("./asset/Misc/Effect/Dodge.png");
+    // ManaEffect = LoadTexture("./asset/Board/Bar/unit/mana.png");
+
+    // Cards textures loading :
+    // BasicCardPatch = LoadTexture("./asset/Board/card-basic.png");
+    // CommonCardPatch = LoadTexture("./asset/Board/card-common.png");
+    // AtypicCardPatch = LoadTexture("./asset/Board/card-atypic.png");
+    // RareCardPatch = LoadTexture("./asset/Board/card-rare.png");
+    // SpecialCardPatch = LoadTexture("./asset/Board/card-special.png");
+
+    // Image card unknown loading (for card that doesn't have specific image) :
+    // ImageCardUnknown = LoadTexture("./asset/Board/image-card/image-card-unknown.png");
+
+    loadTextureCard();
 
     // Cards infos :
-    cardInfo.source = (Rectangle){0, 0, 96, 156},
-    cardInfo.left = 00;
-    cardInfo.top = 00;
-    cardInfo.right = 00;
-    cardInfo.bottom = 00;
 
     // Enemy  :
 
@@ -645,26 +692,28 @@ void UnloadCombatScreen(void)
     UnloadTexture(CombatBG);
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
-    UnloadTexture(EnergyIcon);
+    // UnloadTexture(EnergyIcon);
     UnloadTexture(DodgeIcon);
 
-    UnloadTexture(strenghtEffect);
-    UnloadTexture(dexterityEffect);
-    UnloadTexture(fireEffect);
-    UnloadTexture(weaknessEffect);
-    UnloadTexture(slowingEffect);
-    UnloadTexture(HPEffect);
-    UnloadTexture(DodgeEffect);
-    UnloadTexture(ManaEffect);
+    // UnloadTexture(strenghtEffect);
+    // UnloadTexture(dexterityEffect);
+    // UnloadTexture(fireEffect);
+    // UnloadTexture(weaknessEffect);
+    // UnloadTexture(slowingEffect);
+    // UnloadTexture(HPEffect);
+    // UnloadTexture(DodgeEffect);
+    // UnloadTexture(ManaEffect);
 
-    UnloadTexture(BasicCardPatch);
-    UnloadTexture(CommonCardPatch);
-    UnloadTexture(AtypicCardPatch);
-    UnloadTexture(RareCardPatch);
-    UnloadTexture(SpecialCardPatch);
+    // UnloadTexture(BasicCardPatch);
+    // UnloadTexture(CommonCardPatch);
+    // UnloadTexture(AtypicCardPatch);
+    // UnloadTexture(RareCardPatch);
+    // UnloadTexture(SpecialCardPatch);
 
-    UnloadTexture(ImageCardUnknown);
+    // UnloadTexture(ImageCardUnknown);
     UnloadTexture(ennemySprite.texture);
+
+    unloadTextureCard();
 
     freeCombat(combat);
 }

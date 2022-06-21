@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+static Texture2D CombatBG = {0};
+
 static Texture2D StatBar = {0};
 static Texture2D Statboard = {0};
 static Texture2D EnergyIcon = {0};
@@ -263,7 +265,7 @@ void drawEnnemy(entity_t *entity)
     Vector2 ennemyNamePos = (Vector2){GetScreenWidth() / 2 - ennemyNameSize.x / 2, 15};
     DrawTextEx(font, TextFormat("%s", entity->name), ennemyNamePos, fontNameSize, 1, WHITE);
 
-    const Vector2 ennemyPos = {ennemyNamePos.x + (ennemyNameSize.x / 2) - ennemySprite.frameRec.width * scaleEnnemy / 2, ennemyNamePos.y + ennemyNameSize.y + 3};
+    const Vector2 ennemyPos = {ennemyNamePos.x + (ennemyNameSize.x / 2) - ennemySprite.frameRec.width * scaleEnnemy / 2, ennemyNamePos.y + ennemyNameSize.y + 400 - ennemySprite.frameRec.height * scaleEnnemy};
     drawSprite(&ennemySprite, ennemyPos, 0.0f, scaleEnnemy, WHITE);
 
     int HpMax = getEntityStat(entity, HP)->max;
@@ -272,7 +274,7 @@ void drawEnnemy(entity_t *entity)
 
     float scaleBar = 2.0f;
 
-    Vector2 StatBarPos = (Vector2){(ennemyPos.x + ennemySprite.frameRec.width * scaleEnnemy / 2) - (StatBar.width * scaleBar / 2), ennemyPos.y + ennemySprite.frameRec.height * scaleEnnemy + 10};
+    Vector2 StatBarPos = (Vector2){(ennemyPos.x + ennemySprite.frameRec.width * scaleEnnemy / 2) - (StatBar.width * scaleBar / 2), ennemyNamePos.y + 40};
 
     float HpBarWidth = (float)HpActuel / (float)HpMax * StatBar.width * scaleBar * 0.8f;
     DrawRectangle(StatBarPos.x + StatBar.width * scaleBar / 10, StatBarPos.y + StatBar.height * scaleBar * 0.2f, HpBarWidth, StatBar.height * scaleBar * 0.6f, RED);
@@ -397,6 +399,8 @@ void InitCombatScreen(void)
     printf("Combat Screen Init\n");
     fflush(stdout);
 
+    CombatBG = LoadTexture("./asset/Misc/bgCombat.png");
+
     StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
     Statboard = LoadTexture("./asset/Board/Bar/StatBoard.png");
     EnergyIcon = LoadTexture("./asset/Board/Bar/unit/Energy.png");
@@ -500,6 +504,8 @@ void UpdateCombatScreen(void)
 }
 void DrawCombatScreen(void)
 {
+    float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
+    DrawTextureEx(CombatBG, (Vector2){0, 0}, 0, scaleBackground, WHITE);
     ClearBackground(GetColor(0x3f3f74ff));
 
     drawStatBoard();
@@ -533,6 +539,7 @@ void DrawCombatScreen(void)
 }
 void UnloadCombatScreen(void)
 {
+    UnloadTexture(CombatBG);
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
     UnloadTexture(EnergyIcon);

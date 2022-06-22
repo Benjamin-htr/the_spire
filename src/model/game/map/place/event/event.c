@@ -7,6 +7,8 @@
 
 int NB_EVENT = 5;
 
+// INIT d'un evenement
+
 event *event_init(char *dialogue, option *actions, void *data)
 {
     event *e = malloc(sizeof(event));
@@ -24,10 +26,15 @@ event *event_init(char *dialogue, option *actions, void *data)
     e->data = data; // mettre un sanctuaire ici
     return e;
 }
+
+// retourne un evenement random
+
 event *get_random_event()
 {
     return importEvent(EVENT_ENCYCLOPEDIA[((rand() % (NB_EVENT - 1)) + 2)]);
 }
+
+// import tous les evenements depuis l'encyclopedie
 
 event **import_all_event()
 {
@@ -38,6 +45,8 @@ event **import_all_event()
     }
     return all;
 }
+
+// Test de l'evenement
 
 void Test_EVENT()
 {
@@ -70,6 +79,8 @@ void Test_EVENT()
     // po[0]->actions[0]->action();
 }
 
+// affichage d'un evenement
+
 void show_event(event *ev)
 {
     printf("ev.dialogue = %s\n", ev->dialogue);
@@ -77,20 +88,28 @@ void show_event(event *ev)
     printf("ev.action 1 = %s\n", ev->actions[1]->label);
 }
 
+// import d'un evenement de l'encyclopedie
+
 event *importEvent(event_import event_import_)
 {
     return event_init(event_import_.dialogue, event_import_.actions, event_import_.data);
 }
+
+// retourne un evenement mini boss
 
 event *get_mini_boss()
 {
     return importEvent(EVENT_ENCYCLOPEDIA[0]);
 }
 
+// retourne un sanctuaire
+
 event *get_sanctuary()
 {
     return importEvent(EVENT_ENCYCLOPEDIA[1]);
 }
+
+// lance le combat de miniboss
 
 int launch_fight_miniboss(entity_t *peter)
 {
@@ -99,12 +118,16 @@ int launch_fight_miniboss(entity_t *peter)
     return 3;
 }
 
+// ne fait rien
+
 int do_nothing(entity_t *peter)
 {
     printf("do nothing\n");
     printf("%s\n", peter->name);
     return -1;
 }
+
+// action de refill de la vie du sanctuaire
 
 int sanctuary_life_refill(entity_t *peter)
 {
@@ -113,44 +136,51 @@ int sanctuary_life_refill(entity_t *peter)
     // get fonction from hugo
     return -1;
 }
+
+// affiche le deck pour l'evenement sanctuaire
+
 int sanctuary_show_deck()
 {
     printf("show deck sanctuary\n");
     return 2;
 }
 
+// refill le mana pour le sanctuaire
+
 int sanctuary_mana_refill(entity_t *peter)
 {
     printf("sanctuary mana refill\n");
     refillHalfStat(getEntityStat(peter, MANA));
-    // get fonction from hugo
     return -1;
 }
+
+// transforme les cartes strike en dodge
 
 int transform_striketododge(entity_t *peter)
 {
     printf("transform striketododge\n");
     replaceCardWithOther(&(peter->cardDeck), STRIKE, DODGE_A);
-    // startCombat(peter, event->data);
-    // get fonction from hugo
     return -1;
 }
+
+// transforme les cartes dodge en strike
 
 int transform_dodgetostrike(entity_t *peter)
 {
     printf("transform dodgetostrike\n");
     replaceCardWithOther(&(peter->cardDeck), DODGE_A, STRIKE);
-    // startCombat(peter, event->data);
-    // get fonction from hugo
     return -1;
 }
 
+// augmente le mana max
 int mana_max_refill(entity_t *peter)
 {
     printf("mana max refill\n");
     updateStat(getEntityStat(peter, MANA), 20, true);
     return -1;
 }
+
+// augmente la vie max
 
 int life_max_refill(entity_t *peter)
 {
@@ -160,6 +190,8 @@ int life_max_refill(entity_t *peter)
     return -1;
 }
 
+// enleve de la vie a peter si il decide de ne pas TP
+
 int no_tp(entity_t *peter)
 {
     printf("no tp\n");
@@ -167,12 +199,16 @@ int no_tp(entity_t *peter)
     return -1;
 }
 
+// tp peter
+
 int tp(entity_t *peter)
 {
     printf("tp\n");
     printf("%s\n", peter->name);
     return 4;
 }
+
+// tous les evenements
 
 event_import EVENT_ENCYCLOPEDIA[] = {
 

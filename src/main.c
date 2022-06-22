@@ -26,6 +26,7 @@ Font font = {0};
 Music music = {0};
 Texture2D background = {0};
 Sound buttonSound = {0};
+Image WinIcon = {0};
 Texture2D buttonPatch = {0};
 NPatchInfo buttonInfo = {0};
 bool shouldClose = false;
@@ -76,7 +77,8 @@ int main(void)
         // Initialization (OpenGL context)
         //--------------------------------------------------------------------------------------
         InitWindow(screenWidth, screenHeight, "The Spire");
-
+        WinIcon = LoadImage("./asset/Misc/Effect/Fire.png");
+        SetWindowIcon(WinIcon);
         SetExitKey(0);
 
         // Global data loading (assets that must be available in all screens, i.e. fonts)
@@ -100,8 +102,9 @@ int main(void)
         buttonInfo.bottom = 60;
 
         // Setup and Init first screen
-        currentScreen = GAMEPLAY;
-        InitGameplayScreen();
+        currentScreen = MENU;
+        // InitGameplayScreen();
+        InitMenuScreen();
 
         SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 

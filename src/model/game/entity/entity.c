@@ -29,6 +29,7 @@ entity_t *initEntity(
     return res;
 }
 
+// free entity Memory
 void freeEntity(entity_t *entity)
 {
     freeEntityStatArray(entity->stats);
@@ -38,6 +39,7 @@ void freeEntity(entity_t *entity)
     free(entity);
 }
 
+// import a caracter from global array
 entity_t *importCaracter(entity_import entitySkel)
 {
     return initEntity(
@@ -52,11 +54,13 @@ entity_t *importCaracter(entity_import entitySkel)
         BOSS);
 }
 
+// import a caracter from enum Id
 entity_t *importCaracterFromId(CARACTER_ID id)
 {
     return importCaracter(CARATER_ENCYCLOPEDIA[id]);
 }
 
+// import an enemy from global array
 entity_t *importEnemy(enemy_import enemySkel, ENEMY_TYPE enemyType)
 {
     int hp =
@@ -81,36 +85,42 @@ entity_t *importEnemy(enemy_import enemySkel, ENEMY_TYPE enemyType)
         enemyType);
 }
 
+// import an enemy of phase 1 from enum Id
 entity_t *importEnemyPhase1FromId(ENEMY_PHASE_1_ID id)
 {
     return importEnemy(ENEMY_PHASE_1_ENCYCLOPEDIA[id], COMMON_ENEMY);
 }
 
+// import a random enemy of phase 1
 entity_t *getRandomEnemyPhase1()
 {
     return importEnemyPhase1FromId(rand() % ENEMY_PHASE_1_ID_SIZE);
 }
 
+// import an enemy of phase 2 from enum Id
 entity_t *importEnemyPhase2FromId(ENEMY_PHASE_2_ID id)
 {
     return importEnemy(ENEMY_PHASE_2_ENCYCLOPEDIA[id], COMMON_ENEMY);
 }
 
+// import a random enemy of phase 2
 entity_t *getRandomEnemyPhase2()
 {
     return importEnemyPhase2FromId(rand() % ENEMY_PHASE_2_ID_SIZE);
 }
 
+// import a boss from enum Id
 entity_t *importMiniBossFromId(MINIBOSS_ID id)
 {
     return importEnemy(MINIBOSS_ENCYCLOPEDIA[id], MINIBOSS);
 }
 
+// import a random  mini boss
 entity_t *getRandomMiniBoss()
 {
     return importMiniBossFromId(rand() % MINIBOSS_ID_SIZE);
 }
-
+// import a boss from enum Id
 entity_t *importBOSSFromId(BOSS_ID id)
 {
     return importEnemy(BOSS_ENCYCLOPEDIA[id], BOSS);
@@ -131,7 +141,7 @@ void displayEntity(entity_t *entity)
 }
 
 // METHODS
-
+// variant of merge effect for the HP effect with negativ value
 void takeDamage(entity_t *entity, int value)
 {
     stat_t *entityDodge = getEntityStat(entity, DODGE);
@@ -148,6 +158,7 @@ void takeDamage(entity_t *entity, int value)
     }
 }
 
+// apply card effect to the launcher and the receiver
 void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
 {
     printf("la carte %s est joué\n", card->name);
@@ -161,7 +172,7 @@ void applyCardEffect(card_t *card, entity_t *launcher, entity_t *receiver)
     }
 }
 
-// dupplication de code pas ouf :/
+// apply all entity item effect to the entity
 void applyAllItemsEffect(entity_t *launcher, entity_t *receiver)
 {
     for (int itemsIdx = 0; itemsIdx < 5 && launcher->items[itemsIdx]->description != NULL; itemsIdx++)
@@ -187,6 +198,7 @@ void applyAllItemsEffect(entity_t *launcher, entity_t *receiver)
     }
 }
 
+// item related : when adding an item that have effect on max
 void applyItemMaxEffect(entity_t *launcher, item_t *item)
 {
     for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
@@ -201,6 +213,7 @@ void applyItemMaxEffect(entity_t *launcher, item_t *item)
     }
 }
 
+// item related : when removing an item that have effect on max
 void removeItemMaxEffect(entity_t *launcher, item_t *item)
 {
     for (int itemEffectIdx = 0; itemEffectIdx < item->launcherEffectsSize; itemEffectIdx++)
@@ -215,6 +228,7 @@ void removeItemMaxEffect(entity_t *launcher, item_t *item)
     }
 }
 
+// put all effect value at 0( used at end of combat )
 void wipeAllEffect(entity_t *entity)
 {
     for (int effectIdx = 0; effectIdx < 5; effectIdx++)
@@ -223,6 +237,7 @@ void wipeAllEffect(entity_t *entity)
     }
 }
 
+// decrease effect value and apply fire effect
 void turnBeginEffectUpdate(entity_t *entity)
 {
     effect_t *entityFIRE = getEntityEffect(entity, FIRE_E);
@@ -240,6 +255,7 @@ void turnBeginEffectUpdate(entity_t *entity)
     }
 }
 
+// return the value of the card after apply entity effect
 void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect)
 {
     effect_t *entityStr = getEntityEffect(entity, STR_E);
@@ -256,6 +272,7 @@ void updateCardEffectWithEntityEffect(entity_t *entity, effect_t *cardEffect)
     }
 }
 
+// apply effect to the entity
 void mergeEffect(entity_t *entity, effect_t *effect)
 {
     if (effect->id == HP_E && effect->value < 0)
@@ -283,11 +300,13 @@ void mergeEffect(entity_t *entity, effect_t *effect)
 
 //      GETTER
 
+// return entity stat from stat id
 stat_t *getEntityStat(entity_t *entity, stat_ID statId)
 {
     return entity->stats[statId - 1];
 }
 
+// return Entity effect from effect id
 effect_t *getEntityEffect(entity_t *entity, effect_ID id)
 {
     if (id < 3)
@@ -297,6 +316,7 @@ effect_t *getEntityEffect(entity_t *entity, effect_ID id)
     return entity->effects[id - 8];
 }
 
+// return the card after apply entity effect
 card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de free la carte retourné une fois l'utilisation fini
 {
     card_t *res = copyCard(card);
@@ -314,6 +334,7 @@ card_t *getTrueCardValue(entity_t *entity, card_t *card) // On oublie pas de fre
     return res;
 }
 
+// return a semi random item that the entity dont have
 int getRandomUniqueItemId(entity_t *entity)
 {
     int itemId;
@@ -326,19 +347,10 @@ int getRandomUniqueItemId(entity_t *entity)
 
 //      SETTER
 
+// ITEM RELATED
+// import an entire array of item in the entity
 void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[itemLength])
 {
-    // item_t **res = malloc(5 * sizeof(item_t *));
-    // int item_ID;
-    // for (item_ID = 0; item_ID < itemLength; item_ID++)
-    // {
-    //     res[item_ID] = importItemFromId(itemsId[item_ID]);
-    // };
-    // for (; item_ID < 5; item_ID++)
-    // {
-    //     res[item_ID] = importItemFromId(NONE_ITEM);
-    // };
-    // return res;
     entity->items = createEmptyEntityItemList();
     for (int item_ID = 0; item_ID < itemLength; item_ID++)
     {
@@ -346,6 +358,7 @@ void importEntityItemFromIdArray(entity_t *entity, int itemLength, int itemsId[i
     };
 }
 
+// import a item and add max stat
 void addItemtoEntityItemList(entity_t *entity, ITEM_ENCYCLOPEDIA_ID id)
 {
     if (entity->items[id - 1]->description == NULL)
@@ -387,7 +400,6 @@ void testApplyCardEffect(entity_t *testCar, entity_t *testEnemy)
     displayEntity(testCar);
     displayEntity(testEnemy);
 }
-
 void testEntity()
 {
     printf("\n==============================\n\tTEST DE L'ENTITY\n==============================\n");

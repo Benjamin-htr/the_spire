@@ -6,6 +6,8 @@
 int MAP_HEIGHT = 11;
 int MAP_WIDTH = 4;
 
+// init la position du player
+
 position_player position_init(int x, int y)
 {
     position_player p;
@@ -14,16 +16,22 @@ position_player position_init(int x, int y)
     return p;
 }
 
+// permet de debugger quand on est en colère
+
 void printtamere(char *chaine)
 {
     printf("---------------------------------\n TA MERE %s\n---------------------------------\n", chaine);
     fflush(stdout);
 }
 
+// retourne la position actuelle du joueur
+
 position_player player_position(map *ma)
 {
     return ma->position_player;
 }
+
+// retourne les positions jouable
 
 int *playable_move(map *m)
 {
@@ -51,6 +59,7 @@ int *playable_move(map *m)
     }
 }
 
+// affiche l'event actuelle
 void go_event(map *m)
 {
     switch (map_get(m))
@@ -72,6 +81,8 @@ void go_event(map *m)
         break;
     }
 }
+
+// liée a l'evenement tp permet de tp le joueur
 
 void *teleporter(map *m)
 {
@@ -95,6 +106,8 @@ void *teleporter(map *m)
     }
     return NULL;
 }
+
+// retour un tableau de boolean d'ou sont les evenements sur la map
 
 boolean *event_place()
 {
@@ -124,6 +137,8 @@ boolean *event_place()
 
     return array;
 }
+
+// lie le tableau de boolean des evenements à la map
 
 void set_event(map *m)
 {
@@ -158,6 +173,8 @@ void set_event(map *m)
         }
     }
 }
+
+// init de la map
 
 map *map_init()
 {
@@ -202,6 +219,8 @@ map *map_init()
     return m;
 }
 
+// check si le joueur peut bouger a une position
+
 boolean check_map(map *m, int y)
 {
     if (m->position_player.x == 0 && y <= MAP_WIDTH - 1 && y >= 0)
@@ -233,6 +252,8 @@ boolean check_map(map *m, int y)
     return false;
 }
 
+// move le player si checkmap retourne true
+
 void move_player(map *m, int y, boolean isTP)
 {
     if (check_map(m, y))
@@ -254,6 +275,8 @@ void move_player(map *m, int y, boolean isTP)
     }
 }
 
+// print la map
+
 void map_print(map *m)
 {
     int i, j;
@@ -267,16 +290,14 @@ void map_print(map *m)
     }
 }
 
-// void map_event(map *m)
-// {
-//     go_event(m);
-// }
+// retourne le type d'evenement du joueur
 
-// returns the event of the given tile
 int map_get(map *map)
 {
     return map->places[map->position_player.x][map->position_player.y].isWhat;
 }
+
+// test de la map
 
 void testMap()
 {

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "place.h"
 
+// init de la place
+
 place place_init(int isWhat, event *eventData, entity_t *enemyData)
 {
     place p;
@@ -12,10 +14,14 @@ place place_init(int isWhat, event *eventData, entity_t *enemyData)
     return p;
 }
 
+// test de la place
+
 place test()
 {
     return place_init(0, NULL, NULL);
 }
+
+// test de la place
 
 void testPlace()
 {

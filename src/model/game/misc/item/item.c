@@ -1,6 +1,7 @@
 #include "item.h"
 #include <stdio.h>
 
+// INIT FUNCTION
 item_t *createItem(
     char *name,
     int launcherEffectsSize,
@@ -24,6 +25,7 @@ item_t *createItem(
     return res;
 }
 
+// free memory of item
 void freeItem(item_t *item)
 {
     freeEffectArray(item->launcherEffects, item->launcherEffectsSize);
@@ -31,6 +33,7 @@ void freeItem(item_t *item)
     free(item);
 }
 
+// free memory from item array of entity
 void freeEntityItem(item_t **items)
 {
     for (int itemsIdx = 0; itemsIdx < 5; itemsIdx++)
@@ -40,6 +43,7 @@ void freeEntityItem(item_t **items)
     free(items);
 }
 
+// import an item from global array
 item_t *importItem(item_import itemImport)
 {
     return createItem(
@@ -53,11 +57,13 @@ item_t *importItem(item_import itemImport)
         itemImport.imageName);
 }
 
+// import an item from enum id
 item_t *importItemFromId(ITEM_ENCYCLOPEDIA_ID itemId)
 {
     return importItem(ITEM_ENCYCLOPEDIA[itemId]);
 }
 
+// create an empty item list (used for entity)
 item_t **createEmptyEntityItemList()
 {
     item_t **res = malloc(5 * sizeof(item_t *));
@@ -69,6 +75,7 @@ item_t **createEmptyEntityItemList()
     return res;
 }
 
+// import item from array enum id
 item_t **importItemFromIdArray(int itemLength, int itemsId[itemLength])
 {
     item_t **res = malloc(itemLength * sizeof(item_t *));
@@ -89,7 +96,7 @@ void displayItem(item_t *item)
     printf("\nRECEIVER EFFECT:\n________________\n");
     displayEffectArray(item->receiverEffects, item->receiverEffectsSize);
 }
-
+// display array function
 void displayEntityItems(item_t **items)
 {
     printf("ITEMS: \n______\n");

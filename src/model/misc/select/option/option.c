@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "option.h"
 
+// init d'une option
 option *option_init(char *label, action_t action)
 {
     option *o = malloc(sizeof(option));
@@ -11,6 +12,7 @@ option *option_init(char *label, action_t action)
     return o;
 }
 
+// retourne les actions de l'option
 action_t option_get_action(option *o)
 {
     return o->action;

@@ -4,7 +4,7 @@
 #include "time.h"
 
 const int NB_CARDS_TO_DRAW = 5;
-board_t *createBoard(deck_t *playerDeck)
+board_t *createBoard(deck_t *playerDeck) // fonction qui créee un board à partir d'un deck, en lui allouant de la mémoire.
 {
     board_t *gameBoard = malloc(sizeof(board_t));
     // WARNING: si tu fais ca et que tu pioche dans le deck tu vide le deck d'information stocker dans le player
@@ -27,14 +27,14 @@ void freeBoard(board_t *board)
     free(board);
 }
 
-void tranferOneCardBetweenDeck(deck_t **firstPlace, deck_t **secondPlace, int cardIdx)
+void tranferOneCardBetweenDeck(deck_t **firstPlace, deck_t **secondPlace, int cardIdx) // transfere une carte à un indice donné d'un deck à un autre
 {
     addCard(*secondPlace, removeCardatIndex(firstPlace, cardIdx));
 }
 
-void putCardsFromOnePlaceToAnother(deck_t **firstPlace, deck_t **secondPlace)
-{ // returns the firstPlace, which is empty.
-    // don't forget to use this method this way : 'firstPlace = putCardsFromOnePlaceToAnother(firstPlace,secondPlace)'
+void putCardsFromOnePlaceToAnother(deck_t **firstPlace, deck_t **secondPlace) // transfere toutes les cartes d'un deck vers un autre deck 
+                                                                             // utilisé notamment pour déplacer toutes les cartes de la discard vers la main
+{ 
     shuffleDeck(firstPlace);
     while ((*firstPlace) != NULL && (*firstPlace)->data != NULL)
     {
@@ -42,9 +42,8 @@ void putCardsFromOnePlaceToAnother(deck_t **firstPlace, deck_t **secondPlace)
     }
 }
 
-int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew)
-{ // returns number of cards drawed,
-    // second parameter is the number of cards drew this turn*
+int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew) // pioche des cartes du deck, prend en paramètres le nombre de cartes piochées ce tour
+{ 
     while (nbCardsDrew < NB_CARDS_TO_DRAW && myBoard->cardDeck != NULL)
     {
         tranferOneCardBetweenDeck(&myBoard->cardDeck, &myBoard->hand, 0);
@@ -53,8 +52,8 @@ int drawCardsFromDeck(board_t *myBoard, int nbCardsDrew)
     return nbCardsDrew;
 }
 
-void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard)
-{ // returns the board, please use "board = drawCards(board)
+void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard) // pioche des cartes du deck et rempli la main dans le cas où il n'ya pas assez de cartes dans la main pour piocher
+{ 
     int nbCardsDrawed = drawCardsFromDeck(myBoard, 0);
     if (nbCardsDrawed < NB_CARDS_TO_DRAW && getDeckSize(myBoard->discardPile) != 0)
     { // means no more cards are in the deck, lets try to fill the draw with discard
@@ -64,8 +63,8 @@ void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard)
     }
 }
 
-void moveCardsFromHand(board_t *myBoard, boolean goToAbyss)
-{ // move all cards from hand to abyss/discard
+void moveCardsFromHand(board_t *myBoard, boolean goToAbyss) // déplace les cartes de la main vers le cimetière/l'abysse
+{ 
     deck_t *hand = myBoard->hand;
     if (myBoard->abyss == NULL)
     {
@@ -77,7 +76,6 @@ void moveCardsFromHand(board_t *myBoard, boolean goToAbyss)
     }
     while (hand != NULL && hand->data != NULL)
     {
-        // Pourquoi ne pas appeler moveOneCardFromHand tu dupplique ton code
         card_t *cardToRemove = removeFirstCard(&(hand));
         if (cardToRemove->isAbyssal && goToAbyss)
         {
@@ -91,14 +89,13 @@ void moveCardsFromHand(board_t *myBoard, boolean goToAbyss)
     myBoard->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
 }
 
-deck_t *getRandomCardFromHand(board_t *board)
+deck_t *getRandomCardFromHand(board_t *board) // récupère une carte aléatoire  de la main
 {
-    // ne serait-il pas préférable de retourner directement la carte (à voir les utilisations faites)
     int listSize = getDeckSize(board->hand);
     return getElementFromDeckAtIndex(rand() % listSize, board->hand);
 }
 
-void moveOneCardFromHand(board_t *board, card_t *cardToRemove)
+void moveOneCardFromHand(board_t *board, card_t *cardToRemove) // retire une carte de la main et la déplace vers l'abysse/cimetière
 {
     if (cardToRemove != NULL)
     {
@@ -116,13 +113,13 @@ void moveOneCardFromHand(board_t *board, card_t *cardToRemove)
     }
 }
 
-void moveOneCardFromHandByIdx(board_t *board, int idx)
+void moveOneCardFromHandByIdx(board_t *board, int idx) // déplace la carte de la main à l'indice idx vers le cimetière/ l'abysse 
 {
     card_t *cardToRemove = getElementFromDeckAtIndex(idx, board->hand)->data;
     moveOneCardFromHand(board, cardToRemove);
 }
 
-void displayBoard(board_t *board)
+void displayBoard(board_t *board) // affiche le board dans le terminal ( utilisé pour les tests)
 {
     printf("\nBOARD:\n______\n");
     printf("\nDECK:");
@@ -135,7 +132,7 @@ void displayBoard(board_t *board)
     displayDeck(board->abyss);
 }
 
-void testBoard()
+void testBoard() // fonction pour tester différentes méthodes du board dans un terminal
 {
     printf("\n==============================\n\tTEST BOARDY\n==============================\n");
     deck_t *playerDeck = createDeckFromArray((int[][2]){

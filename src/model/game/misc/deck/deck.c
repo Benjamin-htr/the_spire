@@ -4,7 +4,7 @@
 #include <string.h>
 #include "time.h"
 
-deck_t *createDeck(card_t *myCard)
+deck_t *createDeck(card_t *myCard) // fonction pour créer un deck en lui allouant de la mémoire
 {
     deck_t *res = malloc(sizeof(deck_t));
     res->next = NULL;
@@ -12,7 +12,7 @@ deck_t *createDeck(card_t *myCard)
     return res;
 }
 
-deck_t *copyDeck(deck_t *deck)
+deck_t *copyDeck(deck_t *deck) // fonction pour copier un deck
 {
     if (deck == NULL)
     {
@@ -34,7 +34,7 @@ void freeDeck(deck_t *deck)
     free(deck);
 }
 
-void freeDeckListAndCard(deck_t *deckList)
+void freeDeckListAndCard(deck_t *deckList) // fonction pour libérer la mémoire en désallouant la mémoire assignée au deck et à chaque carte qu'il contient
 {
     deck_t *toFree = deckList;
     deck_t *next;
@@ -51,9 +51,7 @@ void freeDeckListAndCard(deck_t *deckList)
     }
 }
 
-deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
-// first int is the card id 2nd one is the number of card
-// 2nd Param is just the size of the array
+deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber) // retourne un deck à partir d'une liste de cartes
 {
     deck_t *res = createDeck(NULL);
     for (int cardIdx = 0; cardIdx < diffCardNumber; cardIdx++)
@@ -66,7 +64,7 @@ deck_t *createDeckFromArray(int cardIds[][2], int diffCardNumber)
     return res;
 }
 
-deck_t *createRewardDeck()
+deck_t *createRewardDeck() // retourne le deck qui contient les cartes de récompenses
 {
     return createDeckFromArray(
         (int[3][2]){
@@ -77,7 +75,7 @@ deck_t *createRewardDeck()
         3);
 }
 
-int getPositionOfCard(deck_t *deck, char *cardName)
+int getPositionOfCard(deck_t *deck, char *cardName) // retourne la position d'une carte dans un deck
 {
     int i = 0;
     while (deck != NULL && deck->data != NULL)
@@ -93,7 +91,7 @@ int getPositionOfCard(deck_t *deck, char *cardName)
     return -1;
 }
 
-void addCard(deck_t *deck, card_t *card)
+void addCard(deck_t *deck, card_t *card) // ajoute une carte à un deck
 {
     if (deck == NULL)
     {
@@ -115,7 +113,7 @@ void addCard(deck_t *deck, card_t *card)
     }
 }
 
-card_t *removeFirstCard(deck_t **deck)
+card_t *removeFirstCard(deck_t **deck) // retire la première carte d'un deck (utilisé pour piocher)
 {
     if (getDeckSize(*deck) > 0)
     {
@@ -126,17 +124,9 @@ card_t *removeFirstCard(deck_t **deck)
         return cardToReturn;
     }
     return NULL;
-    // if (deck == NULL)
-    //     return createDeck(NULL);
-    // deck = deck->next;
-    // if (deck == NULL)
-    // {
-    //     deck = createDeck(NULL);
-    // }
-    // return deck;
 }
 
-card_t *removeCardatIndex(deck_t **deck, int cardIdx)
+card_t *removeCardatIndex(deck_t **deck, int cardIdx) // retire et retourne la carte à l'indice cardIdx d'un deck
 {
     if (cardIdx == 0)
     {
@@ -163,7 +153,7 @@ card_t *removeCardatIndex(deck_t **deck, int cardIdx)
     return NULL;
 }
 
-card_t *removeCard(deck_t **deck, char *cardName)
+card_t *removeCard(deck_t **deck, char *cardName) // retire une carte d'un deck à partir de son nom
 {
     int pos = getPositionOfCard(*deck, cardName);
     if (pos == -1)
@@ -177,7 +167,7 @@ card_t *removeCard(deck_t **deck, char *cardName)
     return NULL;
 }
 
-void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENCYCLOPEDIA_ID cardID_2)
+void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENCYCLOPEDIA_ID cardID_2) // remplace une carte d'un deck par une autre carte
 {
     char *card_1_name = CARD_ENCYCLOPEDIA[cardID_1].name;
     deck_t *readingHead = *deck;
@@ -197,14 +187,14 @@ void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENC
     }
 }
 
-card_t *draw(deck_t *deck)
+card_t *draw(deck_t *deck) // pioche une carte du deck
 {
     card_t *res = deck->data;
     removeFirstCard(&deck);
     return res;
 }
 
-deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck)
+deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck) // retire un element du deck à un indice donné
 {
     int i = 0;
     while (deck != NULL)
@@ -219,7 +209,7 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck)
     return NULL;
 }
 
-int getDeckSize(deck_t *deck)
+int getDeckSize(deck_t *deck) // retourne la taille du deck
 {
     int res = 0;
     while (deck != NULL && deck->data != NULL)
@@ -230,7 +220,7 @@ int getDeckSize(deck_t *deck)
     return res;
 }
 
-void swapElements(deck_t *deck, int n, int m)
+void swapElements(deck_t *deck, int n, int m) // remplace un élement du deck à l'indice n par un autre element à l'indice m, et inversement
 {
     deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
     deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
@@ -245,20 +235,10 @@ void swapElements(deck_t *deck, int n, int m)
         tmp = myDeckAtM->next->next;
         myDeckAtM->next->next = myDeckAtN->next->next;
         myDeckAtN->next->next = tmp;
-        // deck_t *myDeckBeforeN = getElementFromDeckAtIndex(n - 1, deck);
-        // deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
-        // deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
-        // deck_t *deckAfterM = getElementFromDeckAtIndex(m + 1, deck);
-        // deck_t *deckAfterN = getElementFromDeckAtIndex(n + 1, deck);
-        // deck_t *myDeckBeforeM = getElementFromDeckAtIndex(m - 1, deck);
-        // myDeckBeforeN->next = myDeckAtM;
-        // myDeckAtM->next = deckAfterN;
-        // myDeckBeforeM->next = myDeckAtN;
-        // myDeckAtN->next = deckAfterM;
     }
 }
 
-void shuffleDeck(deck_t **deck)
+void shuffleDeck(deck_t **deck) // mélange du deck
 {
     int listSize = getDeckSize(*deck);
     if (listSize > 5)
@@ -288,7 +268,7 @@ void shuffleDeck(deck_t **deck)
     // deck = middleElement;
 }
 
-void testDeck()
+void testDeck() // fonction du test de deck
 {
     printf("\n==============================\n\tTEST DE DECK\n==============================\n");
     deck_t *myDeck = createDeckFromArray((int[][2]){{DODGE_A, 4}, {PULVERIZE, 3}, {DEFENSE, 3}, {JAWURM2_HAIRPULLING, 3}, {SPECTRUM, 3}}, 5);
@@ -305,7 +285,7 @@ void testDeck()
     freeDeckListAndCard(copyedDeck);
 }
 
-void displayDeck(deck_t *myDeck)
+void displayDeck(deck_t *myDeck) // affiche le deck
 {
     printf("\n=======================\n");
     int i = 0;

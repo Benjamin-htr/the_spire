@@ -684,33 +684,13 @@ void DrawCombatScreen(void)
     {
         drawLoose();
     }
-
-    // drawRewind();
 }
 void UnloadCombatScreen(void)
 {
     UnloadTexture(CombatBG);
     UnloadTexture(StatBar);
     UnloadTexture(Statboard);
-    // UnloadTexture(EnergyIcon);
     UnloadTexture(DodgeIcon);
-
-    // UnloadTexture(strenghtEffect);
-    // UnloadTexture(dexterityEffect);
-    // UnloadTexture(fireEffect);
-    // UnloadTexture(weaknessEffect);
-    // UnloadTexture(slowingEffect);
-    // UnloadTexture(HPEffect);
-    // UnloadTexture(DodgeEffect);
-    // UnloadTexture(ManaEffect);
-
-    // UnloadTexture(BasicCardPatch);
-    // UnloadTexture(CommonCardPatch);
-    // UnloadTexture(AtypicCardPatch);
-    // UnloadTexture(RareCardPatch);
-    // UnloadTexture(SpecialCardPatch);
-
-    // UnloadTexture(ImageCardUnknown);
     UnloadTexture(ennemySprite.texture);
 
     unloadTextureCard();

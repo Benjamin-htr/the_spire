@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 // CONSTRUCTOR
-
+// INIT FUNCTION
 card_t *createCard(
     char *name,
     enum rarityE rarity,
@@ -32,6 +32,7 @@ card_t *createCard(
     return res;
 }
 
+// free memory of a card
 void freeCard(card_t *card)
 {
     freeEffectArray(card->launcherEffects, card->launcherEffectsSize);
@@ -39,6 +40,7 @@ void freeCard(card_t *card)
     free(card);
 }
 
+// import a card from the global array of card
 card_t *importCard(card_import cardImport)
 {
     return createCard(
@@ -55,17 +57,20 @@ card_t *importCard(card_import cardImport)
         cardImport.description);
 }
 
+// import a card ussing the enum id
 card_t *importCardFromId(CARD_ENCYCLOPEDIA_ID cardId)
 {
     return importCard(CARD_ENCYCLOPEDIA[cardId]);
 }
 
+// return a random playable card id
 int getRandomPlayerCardId()
 {
     // On prend JAWURM_BACKSTAB parce que c'est la premiere carte non jouable par le joueur
     return rand() % (JAWURM_BACKSTAB);
 }
 
+// create a copy of the card
 card_t *copyCard(card_t *cardToCopy)
 {
     int launcherEffects[cardToCopy->launcherEffectsSize][2];

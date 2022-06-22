@@ -260,7 +260,7 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
     // printf("currentPage : %d \n", currentPage);
     int perPage = 6;
     deck_t *myDeck = firsPageElements[currentPage];
-    int deckSize = getDeckSize(myDeck);
+    int deckSize = getDeckSize(game->caracterData->cardDeck);
     if (myDeck == NULL || myDeck->data == NULL)
     {
         printf("Little problem \n");
@@ -301,10 +301,11 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
         i++;
         idxCard++;
     }
+    printf("idx : %d   size : %d \n", idxCard, deckSize);
     blockCarroussel = -1;
     int arrowButtonWidth = 72;
     // printf("i : %d \n", idxCard);
-    if (idxCard < deckSize - 1)
+    if (idxCard < deckSize)
     {
         // flèche vers droite :
         if (ArrowButton((Rectangle){backgroundRect.x + backgroundRect.width - 20 - arrowButtonWidth, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))

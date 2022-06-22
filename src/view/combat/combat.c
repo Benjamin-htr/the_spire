@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
+// Local textures variables :
 static Texture2D CombatBG = {0};
 
 static Texture2D StatBar = {0};
@@ -31,8 +32,10 @@ static Texture2D SpecialCardPatch = {0};
 
 static Texture2D ImageCardUnknown = {0};
 
+// Global card variable :
 NPatchInfo cardInfo = {0};
 
+// variable for ennemy sprite :
 static Sprite ennemySprite = {0};
 
 combat_t *combat = {0};
@@ -56,6 +59,7 @@ static int finishScreen = 0;
 // Draw stats of the player :
 void drawStatBoard()
 {
+    // we fetch required data :
     int HpMax = getEntityStat(game->caracterData, HP)->max;
     int HpActuel = getEntityStat(game->caracterData, HP)->current;
 

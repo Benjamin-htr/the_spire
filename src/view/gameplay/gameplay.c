@@ -8,19 +8,21 @@
 
 static int finishScreen = 0;
 
+// variables textures :
 static Texture2D arrowButtonBack = {0};
 static Texture2D arrow = {0};
 static Texture2D StatBar = {0};
 static Texture2D HeartIcon = {0};
 static Texture2D objectsTextures[5];
-// static Sprite eventSprite = {0};
 
+// variables sprite (animations) :
 static Sprite roomSpriteStart = {0};
 static Sprite roomSprite3Doors = {0};
 static Sprite roomSprite2Doors_top_blocked = {0};
 static Sprite roomSprite2Doors_bottom_blocked = {0};
 static Sprite roomSpriteEnd = {0};
 
+// horizontal gap of map
 static int roomGapX = -200;
 
 // Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back)
@@ -31,7 +33,6 @@ static boolean modalClose = false;
 static int currentEvent = {0};
 static event *eventData = {0};
 static entity_t *ennemyData = {0};
-
 static boolean showDeckModal = false;
 
 //---------------------------------------------------------
@@ -48,6 +49,8 @@ static int blockCarroussel = 0;
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
+
+// Draw button with arrow in the middle
 bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 {
     NPatchInfo buttonArrowInfo = {0};
@@ -114,6 +117,8 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
 
     return pressed;
 }
+
+// Draw life bar of the charater:
 void drawLifeBar()
 {
     int HpMax = getEntityStat(game->caracterData, HP)->max;
@@ -139,6 +144,7 @@ void drawLifeBar()
     DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
 }
 
+// Draw object of character :
 void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFactor, int forcedState)
 {
     int gap = 20;
@@ -161,6 +167,7 @@ void drawItem(item_t *item, Texture2D texture, Vector2 position, float scaleFact
         DrawTextBoxed(font, TextFormat("%s :\n%s", item->technic, item->description), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 18, 1.0f, true, WHITE);
     }
 }
+// Draw all items :
 void drawItems()
 {
     int padding = 10;
@@ -180,6 +187,7 @@ void drawItems()
     }
 }
 
+// Draw choice of current event :
 void drawEventChoice(event *event)
 {
     if (!modalClose)
@@ -244,6 +252,7 @@ void drawEventChoice(event *event)
         }
     }
 }
+// Draw the carroussel that dispay deck (6 cards per page) :
 void drawCarrousselPage(deck_t **firsPageElements, char *title)
 {
     // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
@@ -328,6 +337,7 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
         }
     }
 }
+// Little function that draw carroussel when showDeckModal is true
 void drawDeck()
 {
     if (showDeckModal)
@@ -338,6 +348,7 @@ void drawDeck()
     }
 }
 
+// detect type event and call a function for that
 void drawEvent()
 {
     // if is combat :
@@ -361,6 +372,7 @@ void drawEvent()
         drawEventChoice(eventData);
     }
 }
+// init variable that use from caroussel :
 void initCaroussel()
 {
     blockCarroussel = 0;
@@ -398,6 +410,7 @@ void initCaroussel()
     printf(" deck size : %d    |    %d\n", deckSize, numberOfPage);
     // drawCarrousselPage(0, firsPageElements);
 }
+// reinit map after moving on map :
 void reinitAfterMove()
 {
     currentEvent = map_get(game->mapData);
@@ -436,9 +449,7 @@ void reinitAfterMove()
     }
 }
 
-//----------------------------------------------------------------------------------
-// Screen functions :
-//----------------------------------------------------------------------------------
+// Gameplay Screen Initialization logic
 void InitGameplayScreen(void)
 {
     printf("Gameplay Screen Init\n");
@@ -474,6 +485,7 @@ void InitGameplayScreen(void)
     }
 }
 
+// Gameplay Screen Update logic
 void UpdateGameplayScreen(void)
 {
     if (IsKeyPressed(KEY_ESCAPE))
@@ -496,6 +508,8 @@ void UpdateGameplayScreen(void)
     else if (etage == 9)
         updateSprite(&roomSpriteEnd);
 }
+
+// Gameplay Screen Draw logic
 void DrawGameplayScreen(void)
 {
     ClearBackground(BLACK);
@@ -586,6 +600,7 @@ void DrawGameplayScreen(void)
     drawDeck();
 }
 
+// Gameplay Screen Unload logic
 void UnloadGameplayScreen(void)
 {
     UnloadTexture(arrow);
@@ -602,6 +617,8 @@ void UnloadGameplayScreen(void)
         UnloadTexture(objectsTextures[itemsIdx]);
     }
 }
+
+// Gameplay Screen should finish?
 int FinishGameplayScreen(void)
 {
     return finishScreen;

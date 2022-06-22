@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <stdio.h>
 
+// Init a sprite :
 void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int nbLines)
 {
     sprite->texture = LoadTexture(texturePath);
@@ -18,6 +19,7 @@ void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int
     sprite->currentLine = 0;
 }
 
+// Update sprite (play the animation)
 void updateSprite(Sprite *sprite)
 {
     float frameWidth = (float)(sprite->texture.width / sprite->nbFramesPerLine); // Sprite one frame rectangle width
@@ -42,6 +44,8 @@ void updateSprite(Sprite *sprite)
     sprite->frameRec.x = frameWidth * sprite->currentFrame;
     sprite->frameRec.y = frameHeight * sprite->currentLine;
 }
+
+// Draw sprite :
 void drawSprite(Sprite *sprite, Vector2 position, float angle, float scale, Color c)
 {
     DrawTexturePro(sprite->texture, sprite->frameRec,
@@ -113,6 +117,7 @@ void TransitionToScreen(int screen)
     transAlpha = 0.0f;
 }
 
+// Draw in game menu
 void drawInGameMenu()
 {
     // for buttons :
@@ -144,7 +149,7 @@ void drawInGameMenu()
     }
 }
 
-// Draw text using font inside rectangle limits
+// Draw text inside a rectangle and wrap it if too big
 void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
 {
     DrawTextBoxedSelectable(font, text, rec, fontSize, spacing, wordWrap, tint, 0, 0, WHITE, WHITE);

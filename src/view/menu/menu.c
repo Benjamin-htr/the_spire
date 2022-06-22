@@ -14,6 +14,7 @@ static Sprite titleSprite = {0};
 
 static int titlePositionY = 0;
 
+// Menu Screen Initialization logic
 void InitMenuScreen(void)
 {
     if (isLaunched)
@@ -26,6 +27,8 @@ void InitMenuScreen(void)
 
     titlePositionY = -400;
 }
+
+// Menu Screen Update logic
 void UpdateMenuScreen(void)
 {
     titlePositionY += 7;
@@ -34,6 +37,8 @@ void UpdateMenuScreen(void)
 
     updateSprite(&titleSprite);
 }
+
+// Menu Screen Draw logic
 void DrawMenuScreen(void)
 {
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
@@ -60,10 +65,14 @@ void DrawMenuScreen(void)
         shouldClose = true;
     }
 }
+
+// Menu Screen Unload logic
 void UnloadMenuScreen(void)
 {
     UnloadTexture(titleSprite.texture);
 }
+
+// Menu Screen should finish?
 int FinishMenuScreen(void)
 {
     return finishScreen;

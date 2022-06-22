@@ -16,6 +16,7 @@ static int finishScreen = 0;
 static float creditsScrollingPosY = 0;
 static Texture2D raylibLogo;
 
+// Ending Screen Initialization logic
 void InitEndingScreen(void)
 {
     printf("Ending Screen Init\n");
@@ -25,6 +26,8 @@ void InitEndingScreen(void)
     creditsScrollingPosY = (float)GetScreenHeight() + 20.0f;
     raylibLogo = LoadTexture("./asset/Misc/raylib_logo.png");
 }
+
+// Ending Screen Update logic
 void UpdateEndingScreen(void)
 {
     creditsScrollingPosY -= 3.5f;
@@ -38,6 +41,8 @@ void UpdateEndingScreen(void)
         finishScreen = 1;
     }
 }
+
+// Ending Screen Draw logic
 void DrawEndingScreen(void)
 {
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
@@ -71,10 +76,14 @@ void DrawEndingScreen(void)
     Vector2 textSize = MeasureTextEx(font, "Appuyez sur espace\npour accélérer", fontSize, 2);
     DrawTextEx(font, "Appuyez sur espace\npour accélérer", (Vector2){GetScreenWidth() - (textSize.x + 20), GetScreenHeight() - (textSize.y + 20)}, fontSize, 2, color);
 }
+
+// Ending Screen Unload logic
 void UnloadEndingScreen(void)
 {
     UnloadTexture(raylibLogo);
 }
+
+// Ending Screen should finish?
 int FinishEndingScreen(void)
 {
     return finishScreen;

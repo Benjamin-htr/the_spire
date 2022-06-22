@@ -20,17 +20,40 @@ int GuiCard(card_t *card, Vector2 position, float scaleFactor, int idx, boolean 
 // Draw all cards of the hand player :
 void drawHand();
 
-//
+// Draw the last ennemy card that ennemy has played.
 void drawEnnemyCard();
 
-void drawRewind();
+// Draw the ennemy : sprite, stats and effets.
+void drawEnnemy(entity_t *entity);
+
+// Draw one effect (with hover informations)
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState);
-void InitCombatScreen(void);
-void UpdateCombatScreen(void);
-void DrawCombatScreen(void);
-void UnloadCombatScreen(void);
-int FinishCombatScreen(void);
+
+// Draw rewind (chosse of cards) after combat win.
+void drawRewind();
+
+// Draw loose modal
+void drawLoose();
+
+// Load all textures that use for card :
 void loadTextureCard();
+
+// Unload all textures that use for card :
 void unloadTextureCard();
+
+// Init combat screen (variables for examples) :
+void InitCombatScreen(void);
+
+// Update variables in combat screen (continuously call when on combat screen):
+void UpdateCombatScreen(void);
+
+// Draw combat screen (continuously call when on combat screen):
+void DrawCombatScreen(void);
+
+// Unload all textures from combat screen and free dynamic allocated pointer :
+void UnloadCombatScreen(void);
+
+// Return 1 if combat screen is finish :
+int FinishCombatScreen(void);
 
 #endif

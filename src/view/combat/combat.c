@@ -279,6 +279,7 @@ void drawHand()
     }
 }
 
+// Draw the last ennemy card that ennemy has played.
 void drawEnnemyCard()
 {
     if (ennemyCard != NULL)
@@ -294,6 +295,7 @@ void drawEnnemyCard()
     }
 }
 
+// Draw the ennemy : sprite, stats and effets.
 void drawEnnemy(entity_t *entity)
 {
     float fontNameSize = 20;
@@ -346,6 +348,7 @@ void drawEnnemy(entity_t *entity)
     drawEnnemyCard();
 }
 
+// Draw one effect (with hover informations)
 void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean alignLeft, int forcedState)
 {
     Texture2D textureEffect;
@@ -383,6 +386,8 @@ void drawEffect(effect_t *effect, Vector2 position, float scaleFactor, boolean a
         DrawTextBoxed(font, TextFormat(EFFECT_TEXT[effect->id - 8], EFFECT_NAME[effect->id], effect->value), (Rectangle){hoverRect.x + 5, hoverRect.y + 5, hoverRect.width - 5, hoverRect.height - 5}, 15, 1.0f, true, WHITE);
     }
 }
+
+// Draw rewind (chosse of cards) after combat win.
 void drawRewind()
 {
     if (!modalClose)
@@ -440,6 +445,8 @@ void drawRewind()
         }
     }
 }
+
+// Draw loose modal
 void drawLoose()
 {
     if (!modalClose)
@@ -488,6 +495,7 @@ void drawLoose()
     }
 }
 
+// Load all textures that use for card :
 void loadTextureCard()
 {
     cardInfo.source = (Rectangle){0, 0, 96, 156},
@@ -517,6 +525,7 @@ void loadTextureCard()
 
     ImageCardUnknown = LoadTexture("./asset/Board/image-card/image-card-unknown.png");
 }
+// Unload all textures that use for card :
 void unloadTextureCard()
 {
     UnloadTexture(EnergyIcon);
@@ -538,6 +547,8 @@ void unloadTextureCard()
 
     UnloadTexture(ImageCardUnknown);
 }
+
+// Init combat screen (variables for examples) :
 void InitCombatScreen(void)
 {
     backInteractState = -1;
@@ -629,6 +640,7 @@ void InitCombatScreen(void)
     displayEntityEffectArray(game->caracterData->effects);
 }
 
+// Update variables in combat screen (continuously call when on combat screen):
 void UpdateCombatScreen(void)
 {
     if (IsKeyPressed(KEY_ESCAPE))
@@ -645,6 +657,8 @@ void UpdateCombatScreen(void)
 
     updateSprite(&ennemySprite);
 }
+
+// Draw combat screen (continuously call when on combat screen):
 void DrawCombatScreen(void)
 {
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
@@ -656,10 +670,6 @@ void DrawCombatScreen(void)
     // POUR TEST COMBAT : (A RETIRER PLUS TARD)
     int buttonWidth = 150;
     int buttonHeight = 50;
-    if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth - 10, 10, buttonWidth, buttonHeight}, "MAP", -1))
-    {
-        finishScreen = 1;
-    }
     if (GuiButton((Rectangle){GetScreenWidth() - buttonWidth * 2 - 10, 10, buttonWidth, buttonHeight}, "END TURN", backInteractState))
     {
         moveCardsFromHand(combat->caracter->board, false);
@@ -689,6 +699,8 @@ void DrawCombatScreen(void)
         drawLoose();
     }
 }
+
+// Unload all textures from combat screen and free dynamic allocated pointer :
 void UnloadCombatScreen(void)
 {
     UnloadTexture(CombatBG);
@@ -704,6 +716,8 @@ void UnloadCombatScreen(void)
     freeCard(cardToFree);
     freeCombat(combat);
 }
+
+// Return 1 if combat screen is finish :
 int FinishCombatScreen(void)
 {
     return finishScreen;

@@ -22,6 +22,7 @@ static int finishScreen = 0;
 static float creditsScrollingPosY = 0;
 static Texture2D raylibLogo;
 
+// Init credits screen (variables for examples) :
 void InitCreditsScreen(void)
 {
     printf("Credits Screen Init\n");
@@ -29,6 +30,7 @@ void InitCreditsScreen(void)
     creditsScrollingPosY = (float)GetScreenHeight() + 20.0f;
     raylibLogo = LoadTexture("./asset/Misc/raylib_logo.png");
 }
+// Update variables in credits screen (continuously call when on credits screen) :
 void UpdateCreditsScreen(void)
 {
     creditsScrollingPosY -= 3.5f;
@@ -42,6 +44,7 @@ void UpdateCreditsScreen(void)
         finishScreen = 1;
     }
 }
+// Draw credits screen (continuously call when on credits screen):
 void DrawCreditsScreen(void)
 {
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
@@ -72,10 +75,12 @@ void DrawCreditsScreen(void)
     if (GuiButton((Rectangle){GetScreenWidth() - (buttonWitdth + 20), GetScreenHeight() - (buttonHeight + 20), buttonWitdth, buttonHeight}, "RETOUR", -1))
         TransitionToScreen(MENU);
 }
+// Unload all textures from credits screen and free dynamic allocated pointer :
 void UnloadCreditsScreen(void)
 {
     UnloadTexture(raylibLogo);
 }
+// Return 1 if credits screen is finish :
 int FinishCreditsScreen(void)
 {
     return finishScreen;

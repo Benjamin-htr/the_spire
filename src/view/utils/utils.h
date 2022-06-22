@@ -49,10 +49,13 @@ extern int transToScreen;
 //----------------------------------------------------------------------------------
 // Functions declarations
 //----------------------------------------------------------------------------------
+// Init a sprite :
 void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int nbLines);
 
+// Update sprite
 void updateSprite(Sprite *sprite);
 
+// Draw sprite :
 void drawSprite(Sprite *sprite, Vector2 position, float angle, float scale, Color c);
 
 // Gui button (immediate mode, update and draw)
@@ -61,8 +64,10 @@ bool GuiButton(Rectangle bounds, const char *text, int forcedState);
 // Transitions :
 void TransitionToScreen(int screen); // Request transition to next screen
 
+// Draw in game menu
 void drawInGameMenu();
 
+// Draw text inside a rectangle and wrap it if too big
 void DrawTextBoxed(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint);
 
 void DrawTextBoxedSelectable(Font font, const char *text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint);

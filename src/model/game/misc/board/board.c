@@ -65,7 +65,6 @@ void drawCardsFromDeckWithRefillFromDiscard(board_t *myBoard) // pioche des cart
 
 void moveCardsFromHand(board_t *myBoard, boolean goToAbyss) // déplace les cartes de la main vers le cimetière/l'abysse
 { 
-    deck_t *hand = myBoard->hand;
     if (myBoard->abyss == NULL)
     {
         myBoard->abyss = createDeck(NULL);
@@ -74,9 +73,14 @@ void moveCardsFromHand(board_t *myBoard, boolean goToAbyss) // déplace les cart
     {
         myBoard->discardPile = createDeck(NULL);
     }
-    while (hand != NULL && hand->data != NULL)
+    // CRITICAL: Use pointer to myBoard->hand, not local copy
+    while (myBoard->hand != NULL && myBoard->hand->data != NULL)
     {
-        card_t *cardToRemove = removeFirstCard(&(hand));
+        card_t *cardToRemove = removeFirstCard(&(myBoard->hand));
+        if (cardToRemove == NULL)
+        {
+            break; // Safety: stop if removeFirstCard returns NULL
+        }
         if (cardToRemove->isAbyssal && goToAbyss)
         {
             addCard(myBoard->abyss, cardToRemove);
@@ -86,7 +90,10 @@ void moveCardsFromHand(board_t *myBoard, boolean goToAbyss) // déplace les cart
             addCard(myBoard->discardPile, cardToRemove);
         }
     }
-    myBoard->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
+    if (myBoard->hand == NULL)
+    {
+        myBoard->hand = createDeck(NULL); // initiate hand, because it is NULL at this point and can cause issues afterwards.
+    }
 }
 
 deck_t *getRandomCardFromHand(board_t *board) // récupère une carte aléatoire  de la main
@@ -97,19 +104,23 @@ deck_t *getRandomCardFromHand(board_t *board) // récupère une carte aléatoire
 
 void moveOneCardFromHand(board_t *board, card_t *cardToRemove) // retire une carte de la main et la déplace vers l'abysse/cimetière
 {
-    if (cardToRemove != NULL)
+    if (cardToRemove == NULL || cardToRemove->name == NULL)
     {
-        if (board->abyss == NULL)
-        {
-            board->abyss = createDeck(NULL);
-        }
-        if (board->discardPile == NULL)
-        {
-            board->discardPile = createDeck(NULL);
-        }
-        addCard(
-            ((cardToRemove->isAbyssal) ? board->abyss : board->discardPile),
-            removeCard(&board->hand, cardToRemove->name));
+        return;
+    }
+    if (board->abyss == NULL)
+    {
+        board->abyss = createDeck(NULL);
+    }
+    if (board->discardPile == NULL)
+    {
+        board->discardPile = createDeck(NULL);
+    }
+    // Remove the card first, then route it based on isAbyssal
+    card_t *removed = removeCard(&board->hand, cardToRemove->name);
+    if (removed != NULL)
+    {
+        addCard((removed->isAbyssal) ? board->abyss : board->discardPile, removed);
     }
 }
 

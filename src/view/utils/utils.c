@@ -14,7 +14,8 @@ void constructSprite(Sprite *sprite, char *texturePath, int nbFramesPerLine, int
     sprite->frameRec = (Rectangle){0, 0, frameWidth, frameHeight};
     sprite->position = (Vector2){0, 0};
 
-    sprite->framesCounter = 0;
+    sprite->animFPS = 12.0f;        // default 12 fps animation
+    sprite->animAccumulator = 0.0f;
     sprite->currentFrame = 0;
     sprite->currentLine = 0;
 }
@@ -25,9 +26,13 @@ void updateSprite(Sprite *sprite)
     float frameWidth = (float)(sprite->texture.width / sprite->nbFramesPerLine); // Sprite one frame rectangle width
     float frameHeight = (float)(sprite->texture.height / sprite->nbLines);
 
-    sprite->framesCounter++;
-    if (sprite->framesCounter++ > 2)
+    // Advance animation based on delta time
+    float dt = GetFrameTime();
+    sprite->animAccumulator += dt;
+    const float frameTime = (sprite->animFPS > 0.0f) ? 1.0f / sprite->animFPS : 0.0f;
+    while (frameTime > 0.0f && sprite->animAccumulator >= frameTime)
     {
+        sprite->animAccumulator -= frameTime;
         sprite->currentFrame++;
         if (sprite->currentFrame >= sprite->nbFramesPerLine)
         {
@@ -38,7 +43,6 @@ void updateSprite(Sprite *sprite)
                 sprite->currentLine = 0;
             }
         }
-        sprite->framesCounter = 0;
     }
 
     sprite->frameRec.x = frameWidth * sprite->currentFrame;
@@ -56,7 +60,7 @@ void drawSprite(Sprite *sprite, Vector2 position, float angle, float scale, Colo
 }
 
 // Gui button (immediate mode, update and draw)
-bool GuiButton(Rectangle bounds, const char *text, int forcedState)
+bool GuiButton(Rectangle bounds, const char *text, int forcedState, int buttonId)
 {
     static const int textColor[4] = {0x255a69ff, 0x92e3f7ff, 0x66b2c4ff, 0xd6d6d6ff};
 
@@ -84,7 +88,8 @@ bool GuiButton(Rectangle bounds, const char *text, int forcedState)
             else
                 state = 1; // FOCUSED
 
-            if (IsGestureDetected(GESTURE_TAP))
+            // Use IsMouseButtonPressed instead of Released to trigger only once on click
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsGestureDetected(GESTURE_TAP))
             {
                 pressed = true;
                 PlaySound(buttonSound);
@@ -133,16 +138,16 @@ void drawInGameMenu()
     DrawRectangle(GetScreenWidth() / 2 - menuWidth / 2, GetScreenHeight() / 2 - menuHeight / 2, menuWidth, menuHeight, BLACK);
 
     int topPosButton = GetScreenHeight() / 2 - menuHeight / 2 + paddingY;
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton, buttonWidth, buttonHeight}, "CONTINUER", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton, buttonWidth, buttonHeight}, "CONTINUER", -1, 500))
     {
         showInGameMenu = false;
     }
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton + buttonHeight + gap, buttonWidth, buttonHeight}, "RETOUR VERS LE MENU", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton + buttonHeight + gap, buttonWidth, buttonHeight}, "RETOUR VERS LE MENU", -1, 501))
     {
         TransitionToScreen(MENU);
         showInGameMenu = false;
     }
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton + (2 * (buttonHeight + gap)), buttonWidth, buttonHeight}, "QUITTER", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, topPosButton + (2 * (buttonHeight + gap)), buttonWidth, buttonHeight}, "QUITTER", -1, 502))
     {
         shouldClose = true;
         showInGameMenu = false;

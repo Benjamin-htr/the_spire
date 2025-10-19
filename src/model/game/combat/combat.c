@@ -44,7 +44,7 @@ void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay)
     {
         printf("YOUR MANA:\t%d\nYOUR ENERGY:\t%d\n", entityMana->current, entityEnergy->current);
         displayCard(cardToPlay);
-        printf("plus d'energie enculer \n");
+        printf("Plus d'énergie dispo\n");
     }
 }
 

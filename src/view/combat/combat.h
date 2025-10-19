@@ -53,7 +53,4 @@ void DrawCombatScreen(void);
 // Unload all textures from combat screen and free dynamic allocated pointer :
 void UnloadCombatScreen(void);
 
-// Return 1 if combat screen is finish :
-int FinishCombatScreen(void);
-
 #endif

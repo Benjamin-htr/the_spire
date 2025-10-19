@@ -1,6 +1,7 @@
 #include "effect.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 // GLOBAL VARIABLES
 
@@ -40,11 +41,13 @@ effect_t *initEffect(effect_ID id, int value)
 // effects : [[effectID, value]]
 effect_t **initEffectFromArray(int size, int effects[size][2])
 {
+    assert(size >= 0 && "initEffectFromArray: size must be non-negative");
+    if (size == 0) return NULL;
     effect_t **res = malloc(size * sizeof(effect_t *));
     for (int effects_ID = 0; effects_ID < size; effects_ID++)
     {
         res[effects_ID] = initEffect(effects[effects_ID][0], effects[effects_ID][1]);
-    };
+    }
     return res;
 }
 

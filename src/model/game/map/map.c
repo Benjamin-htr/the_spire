@@ -33,28 +33,43 @@ position_player player_position(map *ma)
 
 // retourne les positions jouable
 
-int *playable_move(map *m)
+const int *playable_move(map *m)
 {
     switch (m->position_player.y)
     {
     case 0:
-        return (int[]){0, 1};
+        {
+            static const int moves_0[] = {0, 1};
+            return moves_0;
+        }
         break;
 
     case 1:
-        return (int[]){0, 1, 2};
+        {
+            static const int moves_1[] = {0, 1, 2};
+            return moves_1;
+        }
         break;
 
     case 2:
-        return (int[]){1, 2, 3};
+        {
+            static const int moves_2[] = {1, 2, 3};
+            return moves_2;
+        }
         break;
 
     case 3:
-        return (int[]){2, 3};
+        {
+            static const int moves_3[] = {2, 3};
+            return moves_3;
+        }
         break;
 
     default:
-        return (int[]){-1};
+        {
+            static const int moves_invalid[] = {-1};
+            return moves_invalid;
+        }
         break;
     }
 }
@@ -89,7 +104,7 @@ void *teleporter(map *m)
     printf("teleporter\n");
     int random = rand() % 6;
     boolean isTP = false;
-    int *move = playable_move(m);
+    const int *move = playable_move(m);
     int lenght = 3;
     if (m->position_player.y == 3 || m->position_player.y == 0)
     {
@@ -111,7 +126,8 @@ void *teleporter(map *m)
 
 boolean *event_place()
 {
-    boolean *array = malloc(sizeof(boolean) * MAP_HEIGHT - 2);
+    // allocate MAP_HEIGHT-2 booleans; ensure correct precedence with parentheses
+    boolean *array = malloc(sizeof(boolean) * (MAP_HEIGHT - 2));
     for (int i = 0; i < MAP_HEIGHT - 2; i++)
     {
         array[i] = false;
@@ -119,7 +135,6 @@ boolean *event_place()
     int random = (rand() % (MAP_HEIGHT - 3));
     boolean flag = false;
     array[4] = true;
-    int j = 0;
     for (int i = 0; i < 5; i++)
     {
         do
@@ -128,7 +143,6 @@ boolean *event_place()
             {
                 array[random] = true;
                 flag = true;
-                j++;
             }
             random = (rand() % (MAP_HEIGHT - 3));
         } while (!flag);
@@ -223,6 +237,11 @@ map *map_init()
 
 boolean check_map(map *m, int y)
 {
+    // Special case: from the last normal floor (index MAP_HEIGHT-2), always allow moving to boss column 0
+    if (m->position_player.x == MAP_HEIGHT - 2 && y == 0)
+    {
+        return true;
+    }
     if (m->position_player.x == 0 && y <= MAP_WIDTH - 1 && y >= 0)
     {
         return true;
@@ -294,6 +313,7 @@ void map_print(map *m)
 
 int map_get(map *map)
 {
+    printf("isWhat value at position (%d, %d): %d\n", map->position_player.x, map->position_player.y, map->places[map->position_player.x][map->position_player.y].isWhat);
     return map->places[map->position_player.x][map->position_player.y].isWhat;
 }
 

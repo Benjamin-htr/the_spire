@@ -222,6 +222,12 @@ int getDeckSize(deck_t *deck) // retourne la taille du deck
 
 void swapElements(deck_t *deck, int n, int m) // remplace un élement du deck à l'indice n par un autre element à l'indice m, et inversement
 {
+    // CRITICAL: This function is buggy and can create cycles/infinite loops
+    // Temporarily disabled to prevent freezes
+    // TODO: Fix swap logic or use safer shuffle algorithm
+    return;
+    
+    /*
     deck_t *myDeckAtM = getElementFromDeckAtIndex(m, deck);
     deck_t *myDeckAtN = getElementFromDeckAtIndex(n, deck);
     deck_t *tmp;
@@ -236,36 +242,36 @@ void swapElements(deck_t *deck, int n, int m) // remplace un élement du deck à
         myDeckAtM->next->next = myDeckAtN->next->next;
         myDeckAtN->next->next = tmp;
     }
+    */
 }
 
 void shuffleDeck(deck_t **deck) // mélange du deck
 {
     int listSize = getDeckSize(*deck);
-    if (listSize > 5)
+    if (listSize <= 5)
     {
-        int idDeck1;
-        int idDeck2;
-        for (int i = 0; i < listSize * 10; i++)
-        {
-            idDeck1 = rand() % listSize;
-            idDeck2 = rand() % listSize;
-            if (idDeck1 != idDeck2 && (idDeck2 - idDeck1 > 1 || idDeck1 - idDeck2 > 1))
-            {
-                swapElements(*deck, idDeck1, idDeck2);
-            }
-        } // ici on swap le premier element avec l'élement du milieu
-        deck_t *beforeMiddleElement = getElementFromDeckAtIndex((rand() % (listSize - 2)) + 1, *deck);
-        deck_t *middle = beforeMiddleElement->next;
-        deck_t *firstNext = (*deck)->next;
-        (*deck)->next = middle->next;
-        middle->next = firstNext;
-        beforeMiddleElement->next = *deck;
-        *deck = middle;
+        return; // Skip shuffle for small decks
     }
-    // middleElement->next = deck;
-    // beforeMiddleElement->next = deck;
-    // deck->next = afterMiddleElement;
-    // deck = middleElement;
+    
+    // CRITICAL: Swap logic is buggy and final head rotation can create cycles
+    // Temporarily use simplified Fisher-Yates-like approach: swap data instead of nodes
+    for (int i = 0; i < listSize * 3; i++)
+    {
+        int idDeck1 = rand() % listSize;
+        int idDeck2 = rand() % listSize;
+        if (idDeck1 != idDeck2)
+        {
+            deck_t *node1 = getElementFromDeckAtIndex(idDeck1, *deck);
+            deck_t *node2 = getElementFromDeckAtIndex(idDeck2, *deck);
+            if (node1 && node2 && node1->data && node2->data)
+            {
+                // Swap card data instead of nodes (safer)
+                card_t *tmp = node1->data;
+                node1->data = node2->data;
+                node2->data = tmp;
+            }
+        }
+    }
 }
 
 void testDeck() // fonction du test de deck

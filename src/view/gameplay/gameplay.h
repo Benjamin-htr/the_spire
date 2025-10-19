@@ -5,7 +5,7 @@
 #include "./../../model/game/game.h"
 
 // Draw button with arrow in the middle
-bool ArrowButton(Rectangle bounds, float rotation, int forcedState);
+bool ArrowButton(Rectangle bounds, float rotation, int forcedState, int buttonId);
 // Draw life bar of the charater:
 void drawLifeBar();
 

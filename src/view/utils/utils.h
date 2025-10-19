@@ -22,7 +22,9 @@ typedef struct Sprite
     int nbLines;
     Vector2 position;
     Rectangle frameRec;
-    int framesCounter;
+    // Time-based animation
+    float animFPS;        // desired animation frames per second
+    float animAccumulator; // accumulated time since last frame advance
     int currentLine;
     int currentFrame;
 } Sprite;
@@ -59,7 +61,7 @@ void updateSprite(Sprite *sprite);
 void drawSprite(Sprite *sprite, Vector2 position, float angle, float scale, Color c);
 
 // Gui button (immediate mode, update and draw)
-bool GuiButton(Rectangle bounds, const char *text, int forcedState);
+bool GuiButton(Rectangle bounds, const char *text, int forcedState, int buttonId);
 
 // Transitions :
 void TransitionToScreen(int screen); // Request transition to next screen

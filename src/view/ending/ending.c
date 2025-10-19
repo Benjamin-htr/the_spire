@@ -30,10 +30,11 @@ void InitEndingScreen(void)
 // Ending Screen Update logic
 void UpdateEndingScreen(void)
 {
-    creditsScrollingPosY -= 3.5f;
+    float dt = GetFrameTime();
+    creditsScrollingPosY -= 140.0f * dt; // base speed
     if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_DOWN))
     {
-        creditsScrollingPosY -= 7.0f;
+        creditsScrollingPosY -= 280.0f * dt; // boost speed
     }
     if (creditsScrollingPosY < (-GetScreenHeight() - 400))
     {

@@ -15,7 +15,7 @@ event *event_init(char *dialogue, option *actions, void *data)
     e->dialogue = dialogue;
     if (actions)
     {
-        e->actions = calloc(2, sizeof(option));
+        e->actions = calloc(2, sizeof(option*));
         e->actions[0] = option_init(actions[0].label, actions[0].action);
         e->actions[1] = option_init(actions[1].label, actions[1].action);
     }
@@ -31,14 +31,20 @@ event *event_init(char *dialogue, option *actions, void *data)
 
 event *get_random_event()
 {
-    return importEvent(EVENT_ENCYCLOPEDIA[((rand() % (NB_EVENT - 1)) + 2)]);
+    // Pick a random event excluding indices 0 (mini-boss) and 1 (sanctuary)
+    int pool = NB_EVENT - 2; // number of generic events
+    if (pool <= 0) {
+        return importEvent(EVENT_ENCYCLOPEDIA[1]); // fallback to sanctuary if misconfigured
+    }
+    int idx = 2 + (rand() % pool); // valid indices: [2, NB_EVENT-1]
+    return importEvent(EVENT_ENCYCLOPEDIA[idx]);
 }
 
 // import tous les evenements depuis l'encyclopedie
 
 event **import_all_event()
 {
-    event **all = malloc(sizeof(event) * NB_EVENT);
+    event **all = malloc(sizeof(event*) * NB_EVENT);
     for (int i = 0; i < NB_EVENT; i++)
     {
         all[i] = importEvent(EVENT_ENCYCLOPEDIA[i]);
@@ -139,7 +145,7 @@ int sanctuary_life_refill(entity_t *peter)
 
 // affiche le deck pour l'evenement sanctuaire
 
-int sanctuary_show_deck()
+int sanctuary_show_deck(entity_t *peter)
 {
     printf("show deck sanctuary\n");
     return 2;

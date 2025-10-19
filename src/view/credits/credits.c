@@ -33,10 +33,11 @@ void InitCreditsScreen(void)
 // Update variables in credits screen (continuously call when on credits screen) :
 void UpdateCreditsScreen(void)
 {
-    creditsScrollingPosY -= 3.5f;
+    float dt = GetFrameTime();
+    creditsScrollingPosY -= 140.0f * dt; // base speed
     if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_DOWN))
     {
-        creditsScrollingPosY -= 7.0f;
+        creditsScrollingPosY -= 280.0f * dt; // boost speed
     }
     if (creditsScrollingPosY < (-GetScreenHeight() - 400))
     {
@@ -72,7 +73,7 @@ void DrawCreditsScreen(void)
 
     int buttonWitdth = 200;
     int buttonHeight = 80;
-    if (GuiButton((Rectangle){GetScreenWidth() - (buttonWitdth + 20), GetScreenHeight() - (buttonHeight + 20), buttonWitdth, buttonHeight}, "RETOUR", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() - (buttonWitdth + 20), GetScreenHeight() - (buttonHeight + 20), buttonWitdth, buttonHeight}, "RETOUR", -1, 300))
         TransitionToScreen(MENU);
 }
 // Unload all textures from credits screen and free dynamic allocated pointer :

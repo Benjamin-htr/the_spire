@@ -26,7 +26,7 @@ int map_get(map *map);
 map *map_init();
 void testMap();
 void move_player(map *m, int y, boolean isTP);
-int *playable_move(map *m);
+const int *playable_move(map *m);
 position_player player_position(map *ma);
 boolean check_map(map *m, int y);
 void map_print(map *m);

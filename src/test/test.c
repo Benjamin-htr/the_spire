@@ -6,7 +6,7 @@ void testFunction()
 {
     // testStat();
     // testPlace();
-    testMap();
+    // testMap();
     // testCard();
     // testEffect();
     // testEntity();

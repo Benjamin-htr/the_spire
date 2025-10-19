@@ -1,6 +1,7 @@
 #include "gameplay.h"
 #include "./../combat/combat.h"
 #include "./../utils/utils.h"
+#include "./../utils/shared_textures.h"
 #include "./../../model/game/map/map.h"
 
 #include <stdio.h>
@@ -11,8 +12,7 @@ static int finishScreen = 0;
 // variables textures :
 static Texture2D arrowButtonBack = {0};
 static Texture2D arrow = {0};
-static Texture2D StatBar = {0};
-static Texture2D HeartIcon = {0};
+// Note: StatBar and HeartIcon are now shared, accessed via sharedTextures
 static Texture2D objectsTextures[5];
 
 // variables sprite (animations) :
@@ -51,7 +51,7 @@ static int blockCarroussel = 0;
 //----------------------------------------------------------------------------------
 
 // Draw button with arrow in the middle
-bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
+bool ArrowButton(Rectangle bounds, float rotation, int forcedState, int buttonId)
 {
     NPatchInfo buttonArrowInfo = {0};
 
@@ -78,7 +78,8 @@ bool ArrowButton(Rectangle bounds, float rotation, int forcedState)
             else
                 state = 1; // FOCUSED
 
-            if (IsGestureDetected(GESTURE_TAP))
+            // Use IsMouseButtonPressed instead of Released to trigger only once on click
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsGestureDetected(GESTURE_TAP))
             {
                 pressed = true;
                 PlaySound(buttonSound);
@@ -132,16 +133,16 @@ void drawLifeBar()
 
     int fontSize = 20;
     Vector2 textSize = MeasureTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), fontSize, 1);
-    Vector2 textPos = (Vector2){GetScreenWidth() - textSize.x - padding, GetScreenHeight() - ((StatBar.height * scaleBar / 2) + textSize.y + padding)};
+    Vector2 textPos = (Vector2){GetScreenWidth() - textSize.x - padding, GetScreenHeight() - ((sharedTextures.StatBar.height * scaleBar / 2) + textSize.y + padding)};
     DrawTextEx(font, TextFormat("%d/%d hp", HpActuel, HpMax), textPos, fontSize, 1, LIGHTGRAY);
 
-    Vector2 StatBarPos = (Vector2){textPos.x - (StatBar.width * scaleBar + gap), GetScreenHeight() - ((HeartIcon.height * scaleHeart / 2) + (StatBar.height * scaleBar / 2) + padding)};
-    DrawTextureEx(HeartIcon, (Vector2){StatBarPos.x - (HeartIcon.width * scaleHeart + gap), GetScreenHeight() - (HeartIcon.height * scaleHeart + padding)}, 0, scaleHeart, WHITE);
+    Vector2 StatBarPos = (Vector2){textPos.x - (sharedTextures.StatBar.width * scaleBar + gap), GetScreenHeight() - ((sharedTextures.HeartIcon.height * scaleHeart / 2) + (sharedTextures.StatBar.height * scaleBar / 2) + padding)};
+    DrawTextureEx(sharedTextures.HeartIcon, (Vector2){StatBarPos.x - (sharedTextures.HeartIcon.width * scaleHeart + gap), GetScreenHeight() - (sharedTextures.HeartIcon.height * scaleHeart + padding)}, 0, scaleHeart, WHITE);
 
-    float HpBarWidth = (float)HpActuel / (float)HpMax * StatBar.width * scaleBar * 0.8f;
-    DrawRectangle(StatBarPos.x + StatBar.width * scaleBar / 10, StatBarPos.y + StatBar.height * scaleBar * 0.2f, HpBarWidth, StatBar.height * scaleBar * 0.6f, RED);
+    float HpBarWidth = (float)HpActuel / (float)HpMax * sharedTextures.StatBar.width * scaleBar * 0.8f;
+    DrawRectangle(StatBarPos.x + sharedTextures.StatBar.width * scaleBar / 10, StatBarPos.y + sharedTextures.StatBar.height * scaleBar * 0.2f, HpBarWidth, sharedTextures.StatBar.height * scaleBar * 0.6f, RED);
 
-    DrawTextureEx(StatBar, StatBarPos, 0, scaleBar, WHITE);
+    DrawTextureEx(sharedTextures.StatBar, StatBarPos, 0, scaleBar, WHITE);
 }
 
 // Draw object of character :
@@ -192,6 +193,15 @@ void drawEventChoice(event *event)
 {
     if (!modalClose)
     {
+        // Guard against NULL event or actions
+        if (!event || !event->actions || !event->actions[0] || !event->actions[1])
+        {
+            printf("ERROR: drawEventChoice received NULL event or actions\n");
+            fflush(stdout);
+            modalClose = true;
+            return;
+        }
+        
         backInteractState = 0;
         // DrawRectangleRec((Rectangle){0, 0, GetScreenWidth(), GetScreenWidth()}, GetColor(0x242424ff));
         float backgroundWidth = GetScreenWidth() * 0.7f;
@@ -201,7 +211,7 @@ void drawEventChoice(event *event)
         float margin = 0.05f;
         // Draw event description :
         Rectangle boundsDesc = (Rectangle){backgroundRect.x + backgroundRect.width * 0.20f, backgroundRect.y + backgroundRect.height * margin, backgroundWidth * 0.6f, backgroundHeight * 0.2f};
-        DrawTextBoxed(font, TextFormat("%s", event->dialogue), boundsDesc, 22, 1.0f, true, WHITE);
+        DrawTextBoxed(font, TextFormat("%s", event->dialogue ? event->dialogue : "???"), boundsDesc, 22, 1.0f, true, WHITE);
 
         // Event choices options :
         float marginTopTextAction = 0.15f;
@@ -211,10 +221,12 @@ void drawEventChoice(event *event)
         float gapX = backgroundWidth - actionTextWidth * 2 - (backgroundWidth * margin * 2);
         //  Draw event text choices :
         Rectangle boundsAction1 = (Rectangle){backgroundRect.x + (margin * backgroundWidth), posY, actionTextWidth, actionTextHeight};
-        DrawTextBoxed(font, TextFormat("%s", event->actions[0]->label), boundsAction1, 17, 1.0f, true, WHITE);
+        const char* label1 = (event->actions[0]->label) ? event->actions[0]->label : "???";
+        DrawTextBoxed(font, TextFormat("%s", label1), boundsAction1, 17, 1.0f, true, WHITE);
 
         Rectangle boundsAction2 = (Rectangle){boundsAction1.x + boundsAction1.width + gapX, posY, actionTextWidth, actionTextHeight};
-        DrawTextBoxed(font, TextFormat("%s", event->actions[1]->label), boundsAction2, 17, 1.0f, true, WHITE);
+        const char* label2 = (event->actions[1]->label) ? event->actions[1]->label : "???";
+        DrawTextBoxed(font, TextFormat("%s", label2), boundsAction2, 17, 1.0f, true, WHITE);
 
         // Draw button choices :
         float marginTopButton = 0.10f;
@@ -222,7 +234,7 @@ void drawEventChoice(event *event)
         float buttonHeight = 60;
         float buttonWidth = backgroundWidth * 0.20f;
 
-        if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+        if (GuiButton((Rectangle){boundsAction1.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1, 600))
         {
             printf("Choix 1 \n");
             fflush(stdout);
@@ -238,7 +250,7 @@ void drawEventChoice(event *event)
                 teleporter(game->mapData);
             }
         }
-        if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1))
+        if (GuiButton((Rectangle){boundsAction2.x + (actionTextWidth / 2) - buttonWidth / 2, posY, buttonWidth, buttonHeight}, "CHOISIR", -1, 601))
         {
             printf("Choix 2 \n");
             int res = event->actions[1]->action(game->caracterData); //, event->data);
@@ -302,7 +314,6 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
             freeCard(suppCard);
             showDeckModal = false;
             backInteractState = -1;
-            unloadTextureCard();
             free(firsPageElements);
         }
 
@@ -317,7 +328,7 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
     if (idxCard < deckSize)
     {
         // flèche vers droite :
-        if (ArrowButton((Rectangle){backgroundRect.x + backgroundRect.width - 20 - arrowButtonWidth, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1))
+        if (ArrowButton((Rectangle){backgroundRect.x + backgroundRect.width - 20 - arrowButtonWidth, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, -1, 100))
         {
             printf("i : %d \n", i);
             currentPage += 1;
@@ -327,7 +338,7 @@ void drawCarrousselPage(deck_t **firsPageElements, char *title)
     if (idxCard > perPage)
     {
         // flèche vers gauche :
-        if (ArrowButton((Rectangle){backgroundRect.x + 20, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1))
+        if (ArrowButton((Rectangle){backgroundRect.x + 20, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, -1, 101))
         {
             // printf("ArrowButton LEFT\n");
             currentPage -= 1;
@@ -406,7 +417,7 @@ void initCaroussel()
         myDeck = myDeck->next;
         i++;
     }
-    loadTextureCard();
+    // Textures are preloaded at screen init; no need to reload here
     printf(" deck size : %d    |    %d\n", deckSize, numberOfPage);
     // drawCarrousselPage(0, firsPageElements);
 }
@@ -463,8 +474,7 @@ void InitGameplayScreen(void)
 
     arrow = LoadTexture("./asset/UI_assets/arrow.png");
     arrowButtonBack = LoadTexture("./asset/UI_assets/button-arrow.png");
-    StatBar = LoadTexture("./asset/Board/Bar/StatBar.png");
-    HeartIcon = LoadTexture("./asset/Board/Bar/unit/heart.png");
+    // Note: StatBar and HeartIcon are now shared textures, preloaded in main
 
     // load 3 sprites rooms :
     constructSprite(&roomSpriteStart, "./asset/map/room_start.png", 3, 1);
@@ -554,7 +564,7 @@ void DrawGameplayScreen(void)
     int arrowButtonWidth = 72;
     int padding = 4;
 
-    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, backInteractState))
+    if (ArrowButton((Rectangle){GetScreenWidth() / 2 + (roomWidth / 2) + padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, 0, backInteractState, 0))
     {
         printf("ArrowButton RIGHT\n");
         if (etage == 9)
@@ -570,7 +580,7 @@ void DrawGameplayScreen(void)
     }
     if (etage == 0)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, backInteractState))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - (roomWidth / 2) - arrowButtonWidth - padding + roomGapX, GetScreenHeight() / 2 - arrowButtonWidth / 2, arrowButtonWidth, arrowButtonWidth}, -180, backInteractState, 1))
         {
             printf("ArrowButton LEFT\n");
             move_player(game->mapData, room + 2, false);
@@ -579,7 +589,7 @@ void DrawGameplayScreen(void)
     }
     if (room != 0 && etage != 9)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, backInteractState))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 - (roomHeight / 2) - arrowButtonWidth - padding, arrowButtonWidth, arrowButtonWidth}, -90, backInteractState, 2))
         {
             printf("ArrowButton TOP\n");
             move_player(game->mapData, room - 1, false);
@@ -588,7 +598,7 @@ void DrawGameplayScreen(void)
     }
     if (room != 3 && etage != 9)
     {
-        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, backInteractState))
+        if (ArrowButton((Rectangle){GetScreenWidth() / 2 - arrowButtonWidth / 2 + roomGapX, GetScreenHeight() / 2 + (roomHeight / 2) + padding, arrowButtonWidth, arrowButtonWidth}, 90, backInteractState, 3))
         {
             printf("ArrowButton BOTTOM\n");
             move_player(game->mapData, room + 1, false);
@@ -610,7 +620,7 @@ void UnloadGameplayScreen(void)
     UnloadTexture(roomSprite2Doors_top_blocked.texture);
     UnloadTexture(roomSprite3Doors.texture);
     UnloadTexture(roomSpriteEnd.texture);
-    UnloadTexture(StatBar);
+    // Note: StatBar is shared, do not unload here
 
     for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
     {

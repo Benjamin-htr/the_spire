@@ -14,9 +14,14 @@
 #include "./view/gameplay/gameplay.h"
 #include "./view/combat/combat.h"
 #include "./view/utils/utils.h"
+#include "./view/utils/shared_textures.h"
 #include "model/misc/boolean/boolean.h"
 #include "test/test.h"
 #include "./model/game/game.h"
+
+#if defined(PLATFORM_WEB)
+    #include <emscripten/emscripten.h>
+#endif
 
 //----------------------------------------------------------------------------------
 // Shared Variables Definition (global)
@@ -63,6 +68,7 @@ const boolean isInNonGraphicalTestes = false;
 
 int main(void)
 {
+    
     time_t t;
     /* Intializes random number generator */
     srand((unsigned)time(&t));
@@ -82,6 +88,12 @@ int main(void)
         SetExitKey(0);
 
         // Global data loading (assets that must be available in all screens, i.e. fonts)
+        // Increase audio stream buffer size to avoid underruns on Web
+        #if defined(PLATFORM_WEB)
+            SetAudioStreamBufferSizeDefault(4096);
+        #else
+            SetAudioStreamBufferSizeDefault(2048);
+        #endif
         InitAudioDevice();
 
         font = LoadFontEx("./asset/Misc/Fonts/pixantiqua.ttf", 24, 0, 250);
@@ -101,53 +113,68 @@ int main(void)
         buttonInfo.right = 60;
         buttonInfo.bottom = 60;
 
-        // Setup and Init first screen
+    // Preload card textures once for the whole app (prevents stutter on web)
+    loadTextureCard();
+
+    // Preload shared textures (StatBar, HeartIcon) to avoid reload on gameplay<->combat transitions
+    LoadSharedTextures();
+
+    // Setup and Init first screen
         currentScreen = MENU;
         // InitGameplayScreen();
         InitMenuScreen();
 
-        SetTargetFPS(24); // Set our game to run at 60 frames-per-second
 
         //-------------------------------------------------------------------------------------
         // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
         //---------------------------------------------------------------------------------------
 
-        // Main game loop
-        while (!(WindowShouldClose() || shouldClose)) // Detect window close button or ESC key
-        {
-            // Update
-            UpdateDrawFrame();
-
-            // check for alt + enter
-            if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+        #if defined(PLATFORM_WEB)
+            emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
+        #else
+            // Main game loop
+            while (!(WindowShouldClose() || shouldClose)) // Detect window close button or ESC key
             {
-                // int display = GetCurrentMonitor();
+                // Update
+                UpdateDrawFrame();
 
-                // if (IsWindowFullscreen())
-                //{
-                //     printf("was fullscreen : screenWidth : %d, screenHeight : %d \n ", screenWidth, screenHeight);
-                //     // if we are full screen, then go back to the windowed size
-                //     SetWindowSize(screenWidth, screenHeight);
-                // }
-                // else
-                //{
-                //
-                //     // if we are not full screen, set the window size to match the monitor we are on
-                //     SetWindowSize(GetMonitorPhysicalWidth(display), GetMonitorPhysicalHeight(display));
-                // }
+                // check for alt + enter
+                if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+                {
+                    // int display = GetCurrentMonitor();
 
-                // toggle the state
-                ToggleFullscreen();
+                    // if (IsWindowFullscreen())
+                    //{
+                    //     printf("was fullscreen : screenWidth : %d, screenHeight : %d \n ", screenWidth, screenHeight);
+                    //     // if we are full screen, then go back to the windowed size
+                    //     SetWindowSize(screenWidth, screenHeight);
+                    // }
+                    // else
+                    //{
+                    //
+                    //     // if we are not full screen, set the window size to match the monitor we are on
+                    //     SetWindowSize(GetMonitorPhysicalWidth(display), GetMonitorPhysicalHeight(display));
+                    // }
 
-                printf("screenWidth : %d, screenHeight : %d \n ", GetScreenWidth(), GetScreenHeight());
+                    // toggle the state
+                    ToggleFullscreen();
+
+                    printf("screenWidth : %d, screenHeight : %d \n ", GetScreenWidth(), GetScreenHeight());
+                }
             }
-        }
+        #endif
 
         // Unload all global loaded data (i.e. fonts) here!
         UnloadFont(font);
-        UnloadTexture(background);
+    UnloadTexture(background);
         UnloadMusicStream(music);
+
+    // Unload preloaded card textures
+    unloadTextureCard();
+
+    // Unload shared textures
+    UnloadSharedTextures();
 
         CloseAudioDevice(); // Close audio context
 
@@ -213,9 +240,10 @@ void ChangeToScreen(int screen)
 // Update transition effect
 static void UpdateTransition(void)
 {
+    float dt = GetFrameTime();
     if (!transFadeOut)
     {
-        transAlpha += 0.05f;
+        transAlpha += 1.5f * dt; // ~0.05 per frame at 30fps
 
         // NOTE: Due to float internal representation, condition jumps on 1.0f instead of 1.05f
         // For that reason we compare against 1.01f, to avoid last frame loading stop
@@ -275,7 +303,7 @@ static void UpdateTransition(void)
     }
     else // Transition fade out logic
     {
-        transAlpha -= 0.02f;
+        transAlpha -= 0.6f * dt; // ~0.02 per frame at 30fps
 
         if (transAlpha < -0.01f)
         {
@@ -336,9 +364,8 @@ static void UpdateDrawFrame(void)
         case COMBAT_SCREEN:
         {
             UpdateCombatScreen();
-
-            if (FinishCombatScreen() == 1)
-                ChangeToScreen(GAMEPLAY);
+            // Note: Screen transition is now handled directly in UpdateCombatScreen
+            // via TransitionToScreen(GAMEPLAY) or TransitionToScreen(ENDING)
         }
         break;
         case ENDING:

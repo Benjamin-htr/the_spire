@@ -52,15 +52,15 @@ void DrawMenuScreen(void)
     int buttonWidth = 300;
     int buttonHeight = 80;
     int gap = 30;
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300, buttonWidth, buttonHeight}, "NOUVELLE PARTIE", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300, buttonWidth, buttonHeight}, "NOUVELLE PARTIE", -1, 200))
     {
         TransitionToScreen(GAMEPLAY);
     }
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300 + buttonHeight + gap, buttonWidth, buttonHeight}, "CREDITS", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300 + buttonHeight + gap, buttonWidth, buttonHeight}, "CREDITS", -1, 201))
     {
         TransitionToScreen(CREDITS);
     }
-    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300 + (2 * (buttonHeight + gap)), buttonWidth, buttonHeight}, "QUITTER", -1))
+    if (GuiButton((Rectangle){GetScreenWidth() / 2 - buttonWidth / 2, 300 + (2 * (buttonHeight + gap)), buttonWidth, buttonHeight}, "QUITTER", -1, 202))
     {
         shouldClose = true;
     }

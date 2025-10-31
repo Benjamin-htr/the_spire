@@ -29,7 +29,11 @@ void freeBoard(board_t *board)
 
 void tranferOneCardBetweenDeck(deck_t **firstPlace, deck_t **secondPlace, int cardIdx) // transfere une carte à un indice donné d'un deck à un autre
 {
-    addCard(*secondPlace, removeCardatIndex(firstPlace, cardIdx));
+    card_t *moved = removeCardatIndex(firstPlace, cardIdx);
+    if (moved != NULL)
+    {
+        addCard(*secondPlace, moved);
+    }
 }
 
 void putCardsFromOnePlaceToAnother(deck_t **firstPlace, deck_t **secondPlace) // transfere toutes les cartes d'un deck vers un autre deck 

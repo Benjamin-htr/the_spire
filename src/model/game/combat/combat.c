@@ -40,12 +40,12 @@ void playOneCard(entity_t *launcher, entity_t *receiver, card_t *cardToPlay)
         updateStat(entityEnergy, -(cardToPlay->energyCost), false);
         moveOneCardFromHand(launcher->board, cardToPlay);
     }
-    else
-    {
-        printf("YOUR MANA:\t%d\nYOUR ENERGY:\t%d\n", entityMana->current, entityEnergy->current);
-        displayCard(cardToPlay);
-        printf("Plus d'énergie dispo\n");
-    }
+    // else
+    // {
+    //     printf("YOUR MANA:\t%d\nYOUR ENERGY:\t%d\n", entityMana->current, entityEnergy->current);
+    //     displayCard(cardToPlay);
+    //     printf("Plus d'énergie dispo\n");
+    // }
 }
 
 // function that make the enemy play is turn
@@ -77,18 +77,20 @@ int chooseRandomCardId(board_t *board)
 // function that ask to choose a card until the card choosen is playable by the entity
 card_t *pickCardFromHand(entity_t *caracter, int (*cardChoosingFunc)(board_t *))
 {
-    deck_t *deckPicked;
+    int handSize = getDeckSize(caracter->board->hand);
     stat_t *caracterMana = getEntityStat(caracter, MANA);
     stat_t *caracterEnergy = getEntityStat(caracter, ENERGY);
-    do
-    {
-        deckPicked = getElementFromDeckAtIndex(cardChoosingFunc(caracter->board), caracter->board->hand);
-        if (deckPicked == NULL)
-        {
-            return NULL;
-        }
-    } while (deckPicked->data->energyCost > caracterEnergy->current || deckPicked->data->manaCost > caracterMana->current);
-    return deckPicked->data;
+    int safety = 0;
+    for (; safety < handSize; safety++) {
+        int idx = cardChoosingFunc(caracter->board);
+        deck_t *deckPicked = getElementFromDeckAtIndex(idx, caracter->board->hand);
+        if (deckPicked == NULL || deckPicked->data == NULL)
+            continue;
+        if (deckPicked->data->energyCost <= caracterEnergy->current && deckPicked->data->manaCost <= caracterMana->current)
+            return deckPicked->data;
+    }
+    // No playable card found
+    return NULL;
 }
 
 // TEST FUNCTION

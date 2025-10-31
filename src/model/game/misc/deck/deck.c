@@ -38,16 +38,18 @@ void freeDeckListAndCard(deck_t *deckList) // fonction pour libérer la mémoire
 {
     deck_t *toFree = deckList;
     deck_t *next;
-    while (toFree != NULL)
+    // Safety: prevent infinite loop in case of an accidental cycle
+    int safety = 0;
+    while (toFree != NULL && safety < 10000)
     {
         next = toFree->next;
-        // TODO FREE CARD
         if (toFree->data != NULL)
         {
             freeCard(toFree->data);
         }
         freeDeck(toFree);
         toFree = next;
+        safety++;
     }
 }
 
@@ -93,24 +95,43 @@ int getPositionOfCard(deck_t *deck, char *cardName) // retourne la position d'un
 
 void addCard(deck_t *deck, card_t *card) // ajoute une carte à un deck
 {
-    if (deck == NULL)
+    // Guard: if target list or card is invalid, do nothing
+    if (deck == NULL || card == NULL)
     {
-        deck = createDeck(card);
         return;
     }
-    else
+    // If first node is empty (sentinel), fill it
+    if (deck->data == NULL)
     {
-        while (deck->next != NULL && deck->data != NULL)
-        {
-            deck = deck->next;
-        }
-        if (deck->data == NULL)
-        {
-            deck->data = card;
-            return;
-        }
-        deck->next = createDeck(card);
+        deck->data = card;
+        return;
     }
+    // Move to tail with cycle detection and safety cap
+    deck_t *cur = deck;
+    deck_t *slow = deck;
+    deck_t *fast = deck->next;
+    int safety = 0;
+    while (cur->next != NULL && cur->data != NULL && safety < 100000)
+    {
+        cur = cur->next;
+        // Floyd's cycle detection (tortoise-hare)
+        if (fast != NULL)
+        {
+            fast = fast->next ? fast->next->next : NULL;
+        }
+        if (slow != NULL)
+        {
+            slow = slow->next;
+        }
+        if (fast != NULL && slow != NULL && fast == slow)
+        {
+            // Cycle detected: break it at current to ensure progress
+            cur->next = NULL;
+            break;
+        }
+        safety++;
+    }
+    cur->next = createDeck(card);
 }
 
 card_t *removeFirstCard(deck_t **deck) // retire la première carte d'un deck (utilisé pour piocher)
@@ -136,7 +157,8 @@ card_t *removeCardatIndex(deck_t **deck, int cardIdx) // retire et retourne la c
     {
         deck_t *current = *deck;
         int incrementor = 1;
-        while (current->next != NULL)
+        int safety = 0;
+        while (current->next != NULL && safety < 100000)
         {
             if (incrementor == cardIdx)
             {
@@ -148,6 +170,7 @@ card_t *removeCardatIndex(deck_t **deck, int cardIdx) // retire et retourne la c
             }
             incrementor++;
             current = current->next;
+            safety++;
         }
     }
     return NULL;
@@ -172,7 +195,6 @@ void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENC
     char *card_1_name = CARD_ENCYCLOPEDIA[cardID_1].name;
     deck_t *readingHead = *deck;
     card_t *toFree;
-    int idx = 0;
     while (readingHead != NULL && readingHead->data != NULL)
     {
         if (readingHead->data->name == card_1_name)
@@ -183,7 +205,6 @@ void replaceCardWithOther(deck_t **deck, CARD_ENCYCLOPEDIA_ID cardID_1, CARD_ENC
             freeCard(toFree);
         }
         readingHead = readingHead->next;
-        idx++;
     }
 }
 
@@ -197,7 +218,8 @@ card_t *draw(deck_t *deck) // pioche une carte du deck
 deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck) // retire un element du deck à un indice donné
 {
     int i = 0;
-    while (deck != NULL)
+    int safety = 0;
+    while (deck != NULL && safety < 100000)
     {
         if (i == idx)
         {
@@ -205,6 +227,7 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck) // retire un element du
         }
         deck = deck->next;
         i++;
+        safety++;
     }
     return NULL;
 }
@@ -212,10 +235,12 @@ deck_t *getElementFromDeckAtIndex(int idx, deck_t *deck) // retire un element du
 int getDeckSize(deck_t *deck) // retourne la taille du deck
 {
     int res = 0;
-    while (deck != NULL && deck->data != NULL)
+    int safety = 0;
+    while (deck != NULL && deck->data != NULL && safety < 100000)
     {
         res++;
         deck = deck->next;
+        safety++;
     }
     return res;
 }

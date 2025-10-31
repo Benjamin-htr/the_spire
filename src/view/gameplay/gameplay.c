@@ -524,6 +524,12 @@ void DrawGameplayScreen(void)
 {
     ClearBackground(BLACK);
 
+    // Safety: if game data is invalid (e.g., during transition), don't try to render
+    if (game == NULL || game->mapData == NULL || game->caracterData == NULL)
+    {
+        return;
+    }
+
     position_player playerPos = player_position(game->mapData);
     int etage = playerPos.x;
     int room = playerPos.y;
@@ -622,9 +628,13 @@ void UnloadGameplayScreen(void)
     UnloadTexture(roomSpriteEnd.texture);
     // Note: StatBar is shared, do not unload here
 
-    for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+    // Safety guard: only unload item textures if game data is valid
+    if (game != NULL && game->caracterData != NULL && game->caracterData->items != NULL)
     {
-        UnloadTexture(objectsTextures[itemsIdx]);
+        for (int itemsIdx = 0; itemsIdx < 5 && game->caracterData->items[itemsIdx]->description != NULL; itemsIdx++)
+        {
+            UnloadTexture(objectsTextures[itemsIdx]);
+        }
     }
 }
 

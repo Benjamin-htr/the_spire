@@ -49,6 +49,8 @@ static card_t *ennemyCard;
 static deck_t *rewardDeck = NULL;
 // Pending index of the reward card the player clicked this frame (-1 means none)
 static int pendingRewardPickIdx = -1;
+// Guard to ensure we don't recreate reward deck after the player picked a card
+static boolean rewardResolved = false;
 
 // Represent if modal is open (-1 : no, >= 0 : open) (used to block interaction with button on the back).
 static int backInteractState = -1;
@@ -555,6 +557,9 @@ void unloadTextureCard()
 void InitCombatScreen(void)
 {
     backInteractState = -1;
+    // Reset reward flow guards
+    rewardResolved = false;
+    pendingRewardPickIdx = -1;
 
     printf("Combat Screen Init\n");
     fflush(stdout);
@@ -658,6 +663,7 @@ void UpdateCombatScreen(void)
         freeDeckListAndCard(rewardDeck);
         rewardDeck = NULL;
         backInteractState = -1;
+        rewardResolved = true; // prevent reward deck from being recreated while transitioning
         // Mini-boss extra reward
         if (combat->enemy->enemyType == MINIBOSS)
         {
@@ -684,9 +690,11 @@ void UpdateCombatScreen(void)
         }
         // Reset pending pick
         pendingRewardPickIdx = -1;
+        // Exit early this frame to avoid re-creating rewardDeck while transition runs
+        return;
     }
     // Only create the reward deck once when combat ends
-    if (checkEndCombat(combat) && rewardDeck == NULL)
+    if (checkEndCombat(combat) && rewardDeck == NULL && !rewardResolved)
     {
         if (checkVictory(combat))
         {
@@ -703,6 +711,12 @@ void DrawCombatScreen(void)
     float scaleBackground = (float)(GetScreenWidth() / (float)background.width);
     DrawTextureEx(CombatBG, (Vector2){0, 0}, 0, scaleBackground, WHITE);
     ClearBackground(GetColor(0x3f3f74ff));
+
+    // Safety: if combat or entities are invalid, just show background
+    if (combat == NULL || combat->caracter == NULL || combat->enemy == NULL)
+    {
+        return;
+    }
 
     drawStatBoard();
 
@@ -747,19 +761,37 @@ void UnloadCombatScreen(void)
     UnloadTexture(Statboard);
     UnloadTexture(DodgeIcon);
     UnloadTexture(ennemySprite.texture);
+    
     card_t *cardToFree = ennemyCard;
     ennemyCard = NULL;
-    getEntityStat(combat->caracter, DODGE)->current = 0;
+    
+    // Safety guard: only access combat members if combat pointer is valid
+    if (combat != NULL && combat->caracter != NULL)
+    {
+        stat_t *dodgeStat = getEntityStat(combat->caracter, DODGE);
+        if (dodgeStat != NULL)
+        {
+            dodgeStat->current = 0;
+        }
+    }
+    
     // Guard: enemy might not have played any card yet
     if (cardToFree != NULL)
     {
         freeCard(cardToFree);
     }
+    
     // Safety: if reward deck was never picked/cleared, free it to avoid leaks
     if (rewardDeck != NULL)
     {
         freeDeckListAndCard(rewardDeck);
         rewardDeck = NULL;
     }
-    freeCombat(combat);
+    
+    // Safety: only free combat if it exists
+    if (combat != NULL)
+    {
+        freeCombat(combat);
+        // Note: combat pointer will be reassigned in InitCombatScreen, no need to NULL it
+    }
 }

@@ -8,7 +8,7 @@ void initGame()
 {
     game = malloc(sizeof(Game));
     game->mapData = map_init();
-    game->caracterData = importCaracterFromId(TEST_CAR);
+    game->caracterData = importCaracterFromId(PETER);
     map_print(game->mapData);
 }
 

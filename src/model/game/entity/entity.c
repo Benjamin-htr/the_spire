@@ -430,7 +430,7 @@ entity_import CARATER_ENCYCLOPEDIA[] = {
     {
         .name = "Peter",
         .stats = {
-            {75, false},
+            {100, false},
             {999, true},
             {100, false},
             {3, true},

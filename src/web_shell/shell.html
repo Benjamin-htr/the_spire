@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>raylib HTML5 GAME</title>
+
+    <meta name="title" content="raylib HTML5 GAME" />
+    <meta name="description" content="New HTML5 videogame, developed using raylib videogames library" />
+    <meta name="keywords" content="raylib, games, html5, programming, C, C++, library, learn, videogames" />
+    <meta name="viewport" content="width=device-width" />
+
+    <!-- Open Graph metatags for sharing -->
+    <meta property="og:title" content="raylib HTML5 GAME" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image" content="https://www.raylib.com/common/img/raylib_logo.png" />
+    <meta property="og:site_name" content="raylib.com" />
+    <meta property="og:url" content="https://www.raylib.com/games.html" />
+    <meta property="og:description" content="New HTML5 videogame, developed using raylib videogames library" />
+
+    <!-- Twitter metatags for sharing -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@raysan5" />
+    <meta name="twitter:title" content="raylib HTML5 GAME" />
+    <meta name="twitter:image" content="https://www.raylib.com/common/raylib_logo.png" />
+    <meta name="twitter:url" content="https://www.raylib.com/games.html" />
+    <meta name="twitter:description" content="New HTML5 videogame, developed using raylib videogames library" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://www.raylib.com/favicon.ico" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./shell.css" />
+  </head>
+  <body>
+    <div id="header">
+      <a id="logo" href="https://www.raylib.com"></a>
+
+      <div class="spinner" id="spinner"></div>
+      <div class="emscripten" id="status">Downloading...</div>
+
+      <span id="controls">
+        <button id="btn-fullscreen" onclick="Module.requestFullscreen(false, false)">🖥️ FULLSCREEN</button>
+        <button id="btn-audio" onclick="toggleAudio()">🔇 SUSPEND</button>
+      </span>
+
+      <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden="1"></progress>
+      </div>
+    </div>
+
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    </div>
+
+    <!-- <textarea id="output" rows="8"></textarea> -->
+
+    <!-- External dependencies -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js/dist/FileSaver.min.js"
+    ></script>
+
+    <!-- Custom shell scripts are injected via --pre-js or --post-js during build -->
+    {{{ SCRIPT }}}
+  </body>
+</html>

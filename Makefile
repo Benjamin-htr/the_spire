@@ -50,12 +50,16 @@ BUILD_MODE            ?= RELEASE
 
 # PLATFORM_WEB: Default properties
 BUILD_WEB_ASYNCIFY    ?= FALSE
-BUILD_WEB_SHELL       ?= /Users/benjamin_htr/it/raylib/src/shell.html
+BUILD_WEB_SHELL_FOLDER ?= ./src/web_shell
+BUILD_WEB_SHELL       ?= $(BUILD_WEB_SHELL_FOLDER)/shell.html
 BUILD_WEB_HEAP_SIZE   ?= 128MB
 BUILD_WEB_STACK_SIZE  ?= 1MB
 BUILD_WEB_ASYNCIFY_STACK_SIZE ?= 1048576
 BUILD_WEB_RESOURCES   ?= TRUE
 BUILD_WEB_RESOURCES_PATH  ?= asset
+BUILD_WEB_PRE_JS_FILES = ${BUILD_WEB_SHELL_FOLDER}/module-config.js
+BUILD_WEB_POST_JS_FILES = ${BUILD_WEB_SHELL_FOLDER}/audio-control.js
+BUILD_WEB_FILES_TO_COPY = $(BUILD_WEB_SHELL_FOLDER)/shell.css
 
 # Determine PLATFORM_OS in case PLATFORM_DESKTOP selected
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
@@ -298,6 +302,11 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 
     # Define a custom shell .html and output extension
     LDFLAGS += --shell-file $(BUILD_WEB_SHELL)
+
+    # Generate --pre-js and --post-js options
+    LDFLAGS += --pre-js ${BUILD_WEB_PRE_JS_FILES}
+    LDFLAGS += --post-js ${BUILD_WEB_POST_JS_FILES}
+
     EXT = .html
 endif
 
@@ -379,6 +388,13 @@ all:
 # Project target defined by PROJECT_NAME
 $(PROJECT_NAME): $(OBJS)
 	$(CC) -o $(PROJECT_BUILD_PATH)/$(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+ifeq ($(PLATFORM),PLATFORM_WEB)
+	cp $(BUILD_WEB_FILES_TO_COPY) $(PROJECT_BUILD_PATH)/
+    # Copy additional files required by the shell (like stylesheets, or assets used by js or style)
+	cp -r $(BUILD_WEB_SHELL_FOLDER)/asset $(PROJECT_BUILD_PATH)/
+    # rename PROJECT_NAME.html to index.html for easier hosting
+	mv $(PROJECT_BUILD_PATH)/$(PROJECT_NAME).html $(PROJECT_BUILD_PATH)/index.html
+endif
 
 # Compile source files
 # NOTE: This pattern will compile every module defined on $(OBJS)

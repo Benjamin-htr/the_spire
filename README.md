@@ -1,37 +1,25 @@
 # The spire
 
-project c 2022
+This project was an ISEN study project c 2022 inspired by the game 'Slay the Spire'. You can read the instructions of our teacher [here](AP3_C_Projet_2021-2022.pdf) (in French).
+The instructions were to create a turn-based card game with C language and there were no guidance on the aesthetic. Thus, we spiced it up and decided to make real graphics with animations and sound effects using the raylib library (and not only terminal ui as expected).
 
-## Installation
+## Targeted Platforms
 
-### Windows 10/11 :
+At the original time of development, the project was targeted to be built on desktop platforms (Windows). But I recently decided to port it to the web platform using Emscripten to make it more accessible. You can test the web version [here](https://the-spire.benjamin-hautier.com).
 
--   To compile this project on windows, you need to install mingw64 before. For this you can check https://www.msys2.org/
--   Once this is done, you can call make at the root of the project.
--   Just call the compiled file at build/main.out
+## Building for Web Platform
 
-### WSL :
+To build the project for the web platform using Emscripten, ensure you have Emscripten installed and activated in your environment.
+You can then run the following command:
 
--   If you are on wsl, you may need to install some packages before :
-
-        sudo apt-get install make
-        sudo apt-get install mingw-w64-x86-64-dev
-        sudo apt-get install gcc-mingw-w64-x86-64
-
--   Once this is done, you can call this inscruction at the root of the project.
-
-          make OS=Windows_NT CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar
-
--   Finally call the compiled file at build/main.out
-
-## Add your files
-
--   [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
--   [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+```bash
+make PLATFORM=PLATFORM_WEB
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/d8546/the-spire.git
-git branch -M main
-git push -uf origin main
-```
+
+This will compile the project and generate the necessary HTML, JavaScript, and WebAssembly files in the build directory.
+
+## Custom Shell and JavaScript Integration
+
+You can customize the web shell by modifying the HTML file located in `src/web_shell/shell.html`.
+
+Additionally, you can include custom JavaScript files to be executed before and after the main module code by placing them in the `src/web_shell/` directory and updating the `BUILD_WEB_PRE_JS_FILES` and `BUILD_WEB_POST_JS_FILES` variables in the Makefile.
